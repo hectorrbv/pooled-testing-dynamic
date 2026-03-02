@@ -1,95 +1,29 @@
 """
-Expected utility computations for a DAPTS.
+Expected utility u(F) = E_Z[u(F,Z)].
 
-Two methods:
-  1) exact_expected_utility  — enumerate all 2^n infection profiles
-  2) mc_expected_utility     — Monte Carlo sampling
+Two methods: exact enumeration over all 2^n profiles, and Monte Carlo.
 """
 
-from __future__ import annotations
-
 import random
-from typing import List
-
-from augmented.core import indices_from_mask
 from augmented.simulator import apply_dapts
-from augmented.strategy import DAPTS
 
 
-def _z_weight(z_mask: int, p: List[float], q: List[float], n: int) -> float:
-    """Pr(Z = z_mask) = prod_i p_i^{Z_i} * q_i^{1-Z_i}."""
-    w = 1.0
-    for i in range(n):
-        if z_mask >> i & 1:
-            w *= p[i]
-        else:
-            w *= q[i]
-    return w
-
-
-def exact_expected_utility(
-    F: DAPTS,
-    p: List[float],
-    u: List[float],
-    n: int,
-) -> float:
-    """Compute u(F) = E_Z[u(F,Z)] exactly by summing over all 2^n profiles.
-
-    Parameters
-    ----------
-    F : DAPTS
-        Testing strategy.
-    p : list[float]
-        Infection probabilities, length n.
-    u : list[float]
-        Utilities, length n.
-    n : int
-        Population size.  Should satisfy n <= ~20 for tractability.
-
-    Returns
-    -------
-    float
-        Exact expected utility.
-    """
+def exact_expected_utility(F, p, u, n):
+    """u(F) by summing over all 2^n infection profiles. Feasible for n <= ~20."""
     q = [1.0 - pi for pi in p]
     total = 0.0
     for z_mask in range(1 << n):
-        w = _z_weight(z_mask, p, q, n)
+        # Pr(Z = z_mask)
+        w = 1.0
+        for i in range(n):
+            w *= p[i] if (z_mask >> i & 1) else q[i]
         _, _, u_val = apply_dapts(F, z_mask, n, u)
         total += w * u_val
     return total
 
 
-def mc_expected_utility(
-    F: DAPTS,
-    p: List[float],
-    u: List[float],
-    n: int,
-    trials: int = 10_000,
-    seed: int = 42,
-) -> float:
-    """Estimate u(F) via Monte Carlo.
-
-    Parameters
-    ----------
-    F : DAPTS
-        Testing strategy.
-    p : list[float]
-        Infection probabilities, length n.
-    u : list[float]
-        Utilities, length n.
-    n : int
-        Population size.
-    trials : int
-        Number of MC samples.
-    seed : int
-        RNG seed for reproducibility.
-
-    Returns
-    -------
-    float
-        Monte Carlo estimate of expected utility.
-    """
+def mc_expected_utility(F, p, u, n, trials=10_000, seed=42):
+    """Estimate u(F) via Monte Carlo sampling."""
     rng = random.Random(seed)
     total = 0.0
     for _ in range(trials):
