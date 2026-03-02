@@ -5,72 +5,50 @@ Individuals are indexed 0..n-1.  A "mask" is a Python int whose bit i
 is set iff individual i is in the set (pool, infection profile, etc.).
 """
 
-from __future__ import annotations
-
 from itertools import combinations
-from typing import List
 
 
-# ---------------------------------------------------------------------------
-# Bitmask helpers
-# ---------------------------------------------------------------------------
-
-def mask_from_indices(indices: List[int]) -> int:
-    """Return a bitmask with the given bit positions set."""
+def mask_from_indices(indices):
+    """Bitmask with the given bit positions set. e.g. [0,2] -> 0b101."""
     m = 0
     for i in indices:
         m |= 1 << i
     return m
 
 
-def indices_from_mask(mask: int, n: int) -> List[int]:
-    """Return sorted list of set-bit positions in *mask* (only checks bits 0..n-1)."""
-    return [i for i in range(n) if mask >> i & 1]
+def indices_from_mask(mask, n=None):
+    """Sorted list of set-bit positions. If n given, ignore bits >= n."""
+    if n is not None:
+        mask &= (1 << n) - 1
+    out = []
+    while mask:
+        lsb = mask & -mask
+        out.append(lsb.bit_length() - 1)
+        mask ^= lsb
+    return out
 
 
-def popcount(mask: int) -> int:
+def popcount(mask):
     """Number of set bits."""
-    return bin(mask).count("1")
+    return mask.bit_count()
 
 
-# ---------------------------------------------------------------------------
-# Pool enumeration
-# ---------------------------------------------------------------------------
+def mask_str(mask, n=None):
+    """Human-readable string for a bitmask. e.g. 0b101 -> '{0,2}'."""
+    idxs = indices_from_mask(mask, n)
+    return "{" + ",".join(str(i) for i in idxs) + "}" if idxs else "{}"
 
-def all_pools(n: int, G: int, *, include_empty: bool = True) -> List[int]:
-    """Return every pool mask t with |t| <= G over population 0..n-1.
 
-    Parameters
-    ----------
-    n : int
-        Population size.
-    G : int
-        Maximum pool size (biological limit).
-    include_empty : bool
-        If True (default) the empty pool (mask 0) is included.
-
-    Returns
-    -------
-    list[int]
-        Sorted list of bitmasks representing each valid pool.
-    """
-    pools: List[int] = []
-    indices = list(range(n))
+def all_pools(n, G, include_empty=True):
+    """Every pool mask t with |t| <= G over population 0..n-1."""
+    pools = []
     start = 0 if include_empty else 1
     for size in range(start, min(G, n) + 1):
-        for combo in combinations(indices, size):
+        for combo in combinations(range(n), size):
             pools.append(mask_from_indices(combo))
     return pools
 
 
-# ---------------------------------------------------------------------------
-# Augmented test result
-# ---------------------------------------------------------------------------
-
-def test_result(pool_mask: int, z_mask: int) -> int:
-    """Return the augmented test result r(t, Z) = |t ∩ Z| = popcount(t & Z).
-
-    This is the number of infected individuals in the pool — the
-    "idealized augmented test" from the paper.
-    """
+def test_result(pool_mask, z_mask):
+    """Augmented test result r(t, Z) = |t ∩ Z| (count of infected in pool)."""
     return popcount(pool_mask & z_mask)

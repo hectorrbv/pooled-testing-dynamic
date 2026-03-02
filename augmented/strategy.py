@@ -2,69 +2,33 @@
 DAPTS strategy representation.
 
 A DAPTS F = (F1, ..., FB) maps histories to pools.
-  - Fk : H_{k-1} -> P_G([n])
-  - History h_k is a tuple of k (pool_mask, result) pairs.
+  Fk : H_{k-1} -> P_G([n])
+  History h_k = tuple of k (pool_mask, result) pairs.
 """
 
-from __future__ import annotations
-
-from typing import Dict, List, Optional, Tuple
-
 # A History is a tuple of (pool_mask, test_result) pairs.
-# Length-0 history is the empty tuple ().
-History = Tuple[Tuple[int, int], ...]
+History = tuple  # e.g. ((pool1, r1), (pool2, r2), ...)
 
 
 class DAPTS:
     """Dynamic Augmented Pooled Testing Strategy.
 
-    Stores a policy table: for each step k (1-indexed), a mapping from
-    histories of length k-1 to a pool mask.
-
-    Attributes
-    ----------
-    B : int
-        Budget (number of test rounds).
-    policy : list[dict[History, int]]
-        policy[k] maps a History of length k to the pool chosen at step k+1.
-        So policy[0] maps () -> pool for the first test, etc.
+    policy[k] maps a History of length k to the pool chosen at step k+1.
+    So policy[0] maps () -> pool for the first test, etc.
     """
 
-    def __init__(self, B: int, policy: Optional[List[Dict[History, int]]] = None):
+    def __init__(self, B, policy=None):
         self.B = B
-        if policy is None:
-            self.policy = [{} for _ in range(B)]
-        else:
-            assert len(policy) == B
-            self.policy = policy
+        self.policy = policy if policy is not None else [{} for _ in range(B)]
 
-    def choose(self, k: int, history: History) -> int:
-        """Return the pool mask for step *k* (1-indexed) given *history*.
-
-        Parameters
-        ----------
-        k : int
-            Step number, 1-indexed.  Must satisfy 1 <= k <= B.
-        history : History
-            Tuple of (pool_mask, result) pairs of length k-1.
-
-        Returns
-        -------
-        int
-            Pool bitmask chosen by the policy.
-        """
-        assert 1 <= k <= self.B, f"k={k} out of range [1, {self.B}]"
-        assert len(history) == k - 1, (
-            f"Expected history length {k - 1}, got {len(history)}"
-        )
+    def choose(self, k, history):
+        """Pool mask for step k (1-indexed) given history of length k-1."""
         return self.policy[k - 1][history]
 
-    def set_action(self, k: int, history: History, pool_mask: int) -> None:
-        """Set the pool chosen at step *k* for a given *history*."""
-        assert 1 <= k <= self.B
-        assert len(history) == k - 1
+    def set_action(self, k, history, pool_mask):
+        """Record: at step k with this history, choose pool_mask."""
         self.policy[k - 1][history] = pool_mask
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         entries = sum(len(d) for d in self.policy)
         return f"DAPTS(B={self.B}, entries={entries})"
