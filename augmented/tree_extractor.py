@@ -121,10 +121,16 @@ def print_tree(tree, n, indent=0, file=None):
 
     if tree.get('terminal'):
         cleared = tree['cleared_str']
-        utility = tree['utility']
         post = [f"{pi:.3f}" for pi in tree['posteriors']]
-        out.write(f"{prefix}[TERMINAL] cleared={cleared} utility={utility:.2f}"
-                  f" posteriors=[{', '.join(post)}]\n")
+        if 'pruned_note' in tree:
+            out.write(f"{prefix}[PRUNED] cleared={cleared}"
+                      f" {tree['pruned_note']}"
+                      f" posteriors=[{', '.join(post)}]\n")
+        else:
+            utility = tree['utility']
+            out.write(f"{prefix}[TERMINAL] cleared={cleared}"
+                      f" utility={utility:.2f}"
+                      f" posteriors=[{', '.join(post)}]\n")
         return
 
     step = tree['step']
@@ -150,7 +156,175 @@ def tree_to_string(tree, n):
     return buf.getvalue()
 
 
-def export_tree_dot(tree, n, title="DAPTS Decision Tree"):
+def prune_tree(tree, max_depth):
+    """Return a deep copy of the tree pruned to max_depth levels.
+
+    Nodes whose step exceeds max_depth are converted to terminal nodes
+    with a note indicating how many subtrees were pruned.
+
+    Parameters
+    ----------
+    tree : dict
+        Tree from extract_tree().
+    max_depth : int
+        Maximum depth (step number) to keep.  Nodes at step > max_depth
+        are collapsed into terminal placeholders.
+
+    Returns
+    -------
+    dict
+        A new tree (deep-copied) truncated at max_depth.
+    """
+    import copy
+
+    def _count_subtrees(node):
+        """Count total subtree nodes (including the node itself)."""
+        if node.get('terminal'):
+            return 1
+        count = 1
+        for child in node.get('children', {}).values():
+            count += _count_subtrees(child)
+        return count
+
+    def _prune(node, depth):
+        if node.get('terminal'):
+            return copy.deepcopy(node)
+
+        if depth >= max_depth:
+            # Convert this non-terminal node into a pruned terminal node
+            subtree_count = sum(
+                _count_subtrees(ch)
+                for ch in node.get('children', {}).values()
+            )
+            pruned = {
+                'step': node['step'],
+                'terminal': True,
+                'history': node.get('history'),
+                'cleared': node.get('cleared', 0),
+                'cleared_str': node.get('cleared_str', ''),
+                'posteriors': list(node.get('posteriors', [])),
+                'pruned_note': f"[pruned: {subtree_count} subtrees]",
+            }
+            return pruned
+
+        # Recurse into children
+        new_node = {}
+        for key, val in node.items():
+            if key == 'children':
+                new_node['children'] = {
+                    r: _prune(child, depth + 1)
+                    for r, child in val.items()
+                }
+            elif key == 'posteriors':
+                new_node['posteriors'] = list(val)
+            elif key == 'history':
+                new_node['history'] = val
+            else:
+                new_node[key] = val
+        return new_node
+
+    return _prune(tree, 1)
+
+
+def summarize_tree(tree, n):
+    """Compute aggregate statistics over the decision tree.
+
+    Parameters
+    ----------
+    tree : dict
+        Tree from extract_tree().
+    n : int
+        Population size.
+
+    Returns
+    -------
+    dict
+        Aggregate statistics with keys:
+          - total_nodes: count of all nodes
+          - terminal_nodes: count of terminal (leaf) nodes
+          - max_depth: deepest step level in the tree
+          - avg_branching: average branching factor of non-terminal nodes
+          - avg_terminal_utility: average utility at terminal nodes
+          - pools_used: set of unique pool strings tested
+          - depth_distribution: dict mapping depth (step) -> node count
+    """
+    stats = {
+        'total_nodes': 0,
+        'terminal_nodes': 0,
+        'max_depth': 0,
+        'branching_factors': [],     # temporary; used to compute avg
+        'terminal_utilities': [],    # temporary; used to compute avg
+        'pools_used': set(),
+        'depth_distribution': {},
+    }
+
+    def _walk(node):
+        stats['total_nodes'] += 1
+
+        depth = node.get('step', 0)
+        if depth > stats['max_depth']:
+            stats['max_depth'] = depth
+
+        stats['depth_distribution'][depth] = (
+            stats['depth_distribution'].get(depth, 0) + 1
+        )
+
+        if node.get('terminal'):
+            stats['terminal_nodes'] += 1
+            if 'utility' in node:
+                stats['terminal_utilities'].append(node['utility'])
+            return
+
+        # Non-terminal node
+        if 'pool_str' in node:
+            stats['pools_used'].add(node['pool_str'])
+
+        children = node.get('children', {})
+        if children:
+            stats['branching_factors'].append(len(children))
+        for child in children.values():
+            _walk(child)
+
+    _walk(tree)
+
+    # Compute averages
+    bf = stats.pop('branching_factors')
+    tu = stats.pop('terminal_utilities')
+    stats['avg_branching'] = (sum(bf) / len(bf)) if bf else 0.0
+    stats['avg_terminal_utility'] = (sum(tu) / len(tu)) if tu else 0.0
+
+    return stats
+
+
+def print_tree_summary(tree, n):
+    """Print a human-readable one-paragraph summary of the decision tree.
+
+    Parameters
+    ----------
+    tree : dict
+        Tree from extract_tree().
+    n : int
+        Population size.
+    """
+    s = summarize_tree(tree, n)
+    pools = ', '.join(sorted(s['pools_used'])) if s['pools_used'] else 'none'
+    depth_parts = ', '.join(
+        f"depth {d}: {c}"
+        for d, c in sorted(s['depth_distribution'].items())
+    )
+    print(
+        f"Tree summary ({n} individuals): "
+        f"{s['total_nodes']} total nodes, "
+        f"{s['terminal_nodes']} terminal nodes, "
+        f"maximum depth {s['max_depth']}, "
+        f"average branching factor {s['avg_branching']:.2f}, "
+        f"average terminal utility {s['avg_terminal_utility']:.4f}. "
+        f"Pools tested: {pools}. "
+        f"Depth distribution: {depth_parts}."
+    )
+
+
+def export_tree_dot(tree, n, title="DAPTS Decision Tree", max_depth=None):
     """Export the decision tree to DOT format for Graphviz.
 
     Parameters
@@ -161,6 +335,8 @@ def export_tree_dot(tree, n, title="DAPTS Decision Tree"):
         Population size.
     title : str
         Graph title.
+    max_depth : int or None
+        If provided, prune the tree to this depth before exporting.
 
     Returns
     -------
@@ -168,6 +344,8 @@ def export_tree_dot(tree, n, title="DAPTS Decision Tree"):
         DOT-format string. Save to .dot file and render with:
         dot -Tpng tree.dot -o tree.png
     """
+    if max_depth is not None:
+        tree = prune_tree(tree, max_depth)
     lines = ['digraph DAPTS {']
     lines.append(f'  label="{title}";')
     lines.append('  labelloc="t";')
@@ -183,10 +361,16 @@ def export_tree_dot(tree, n, title="DAPTS Decision Tree"):
 
         if tree_node.get('terminal'):
             cleared = tree_node['cleared_str']
-            utility = tree_node['utility']
-            label = f"DONE\\ncleared={cleared}\\nutility={utility:.2f}"
-            lines.append(f'  n{nid} [label="{label}", '
-                         f'style=filled, fillcolor="#d4edda"];')
+            if 'pruned_note' in tree_node:
+                note = tree_node['pruned_note']
+                label = f"PRUNED\\ncleared={cleared}\\n{note}"
+                lines.append(f'  n{nid} [label="{label}", '
+                             f'style=filled, fillcolor="#fff3cd"];')
+            else:
+                utility = tree_node['utility']
+                label = f"DONE\\ncleared={cleared}\\nutility={utility:.2f}"
+                lines.append(f'  n{nid} [label="{label}", '
+                             f'style=filled, fillcolor="#d4edda"];')
         else:
             step = tree_node['step']
             pool = tree_node['pool_str']
