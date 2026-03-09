@@ -11,13 +11,15 @@ from augmented.baselines import u_max, u_single
 from augmented.static_solver import solve_static_non_overlapping, solve_static_overlapping
 from augmented.classical_solver import solve_classical_dynamic
 from augmented.solver import solve_optimal_dapts
-from augmented.greedy import greedy_myopic_expected_utility
+from augmented.greedy import (greedy_myopic_expected_utility,
+                              greedy_myopic_counting_expected_utility)
 
 
 def compare_all(p, u, B, G):
     """Compute all strategy values for population (p, u) with budget B and pool size G.
 
-    Returns dict with keys: U_single, U_s_NO, U_s_O, U_D, U_D_A, U_greedy, U_max.
+    Returns dict with keys: U_single, U_s_NO, U_s_O, U_D, U_D_A,
+    U_greedy, U_greedy_counting, U_max.
     """
     n = len(p)
     results = {}
@@ -28,6 +30,7 @@ def compare_all(p, u, B, G):
     results["U_D"], _ = solve_classical_dynamic(p, u, B, G)
     results["U_D_A"], _ = solve_optimal_dapts(p, u, B, G)
     results["U_greedy"] = greedy_myopic_expected_utility(p, u, B, G)
+    results["U_greedy_counting"] = greedy_myopic_counting_expected_utility(p, u, B, G)
     results["U_max"] = u_max(p, u)
 
     return results
@@ -63,6 +66,7 @@ def print_comparison(p, u, B, G, label=""):
 
     print()
     print(f"  {'U^greedy  (myopic augmented greedy)':42s} = {results['U_greedy']:.6f}")
+    print(f"  {'U^greedy_counting  (full-history Bayes)':42s} = {results['U_greedy_counting']:.6f}")
 
     # Verify inequality chain
     print()

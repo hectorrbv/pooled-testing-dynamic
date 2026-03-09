@@ -8,7 +8,8 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from augmented.core import (
-    all_pools, indices_from_mask, mask_from_indices, mask_str,
+    all_pools, all_pools_from_mask, compute_active_mask,
+    indices_from_mask, mask_from_indices, mask_str,
     popcount, test_result,
 )
 from augmented.strategy import DAPTS
@@ -17,12 +18,16 @@ from augmented.expected_utility import exact_expected_utility, mc_expected_utili
 from augmented.baselines import u_max, u_single
 from augmented.solver import solve_optimal_dapts
 from augmented.bayesian import (
-    bayesian_update_single_test, bayesian_update, _poisson_binomial_pmf,
+    bayesian_update_single_test, bayesian_update,
+    bayesian_update_by_counting, estimate_p_from_history,
+    _poisson_binomial_pmf,
 )
 from augmented.greedy import (
     greedy_myopic_simulate, greedy_myopic_expected_utility,
     greedy_lookahead_simulate,
+    greedy_myopic_counting_simulate, greedy_myopic_counting_expected_utility,
 )
+from augmented.tree_extractor import extract_tree, print_tree, tree_to_string, export_tree_dot
 from augmented.static_solver import solve_static_non_overlapping, solve_static_overlapping
 from augmented.classical_solver import solve_classical_dynamic
 
@@ -384,6 +389,280 @@ def test_overlapping_beats_non_overlapping():
     u_sno, _ = solve_static_non_overlapping(p, u_vec, B, G)
     u_so, _ = solve_static_overlapping(p, u_vec, B, G)
     assert u_so >= u_sno - 1e-9
+
+
+# ===================================================================
+# 17) Preprocessing: compute_active_mask and all_pools_from_mask
+# ===================================================================
+
+def test_compute_active_mask_basic():
+    # p = [0.0, 0.5, 1.0, 0.3]: individual 0 is healthy, 2 is infected
+    active, confirmed = compute_active_mask([0.0, 0.5, 1.0, 0.3], 0, 4)
+    assert active == mask_from_indices([1, 3])  # only uncertain
+    assert confirmed == mask_from_indices([2])  # confirmed infected
+
+
+def test_compute_active_mask_with_cleared():
+    # Individual 1 already cleared
+    cleared = mask_from_indices([1])
+    active, confirmed = compute_active_mask([0.3, 0.5, 0.2], cleared, 3)
+    assert active == mask_from_indices([0, 2])  # 1 is cleared
+
+
+def test_compute_active_mask_all_certain():
+    active, confirmed = compute_active_mask([0.0, 1.0], 0, 2)
+    assert active == 0
+    assert confirmed == mask_from_indices([1])
+
+
+def test_all_pools_from_mask():
+    active = mask_from_indices([0, 2, 3])  # only individuals 0, 2, 3
+    pools = all_pools_from_mask(active, G=2, include_empty=False)
+    # Should have C(3,1)+C(3,2) = 3+3 = 6 pools from {0,2,3}
+    assert len(pools) == 6
+    # Verify no pool contains individual 1
+    for pool in pools:
+        assert not (pool >> 1 & 1), f"Pool {mask_str(pool, 4)} contains individual 1"
+
+
+def test_all_pools_from_mask_empty():
+    pools = all_pools_from_mask(0, G=3, include_empty=False)
+    assert pools == []
+
+
+# ===================================================================
+# 18) Bayesian update by counting
+# ===================================================================
+
+def test_counting_captures_cross_test_info():
+    """Counting-based update captures cross-test information that sequential misses.
+
+    Test 1: pool {0,1}, r=1 → exactly one of {0,1} is infected.
+    Test 2: pool {1,2}, r=0 → 1 and 2 are healthy.
+    Combined: since 1 is healthy (test 2) and exactly one of {0,1} infected (test 1),
+    individual 0 must be infected.
+
+    The counting approach correctly deduces P(Z_0=1) = 1.0.
+    The sequential approach only updates individuals IN the pool at each step,
+    so it misses this cross-test deduction (leaves P(Z_0=1) = 0.3).
+    """
+    p = [0.3, 0.5, 0.2]
+    n = 3
+    history = (
+        (mask_from_indices([0, 1]), 1),
+        (mask_from_indices([1, 2]), 0),
+    )
+    counting = bayesian_update_by_counting(p, history, n)
+    # Counting correctly deduces: 0 infected, 1 healthy, 2 healthy
+    assert abs(counting[0] - 1.0) < 1e-10, f"Expected P(Z_0=1)=1, got {counting[0]}"
+    assert abs(counting[1] - 0.0) < 1e-10, f"Expected P(Z_1=1)=0, got {counting[1]}"
+    assert abs(counting[2] - 0.0) < 1e-10, f"Expected P(Z_2=1)=0, got {counting[2]}"
+
+    # Sequential misses the cross-test deduction for individual 0
+    seq = bayesian_update(p, history, n)
+    assert abs(seq[0] - 0.3) < 1e-10  # sequential doesn't update 0 from test 2
+    assert abs(seq[1] - 0.0) < 1e-10  # but correctly clears 1
+    assert abs(seq[2] - 0.0) < 1e-10  # and 2
+
+
+def test_counting_r0_clears():
+    p = [0.3, 0.5, 0.2]
+    pool = mask_from_indices([0, 1])
+    post = bayesian_update_by_counting(p, ((pool, 0),), 3)
+    assert abs(post[0]) < 1e-10
+    assert abs(post[1]) < 1e-10
+    assert abs(post[2] - 0.2) < 1e-10
+
+
+def test_counting_r_equals_pool_size():
+    p = [0.3, 0.5, 0.2]
+    pool = mask_from_indices([0, 1])
+    post = bayesian_update_by_counting(p, ((pool, 2),), 3)
+    assert abs(post[0] - 1.0) < 1e-10
+    assert abs(post[1] - 1.0) < 1e-10
+
+
+def test_counting_empty_history():
+    p = [0.1, 0.5]
+    post = bayesian_update_by_counting(p, (), 2)
+    assert abs(post[0] - 0.1) < 1e-10
+    assert abs(post[1] - 0.5) < 1e-10
+
+
+def test_counting_full_history_cross_test():
+    """Counting correctly propagates information across overlapping pools.
+
+    Test 1: pool {0,1,2}, r=1 → exactly 1 infected in {0,1,2}
+    Test 2: pool {2,3}, r=0   → 2 and 3 are healthy
+    Test 3: pool {0}, r=1     → 0 is infected
+
+    Combined: 0 infected, 2 healthy, 3 healthy. Since exactly 1 in {0,1,2}
+    is infected (test 1) and that's individual 0, individual 1 must be healthy.
+
+    Counting gets this right. Sequential misses the cross-test deduction for 1.
+    """
+    p = [0.1, 0.2, 0.3, 0.4]
+    n = 4
+    history = (
+        (mask_from_indices([0, 1, 2]), 1),
+        (mask_from_indices([2, 3]), 0),
+        (mask_from_indices([0]), 1),
+    )
+    counting = bayesian_update_by_counting(p, history, n)
+    assert abs(counting[0] - 1.0) < 1e-10  # confirmed infected
+    assert abs(counting[1] - 0.0) < 1e-10  # deduced healthy via cross-test
+    assert abs(counting[2] - 0.0) < 1e-10  # proven healthy
+    assert abs(counting[3] - 0.0) < 1e-10  # proven healthy
+
+    # Sequential does NOT deduce individual 1 is healthy
+    seq = bayesian_update(p, history, n)
+    assert abs(seq[0] - 1.0) < 1e-10  # test 3 confirms
+    assert seq[1] > 0.1  # sequential doesn't fully update 1
+    assert abs(seq[2] - 0.0) < 1e-10
+    assert abs(seq[3] - 0.0) < 1e-10
+
+
+# ===================================================================
+# 19) Edge cases for p = 0 or p = 1
+# ===================================================================
+
+def test_bayesian_p_zero():
+    """Individual with p=0 should stay at 0 after any update."""
+    p = [0.0, 0.5, 0.3]
+    pool = mask_from_indices([0, 1, 2])
+    post = bayesian_update_single_test(p, pool, r=1, n=3)
+    assert abs(post[0]) < 1e-10  # stays at 0
+
+
+def test_bayesian_p_one():
+    """Individual with p=1 should stay at 1 after any update."""
+    p = [1.0, 0.5, 0.3]
+    pool = mask_from_indices([0, 1, 2])
+    post = bayesian_update_single_test(p, pool, r=2, n=3)
+    assert abs(post[0] - 1.0) < 1e-10  # stays at 1
+
+
+# ===================================================================
+# 20) Decision tree extraction
+# ===================================================================
+
+def test_extract_tree_simple():
+    """Extract tree from a simple B=1 policy."""
+    p = [0.1, 0.2]
+    u_vec = [5.0, 3.0]
+    _, F = solve_optimal_dapts(p, u_vec, B=1, G=2)
+    tree = extract_tree(F, p, u_vec, n=2)
+    assert not tree['terminal']
+    assert tree['step'] == 1
+    assert 'children' in tree
+    # All children should be terminal (B=1)
+    for r, child in tree['children'].items():
+        assert child['terminal']
+
+
+def test_tree_to_string():
+    """Tree string output should not be empty."""
+    p = [0.1, 0.2]
+    u_vec = [5.0, 3.0]
+    _, F = solve_optimal_dapts(p, u_vec, B=1, G=2)
+    tree = extract_tree(F, p, u_vec, n=2)
+    s = tree_to_string(tree, n=2)
+    assert len(s) > 0
+    assert "Step 1" in s
+
+
+def test_export_tree_dot():
+    """DOT export should produce valid DOT syntax."""
+    p = [0.1, 0.2]
+    u_vec = [5.0, 3.0]
+    _, F = solve_optimal_dapts(p, u_vec, B=1, G=2)
+    tree = extract_tree(F, p, u_vec, n=2)
+    dot = export_tree_dot(tree, n=2)
+    assert "digraph" in dot
+    assert "n0" in dot
+
+
+def test_extract_tree_B2():
+    """Extract tree from a B=2 policy — should have depth 2."""
+    p = [0.1, 0.2, 0.15]
+    u_vec = [5.0, 3.0, 4.0]
+    _, F = solve_optimal_dapts(p, u_vec, B=2, G=2)
+    tree = extract_tree(F, p, u_vec, n=3)
+    assert not tree['terminal']
+    # At least one child should be non-terminal (depth 2)
+    has_depth2 = False
+    for r, child in tree['children'].items():
+        if not child.get('terminal') and 'children' in child:
+            has_depth2 = True
+    assert has_depth2
+
+
+# ===================================================================
+# 21) Counting-based greedy
+# ===================================================================
+
+def test_counting_greedy_simulate():
+    """Counting greedy should produce valid results."""
+    p = [0.1, 0.2, 0.15]
+    u_vec = [5.0, 3.0, 4.0]
+    hist, cleared, util = greedy_myopic_counting_simulate(
+        p, u_vec, B=2, G=2, z_mask=0)
+    assert util > 0  # all healthy, should clear some
+
+
+def test_counting_greedy_matches_sequential_z0():
+    """For z=0 (nobody infected), both greedy variants should agree."""
+    p = [0.1, 0.2, 0.15]
+    u_vec = [5.0, 3.0, 4.0]
+    _, _, util_seq = greedy_myopic_simulate(p, u_vec, B=2, G=2, z_mask=0)
+    _, _, util_cnt = greedy_myopic_counting_simulate(p, u_vec, B=2, G=2, z_mask=0)
+    # Both should find the same utility when nobody is infected
+    assert abs(util_seq - util_cnt) < 1e-10
+
+
+def test_counting_greedy_expected_utility():
+    """Counting greedy EU should be between U_single and U_max."""
+    p = [0.1, 0.2, 0.15]
+    u_vec = [5.0, 3.0, 4.0]
+    u_s, _ = u_single(p, u_vec, B=2)
+    u_cnt = greedy_myopic_counting_expected_utility(p, u_vec, B=2, G=2)
+    u_m = u_max(p, u_vec)
+    assert u_s <= u_cnt + 1e-10, f"U_single={u_s} > U_counting={u_cnt}"
+    assert u_cnt <= u_m + 1e-10, f"U_counting={u_cnt} > U_max={u_m}"
+
+
+def test_counting_vs_sequential_greedy_eu():
+    """Sequential and counting greedy EUs should be very close for independent priors."""
+    p = [0.1, 0.2, 0.15]
+    u_vec = [5.0, 3.0, 4.0]
+    eu_seq = greedy_myopic_expected_utility(p, u_vec, B=2, G=2)
+    eu_cnt = greedy_myopic_counting_expected_utility(p, u_vec, B=2, G=2)
+    # For independent priors, both approaches should give very similar results
+    assert abs(eu_seq - eu_cnt) < 0.1, \
+        f"Sequential EU={eu_seq:.4f} vs Counting EU={eu_cnt:.4f}"
+
+
+# ===================================================================
+# 22) estimate_p_from_history
+# ===================================================================
+
+def test_estimate_p_no_history():
+    """With no history, estimate should return the prior."""
+    est = estimate_p_from_history((), 3, prior_p=[0.1, 0.2, 0.3])
+    assert abs(est[0] - 0.1) < 1e-10
+    assert abs(est[1] - 0.2) < 1e-10
+    assert abs(est[2] - 0.3) < 1e-10
+
+
+def test_estimate_p_with_history():
+    """With history, estimate should reflect the observations."""
+    history = (
+        (mask_from_indices([0, 1]), 0),  # both healthy
+    )
+    est = estimate_p_from_history(history, 3, prior_p=[0.3, 0.3, 0.3])
+    assert est[0] < 0.05  # should be near 0 (proven healthy)
+    assert est[1] < 0.05
+    assert abs(est[2] - 0.3) < 1e-10  # unchanged
 
 
 # ===================================================================
