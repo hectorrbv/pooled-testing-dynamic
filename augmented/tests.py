@@ -19,13 +19,14 @@ from augmented.baselines import u_max, u_single
 from augmented.solver import solve_optimal_dapts
 from augmented.bayesian import (
     bayesian_update_single_test, bayesian_update,
-    bayesian_update_by_counting, estimate_p_from_history,
+    bayesian_update_by_counting, gibbs_update, estimate_p_from_history,
     _poisson_binomial_pmf,
 )
 from augmented.greedy import (
     greedy_myopic_simulate, greedy_myopic_expected_utility,
     greedy_lookahead_simulate,
     greedy_myopic_counting_simulate, greedy_myopic_counting_expected_utility,
+    greedy_myopic_gibbs_simulate, greedy_myopic_gibbs_expected_utility,
 )
 from augmented.tree_extractor import extract_tree, print_tree, tree_to_string, export_tree_dot
 from augmented.static_solver import solve_static_non_overlapping, solve_static_overlapping
@@ -663,6 +664,120 @@ def test_estimate_p_with_history():
     assert est[0] < 0.05  # should be near 0 (proven healthy)
     assert est[1] < 0.05
     assert abs(est[2] - 0.3) < 1e-10  # unchanged
+
+
+# ===================================================================
+# 23) Gibbs sampling posterior update
+# ===================================================================
+
+def test_gibbs_no_history():
+    """With no history, Gibbs returns the prior."""
+    p = [0.1, 0.2, 0.3]
+    result = gibbs_update(p, (), 3, seed=42)
+    for i in range(3):
+        assert abs(result[i] - p[i]) < 1e-10
+
+
+def test_gibbs_all_healthy():
+    """r=0 pool confirms all members healthy."""
+    p = [0.3, 0.4, 0.2]
+    history = ((mask_from_indices([0, 1, 2]), 0),)  # all 3, r=0
+    result = gibbs_update(p, history, 3, seed=42)
+    for i in range(3):
+        assert abs(result[i]) < 1e-10, f"p[{i}] = {result[i]}, expected 0"
+
+
+def test_gibbs_all_infected():
+    """r=|pool| confirms all members infected."""
+    p = [0.3, 0.4, 0.2]
+    history = ((mask_from_indices([0, 1, 2]), 3),)  # all 3, r=3
+    result = gibbs_update(p, history, 3, seed=42)
+    for i in range(3):
+        assert abs(result[i] - 1.0) < 1e-10, f"p[{i}] = {result[i]}, expected 1"
+
+
+def test_gibbs_deterministic_deduction():
+    """Gibbs should deterministically deduce from overlapping tests."""
+    # Test 1: pool {0,1}, r=1 → exactly one infected
+    # Test 2: pool {1,2}, r=0 → both healthy → agent 1 healthy
+    # Therefore agent 0 must be infected
+    p = [0.3, 0.4, 0.2]
+    history = (
+        (mask_from_indices([0, 1]), 1),
+        (mask_from_indices([1, 2]), 0),
+    )
+    result = gibbs_update(p, history, 3, seed=42)
+    assert abs(result[0] - 1.0) < 1e-10, f"p[0] = {result[0]}, expected 1.0"
+    assert abs(result[1]) < 1e-10, f"p[1] = {result[1]}, expected 0.0"
+    assert abs(result[2]) < 1e-10, f"p[2] = {result[2]}, expected 0.0"
+
+
+def test_gibbs_approx_matches_counting():
+    """For small n, Gibbs should approximately match exact counting."""
+    p = [0.2, 0.3, 0.15, 0.25]
+    history = (
+        (mask_from_indices([0, 1, 2]), 1),  # exactly 1 of {0,1,2} infected
+    )
+    n = 4
+    exact = bayesian_update_by_counting(p, history, n)
+    gibbs = gibbs_update(p, history, n, num_iterations=5000,
+                         burn_in=500, seed=42)
+    for i in range(n):
+        assert abs(gibbs[i] - exact[i]) < 0.05, \
+            f"Agent {i}: gibbs={gibbs[i]:.4f} vs exact={exact[i]:.4f}"
+
+
+def test_gibbs_cross_test_info():
+    """Gibbs captures cross-test information like counting does."""
+    # Same setup that showed sequential misses cross-test info:
+    # Test 1: pool {0,1}, r=1; Test 2: pool {1,2}, r=0
+    # Counting correctly deduces P(Z_0)=1.0; sequential leaves it at ~0.3
+    p = [0.3, 0.3, 0.3]
+    history = (
+        (mask_from_indices([0, 1]), 1),
+        (mask_from_indices([1, 2]), 0),
+    )
+    result = gibbs_update(p, history, 3, seed=42)
+    assert abs(result[0] - 1.0) < 1e-10, \
+        f"Gibbs should deduce P(Z_0)=1.0, got {result[0]:.4f}"
+    assert abs(result[1]) < 1e-10
+    assert abs(result[2]) < 1e-10
+
+
+def test_gibbs_reproducible_with_seed():
+    """Same seed produces same results."""
+    p = [0.2, 0.3, 0.15, 0.25, 0.1]
+    history = (
+        (mask_from_indices([0, 1, 2]), 1),
+        (mask_from_indices([2, 3, 4]), 0),
+    )
+    r1 = gibbs_update(p, history, 5, seed=12345)
+    r2 = gibbs_update(p, history, 5, seed=12345)
+    for i in range(5):
+        assert abs(r1[i] - r2[i]) < 1e-10, \
+            f"Agent {i}: run1={r1[i]:.6f} vs run2={r2[i]:.6f}"
+
+
+def test_gibbs_greedy_simulate():
+    """Greedy Gibbs simulate should produce valid results."""
+    p = [0.1, 0.2, 0.15]
+    u = [5.0, 3.0, 4.0]
+    z_mask = 0  # nobody infected
+    history, cleared, utility = greedy_myopic_gibbs_simulate(
+        p, u, B=2, G=2, z_mask=z_mask, seed=42)
+    # With nobody infected, all pools clear → should clear everyone
+    assert utility > 0
+
+
+def test_gibbs_greedy_expected_utility():
+    """Greedy Gibbs expected utility should be close to counting-based."""
+    p = [0.1, 0.2, 0.15]
+    u = [5.0, 3.0, 4.0]
+    eu_gibbs = greedy_myopic_gibbs_expected_utility(p, u, B=2, G=2, seed=42)
+    eu_counting = greedy_myopic_counting_expected_utility(p, u, B=2, G=2)
+    # Should be reasonably close for small instances
+    assert abs(eu_gibbs - eu_counting) < 0.5, \
+        f"Gibbs EU={eu_gibbs:.4f} vs Counting EU={eu_counting:.4f}"
 
 
 # ===================================================================
