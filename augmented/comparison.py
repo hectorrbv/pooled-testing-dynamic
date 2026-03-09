@@ -12,7 +12,8 @@ from augmented.static_solver import solve_static_non_overlapping, solve_static_o
 from augmented.classical_solver import solve_classical_dynamic
 from augmented.solver import solve_optimal_dapts
 from augmented.greedy import (greedy_myopic_expected_utility,
-                              greedy_myopic_counting_expected_utility)
+                              greedy_myopic_counting_expected_utility,
+                              greedy_myopic_gibbs_expected_utility)
 
 
 def compare_all(p, u, B, G):
@@ -31,6 +32,7 @@ def compare_all(p, u, B, G):
     results["U_D_A"], _ = solve_optimal_dapts(p, u, B, G)
     results["U_greedy"] = greedy_myopic_expected_utility(p, u, B, G)
     results["U_greedy_counting"] = greedy_myopic_counting_expected_utility(p, u, B, G)
+    results["U_greedy_gibbs"] = greedy_myopic_gibbs_expected_utility(p, u, B, G, seed=42)
     results["U_max"] = u_max(p, u)
 
     return results
@@ -67,6 +69,7 @@ def print_comparison(p, u, B, G, label=""):
     print()
     print(f"  {'U^greedy  (myopic augmented greedy)':42s} = {results['U_greedy']:.6f}")
     print(f"  {'U^greedy_counting  (full-history Bayes)':42s} = {results['U_greedy_counting']:.6f}")
+    print(f"  {'U^greedy_gibbs  (Gibbs sampling MCMC)':42s} = {results['U_greedy_gibbs']:.6f}")
 
     # Verify inequality chain
     print()

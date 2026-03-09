@@ -18,6 +18,7 @@ from augmented.core import (all_pools, all_pools_from_mask, compute_active_mask,
                             indices_from_mask, test_result, mask_str)
 from augmented.bayesian import (bayesian_update_single_test,
                                 bayesian_update_by_counting,
+                                gibbs_update,
                                 _poisson_binomial_pmf)
 
 
@@ -260,6 +261,83 @@ def greedy_myopic_counting_simulate(p, u, B, G, z_mask):
 
     utility = sum(u[i] for i in indices_from_mask(cleared_mask, n))
     return history, cleared_mask, utility
+
+
+def greedy_myopic_gibbs_simulate(p, u, B, G, z_mask,
+                                 num_iterations=1000, burn_in=200, seed=None):
+    """Simulate myopic greedy with Gibbs sampling posterior updates.
+
+    Like greedy_myopic_counting_simulate but uses Gibbs sampling (MCMC)
+    to approximate posteriors instead of exact enumeration. Scales to
+    larger populations (n~50+) where counting (O(2^n)) is infeasible.
+
+    Returns (history, cleared_mask, utility).
+    """
+    n = len(p)
+    cleared_mask = 0
+    history = ()
+
+    for _ in range(B):
+        # Compute posteriors from full history using Gibbs sampling
+        if history:
+            current_p = gibbs_update(p, history, n,
+                                     num_iterations=num_iterations,
+                                     burn_in=burn_in, seed=seed)
+        else:
+            current_p = list(p)
+
+        pool = _myopic_best_pool(current_p, u, G, n, cleared_mask)
+        if pool == 0:
+            break
+        r = test_result(pool, z_mask)
+        history = history + ((pool, r),)
+        if r == 0:
+            cleared_mask |= pool
+
+    utility = sum(u[i] for i in indices_from_mask(cleared_mask, n))
+    return history, cleared_mask, utility
+
+
+def greedy_myopic_gibbs_expected_utility(p, u, B, G,
+                                          num_iterations=1000, burn_in=200,
+                                          seed=42):
+    """Expected utility of myopic greedy with Gibbs sampling posteriors.
+
+    At each step picks the myopic-best pool using Gibbs-sampled posteriors,
+    then recurses over all possible outcomes weighted by their probabilities.
+    Uses a fixed seed for reproducibility within the recursive tree.
+    """
+    n = len(p)
+
+    def recurse(prior_p, history, b, cleared_mask):
+        if b == 0:
+            return sum(u[i] for i in indices_from_mask(cleared_mask, n))
+
+        # Compute posteriors from full history via Gibbs
+        if history:
+            current_p = gibbs_update(prior_p, history, n,
+                                     num_iterations=num_iterations,
+                                     burn_in=burn_in, seed=seed)
+        else:
+            current_p = list(prior_p)
+
+        pool = _myopic_best_pool(current_p, u, G, n, cleared_mask)
+        if pool == 0:
+            return sum(u[i] for i in indices_from_mask(cleared_mask, n))
+
+        pool_idx = indices_from_mask(pool, n)
+        pmf = _poisson_binomial_pmf([current_p[i] for i in pool_idx])
+
+        ev = 0.0
+        for r in range(len(pool_idx) + 1):
+            if pmf[r] < 1e-15:
+                continue
+            new_cleared = cleared_mask | pool if r == 0 else cleared_mask
+            new_history = history + ((pool, r),)
+            ev += pmf[r] * recurse(prior_p, new_history, b - 1, new_cleared)
+        return ev
+
+    return recurse(list(p), (), B, 0)
 
 
 def greedy_myopic_counting_expected_utility(p, u, B, G):

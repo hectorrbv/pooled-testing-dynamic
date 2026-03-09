@@ -199,6 +199,252 @@ def bayesian_update_by_counting(p, history, n):
     return posterior
 
 
+def gibbs_update(p, history, n, num_iterations=1000, burn_in=200,
+                 window_size=50, tolerance=1e-4, seed=None):
+    """Approximate posterior marginals via Gibbs sampling (MCMC).
+
+    Adapted from Appendix A.2 of "Dynamic Welfare-Maximizing Pooled Testing"
+    (Lopez, Marmolejo-Cossío, Tello Ayala, Parkes) for augmented tests where
+    each test returns the exact count r = |t ∩ Z| of infected in the pool.
+
+    The algorithm:
+      1. Preprocessing: deterministic deductions (r=0 → all healthy,
+         r=|pool| → all infected), with constraint propagation.
+      2. Initialize state vector by sampling from priors.
+      3. Gibbs iterations: for each agent in random order, compute the
+         conditional P(X_i | X_{-i}) by checking consistency with all
+         test constraints, then sample or force deterministically.
+      4. After burn-in, collect samples and estimate marginals as
+         empirical frequencies.
+
+    Parameters
+    ----------
+    p : list[float]
+        Prior infection probabilities (length n).
+    history : tuple of (pool_mask, result) pairs
+        Full test history H_k = ((t_1, r_1), ..., (t_k, r_k)).
+    n : int
+        Population size.
+    num_iterations : int
+        Maximum number of Gibbs iterations.
+    burn_in : int
+        Number of initial iterations to discard.
+    window_size : int
+        Rolling window size for convergence monitoring.
+    tolerance : float
+        Convergence threshold: stop if max change in marginals < tolerance.
+    seed : int or None
+        Random seed for reproducibility.
+
+    Returns
+    -------
+    list[float]
+        Posterior infection probabilities P(Z_i=1 | h_k).
+
+    Notes
+    -----
+    Complexity: O(n * |history| * num_iterations).
+    Scales to n~50+. For small n, results approximate those from
+    bayesian_update_by_counting (which is exact but O(2^n)).
+    """
+    import random as _random
+
+    if not history:
+        return list(p)
+
+    rng = _random.Random(seed)
+
+    # ---- Step 1: Preprocessing — deterministic deductions ----
+    confirmed_healthy = set()
+    confirmed_infected = set()
+
+    remaining_tests = [(pool_mask, r) for pool_mask, r in history]
+    changed = True
+    while changed:
+        changed = False
+        new_tests = []
+        for pool_mask, r in remaining_tests:
+            # Remove confirmed agents from this test
+            eff_pool = pool_mask
+            eff_r = r
+            for i in confirmed_healthy:
+                if eff_pool >> i & 1:
+                    eff_pool ^= (1 << i)
+            for i in confirmed_infected:
+                if eff_pool >> i & 1:
+                    eff_pool ^= (1 << i)
+                    eff_r -= 1
+
+            pool_size = popcount(eff_pool)
+
+            if eff_r == 0 and eff_pool != 0:
+                # All remaining in pool are healthy
+                for i in range(n):
+                    if eff_pool >> i & 1 and i not in confirmed_healthy:
+                        confirmed_healthy.add(i)
+                        changed = True
+            elif eff_r == pool_size and pool_size > 0:
+                # All remaining in pool are infected
+                for i in range(n):
+                    if eff_pool >> i & 1 and i not in confirmed_infected:
+                        confirmed_infected.add(i)
+                        changed = True
+            elif eff_r > 0 and pool_size > 0:
+                new_tests.append((eff_pool, eff_r))
+        remaining_tests = new_tests
+
+    # Build posterior for confirmed agents
+    posterior = list(p)
+    for i in confirmed_healthy:
+        posterior[i] = 0.0
+    for i in confirmed_infected:
+        posterior[i] = 1.0
+
+    # Identify active agents (those in at least one remaining test)
+    active_set = set()
+    for pool_mask, r in remaining_tests:
+        for i in range(n):
+            if pool_mask >> i & 1:
+                active_set.add(i)
+
+    if not active_set:
+        return posterior
+
+    active_list = sorted(active_set)
+
+    # For each active agent, precompute which tests involve them
+    agent_tests = {i: [] for i in active_list}
+    for idx, (pool_mask, r) in enumerate(remaining_tests):
+        for i in active_list:
+            if pool_mask >> i & 1:
+                agent_tests[i].append(idx)
+
+    # ---- Step 2: Initialize state consistently ----
+    # Try to find a consistent initial state via constraint satisfaction
+    state = {i: 0 for i in active_list}
+
+    # Greedily assign infected agents to satisfy test counts
+    for pool_mask, r in remaining_tests:
+        pool_agents = [j for j in active_list if pool_mask >> j & 1]
+        current_count = sum(state[j] for j in pool_agents)
+        needed = r - current_count
+        if needed > 0:
+            # Infect agents with highest prior probability first
+            healthy_in_pool = [j for j in pool_agents if state[j] == 0]
+            healthy_in_pool.sort(key=lambda j: p[j], reverse=True)
+            for j in healthy_in_pool[:needed]:
+                state[j] = 1
+
+    # Helper: check if current state satisfies all test constraints
+    def _state_valid():
+        for pm, r_val in remaining_tests:
+            cnt = sum(state[j] for j in active_list if pm >> j & 1)
+            if cnt != r_val:
+                return False
+        return True
+
+    # Helper: count infected in a test pool
+    def _count_infected(test_idx):
+        pm = remaining_tests[test_idx][0]
+        return sum(state[j] for j in active_list if pm >> j & 1)
+
+    # ---- Step 3: Gibbs iterations with swap moves ----
+    healthy_counts = {i: 0 for i in active_list}
+    total_samples = 0
+    prev_marginals = None
+
+    for iteration in range(num_iterations):
+        # --- Standard Gibbs sweep ---
+        order = list(active_list)
+        rng.shuffle(order)
+
+        for i in order:
+            infected_ok = True
+            healthy_ok = True
+
+            for test_idx in agent_tests[i]:
+                pool_mask, r = remaining_tests[test_idx]
+                other_infected = 0
+                for j in active_list:
+                    if j != i and (pool_mask >> j & 1) and state[j] == 1:
+                        other_infected += 1
+
+                if other_infected + 1 != r:
+                    infected_ok = False
+                if other_infected != r:
+                    healthy_ok = False
+
+            if infected_ok and healthy_ok:
+                state[i] = 1 if rng.random() < p[i] else 0
+            elif infected_ok:
+                state[i] = 1
+            elif healthy_ok:
+                state[i] = 0
+            # else: neither consistent — keep current state
+
+        # --- Swap moves (Metropolis-Hastings) ---
+        # For each test with 0 < r < |pool|, propose swapping an infected
+        # and a healthy member. This ensures ergodicity for exact-count
+        # constraints where standard Gibbs gets stuck.
+        for test_idx, (pool_mask, r) in enumerate(remaining_tests):
+            infected_in_pool = [j for j in active_list
+                                if (pool_mask >> j & 1) and state[j] == 1]
+            healthy_in_pool = [j for j in active_list
+                               if (pool_mask >> j & 1) and state[j] == 0]
+
+            if not infected_in_pool or not healthy_in_pool:
+                continue
+
+            i_inf = rng.choice(infected_in_pool)
+            i_hlt = rng.choice(healthy_in_pool)
+
+            # Temporarily swap
+            state[i_inf], state[i_hlt] = 0, 1
+
+            # Check all tests involving either agent
+            swap_valid = True
+            for tidx in set(agent_tests[i_inf]) | set(agent_tests[i_hlt]):
+                if _count_infected(tidx) != remaining_tests[tidx][1]:
+                    swap_valid = False
+                    break
+
+            if swap_valid:
+                # Metropolis-Hastings acceptance ratio based on priors
+                p_new = p[i_hlt] * (1.0 - p[i_inf])
+                p_old = p[i_inf] * (1.0 - p[i_hlt])
+                acceptance = min(1.0, p_new / p_old) if p_old > 0 else 1.0
+
+                if rng.random() >= acceptance:
+                    state[i_inf], state[i_hlt] = 1, 0  # reject
+            else:
+                state[i_inf], state[i_hlt] = 1, 0  # revert invalid swap
+
+        # ---- Step 4: Collect samples after burn-in ----
+        if iteration >= burn_in:
+            for i in active_list:
+                if state[i] == 0:
+                    healthy_counts[i] += 1
+            total_samples += 1
+
+            # Convergence check
+            if total_samples > 0 and total_samples % window_size == 0:
+                current_marginals = {i: 1.0 - healthy_counts[i] / total_samples
+                                     for i in active_list}
+                if prev_marginals is not None:
+                    max_diff = max(abs(current_marginals[i] - prev_marginals[i])
+                                  for i in active_list)
+                    if max_diff < tolerance:
+                        break
+                prev_marginals = current_marginals
+
+    # Compute posteriors from samples
+    if total_samples > 0:
+        for i in active_list:
+            posterior[i] = 1.0 - healthy_counts[i] / total_samples
+
+    return posterior
+
+
 def estimate_p_from_history(history, n, prior_p=None, prior_strength=1.0):
     """Estimate infection probabilities from observed test data.
 
