@@ -1,30 +1,46 @@
 """
 Greedy algorithms for augmented pooled testing.
 
-Two greedy strategies:
+Three greedy strategies:
   1. greedy_myopic:  at each step, pick pool maximizing P(r=0) * Σ u_i
+     with sequential single-test Bayesian updates.
   2. greedy_lookahead: at each step, pick pool maximizing expected utility
      over ALL possible outcomes (r=0,1,...,|t|) with Bayesian updates.
+  3. greedy_myopic_counting: same as myopic but uses full-history
+     Bayesian update by counting over all consistent worlds.
 
 Key insight: the myopic pool selection is identical for classical and
 augmented tests (only r=0 matters for immediate utility). The augmented
 information helps in FUTURE steps through better Bayesian posteriors.
 """
 
-from augmented.core import all_pools, indices_from_mask, test_result, mask_str
-from augmented.bayesian import bayesian_update_single_test, _poisson_binomial_pmf
+from augmented.core import (all_pools, all_pools_from_mask, compute_active_mask,
+                            indices_from_mask, test_result, mask_str)
+from augmented.bayesian import (bayesian_update_single_test,
+                                bayesian_update_by_counting,
+                                _poisson_binomial_pmf)
 
 
 # -------------------------------------------------------------------
 # Myopic greedy: maximize immediate expected gain
 # -------------------------------------------------------------------
 
-def _myopic_best_pool(p, u, G, n, cleared_mask):
+def _myopic_best_pool(p, u, G, n, cleared_mask, use_filtering=True):
     """Pick pool maximizing P(r=0) * Σ u_i for uncleared members.
 
     Score(t) = prod(1-p_i for i in t) * sum(u_i for i in t if i not cleared)
+
+    If use_filtering=True, only considers pools from active individuals
+    (those not yet cleared and not confirmed infected).
     """
-    pools = all_pools(n, G, include_empty=False)
+    if use_filtering:
+        active_mask, _ = compute_active_mask(p, cleared_mask, n)
+        if active_mask == 0:
+            return 0  # no uncertain individuals left
+        pools = all_pools_from_mask(active_mask, G, include_empty=False)
+    else:
+        pools = all_pools(n, G, include_empty=False)
+
     best_pool, best_score = 0, 0.0
 
     for pool in pools:
@@ -205,3 +221,80 @@ def greedy_lookahead_simulate(p, u, B, G, z_mask):
 
     utility = sum(u[i] for i in indices_from_mask(cleared_mask, n))
     return history, cleared_mask, utility
+
+
+# -------------------------------------------------------------------
+# Counting-based greedy: full-history Bayesian update by counting
+# -------------------------------------------------------------------
+
+def greedy_myopic_counting_simulate(p, u, B, G, z_mask):
+    """Simulate myopic greedy with full-history Bayesian update by counting.
+
+    Like greedy_myopic_simulate but at each step computes posteriors by
+    enumerating all 2^n infection profiles consistent with the FULL
+    history, rather than applying sequential single-test updates.
+
+    This uses bayesian_update_by_counting(p, history, n) which considers
+    all historical data h_k jointly.
+
+    Returns (history, cleared_mask, utility).
+    """
+    n = len(p)
+    cleared_mask = 0
+    history = ()
+
+    for _ in range(B):
+        # Compute posteriors from full history using counting
+        if history:
+            current_p = bayesian_update_by_counting(p, history, n)
+        else:
+            current_p = list(p)
+
+        pool = _myopic_best_pool(current_p, u, G, n, cleared_mask)
+        if pool == 0:
+            break
+        r = test_result(pool, z_mask)
+        history = history + ((pool, r),)
+        if r == 0:
+            cleared_mask |= pool
+
+    utility = sum(u[i] for i in indices_from_mask(cleared_mask, n))
+    return history, cleared_mask, utility
+
+
+def greedy_myopic_counting_expected_utility(p, u, B, G):
+    """Expected utility of myopic greedy with full-history Bayesian counting.
+
+    At each step picks the myopic-best pool using posteriors computed by
+    counting over all consistent worlds, then recurses over all possible
+    outcomes weighted by their probabilities.
+    """
+    n = len(p)
+
+    def recurse(prior_p, history, b, cleared_mask):
+        if b == 0:
+            return sum(u[i] for i in indices_from_mask(cleared_mask, n))
+
+        # Compute posteriors from full history
+        if history:
+            current_p = bayesian_update_by_counting(prior_p, history, n)
+        else:
+            current_p = list(prior_p)
+
+        pool = _myopic_best_pool(current_p, u, G, n, cleared_mask)
+        if pool == 0:
+            return sum(u[i] for i in indices_from_mask(cleared_mask, n))
+
+        pool_idx = indices_from_mask(pool, n)
+        pmf = _poisson_binomial_pmf([current_p[i] for i in pool_idx])
+
+        ev = 0.0
+        for r in range(len(pool_idx) + 1):
+            if pmf[r] < 1e-15:
+                continue
+            new_cleared = cleared_mask | pool if r == 0 else cleared_mask
+            new_history = history + ((pool, r),)
+            ev += pmf[r] * recurse(prior_p, new_history, b - 1, new_cleared)
+        return ev
+
+    return recurse(list(p), (), B, 0)
