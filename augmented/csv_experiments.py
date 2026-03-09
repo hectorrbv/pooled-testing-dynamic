@@ -36,6 +36,7 @@ from augmented.classical_solver import solve_classical_dynamic
 from augmented.greedy import (
     greedy_myopic_expected_utility,
     greedy_myopic_counting_expected_utility,
+    greedy_myopic_gibbs_expected_utility,
 )
 
 
@@ -443,6 +444,238 @@ def print_summary(df, n, B, G):
 # -------------------------------------------------------------------
 # Main
 # -------------------------------------------------------------------
+
+# -------------------------------------------------------------------
+# Item 1: B >= 3 experiments — divergence between greedy variants
+# -------------------------------------------------------------------
+
+def generate_dataset_p_range(n, num_samples, p_range=(0.0, 1.0),
+                              u_integers=False, base_seed=42):
+    """Generate dataset with infection probabilities in a given range."""
+    rng = random.Random(base_seed)
+    rows = []
+    for s in range(num_samples):
+        p_lo, p_hi = p_range
+        p = [rng.uniform(p_lo, p_hi) for _ in range(n)]
+        if u_integers:
+            u = [rng.randint(1, 100) for _ in range(n)]
+        else:
+            u = [rng.uniform(0.5, 5.0) for _ in range(n)]
+        row = {'sample_id': s, 'avg_p': sum(p) / len(p)}
+        for i in range(n):
+            row[f'p_{i}'] = p[i]
+            row[f'u_{i}'] = u[i]
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def evaluate_row_greedy_variants(row, n, B, G):
+    """Evaluate sequential, counting, and gibbs greedy for one instance."""
+    p = [row[f'p_{i}'] for i in range(n)]
+    u = [row[f'u_{i}'] for i in range(n)]
+    results = {}
+    results['U_greedy_sequential'] = greedy_myopic_expected_utility(p, u, B, G)
+    results['U_greedy_counting'] = greedy_myopic_counting_expected_utility(p, u, B, G)
+    results['U_greedy_gibbs'] = greedy_myopic_gibbs_expected_utility(
+        p, u, B, G, seed=42)
+    if n <= 14:
+        try:
+            results['U_D_A_optimal'], _ = solve_optimal_dapts(p, u, B, G)
+            results['U_D_classical'], _ = solve_classical_dynamic(p, u, B, G)
+        except Exception:
+            pass
+    return results
+
+
+def run_b_comparison(n=5, B_values=None, G=3, num_samples=100,
+                     p_range=(0.1, 0.5), seed=42):
+    """Run experiments across multiple B values to show greedy divergence.
+
+    Returns a DataFrame with results for each (B, sample_id).
+    """
+    if B_values is None:
+        B_values = [2, 3, 4, 5]
+
+    all_rows = []
+    df_base = generate_dataset_p_range(n, num_samples, p_range=p_range,
+                                        base_seed=seed)
+
+    for B in B_values:
+        print(f"\n  B={B}: evaluating {num_samples} instances (n={n}, G={G})...")
+        for idx, row in df_base.iterrows():
+            if (idx + 1) % 25 == 0:
+                print(f"    sample {idx + 1}/{num_samples}")
+            results = evaluate_row_greedy_variants(row, n, B, G)
+            result_row = dict(row)
+            result_row['B'] = B
+            result_row.update(results)
+
+            # Compute divergence
+            result_row['seq_count_diff'] = (results['U_greedy_counting']
+                                             - results['U_greedy_sequential'])
+            all_rows.append(result_row)
+
+    return pd.DataFrame(all_rows)
+
+
+def plot_b_divergence(df, n, G, output_dir):
+    """Plot divergence between sequential and counting greedy across B values."""
+    setup_plot_style()
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+    # Box plot of divergence by B
+    ax = axes[0]
+    b_values = sorted(df['B'].unique())
+    data_by_b = [df[df['B'] == b]['seq_count_diff'].values for b in b_values]
+    bp = ax.boxplot(data_by_b, labels=[str(b) for b in b_values],
+                    patch_artist=True)
+    colors = plt.cm.viridis([i / len(b_values) for i in range(len(b_values))])
+    for patch, color in zip(bp['boxes'], colors):
+        patch.set_facecolor(color)
+    ax.set_xlabel('Test Budget B')
+    ax.set_ylabel('Counting − Sequential EU')
+    ax.set_title('Greedy Divergence Grows with B')
+    ax.axhline(y=0, color='red', linestyle='--', alpha=0.5)
+
+    # Mean divergence by B
+    ax = axes[1]
+    means = df.groupby('B')['seq_count_diff'].agg(['mean', 'std', 'max'])
+    ax.bar(range(len(means)), means['mean'], yerr=means['std'],
+           color='steelblue', edgecolor='black', capsize=5, alpha=0.8)
+    ax.set_xticks(range(len(means)))
+    ax.set_xticklabels([str(b) for b in means.index])
+    ax.set_xlabel('Test Budget B')
+    ax.set_ylabel('Mean Divergence (Counting − Sequential)')
+    ax.set_title('Cross-Test Information Increases with B')
+
+    # Add max annotation
+    for i, (b, row) in enumerate(means.iterrows()):
+        ax.annotate(f"max={row['max']:.4f}", (i, row['mean'] + row['std']),
+                    ha='center', va='bottom', fontsize=8)
+
+    fig.suptitle(f'Sequential vs Counting Greedy Divergence (n={n}, G={G})',
+                 fontsize=14, y=1.02)
+    plt.tight_layout()
+    path = os.path.join(output_dir, f'b_divergence_N{n}_G{G}.png')
+    fig.savefig(path, dpi=300, bbox_inches='tight')
+    plt.close(fig)
+    print(f"  Saved: {path}")
+    return means
+
+
+# -------------------------------------------------------------------
+# Item 3: High infection rate experiments at scale
+# -------------------------------------------------------------------
+
+def run_high_infection_experiment(n_values=None, B_values=None, G=3,
+                                  num_samples=200, seed=42):
+    """Run experiments with high infection rates to confirm augmented benefit.
+
+    Tests Francisco's hypothesis: augmented benefit increases with infection rate.
+    Returns a DataFrame with results across infection rate regimes.
+    """
+    if n_values is None:
+        n_values = [5]
+    if B_values is None:
+        B_values = [2, 3]
+
+    regimes = [
+        ('low', 0.05, 0.15),
+        ('medium', 0.15, 0.35),
+        ('high', 0.35, 0.55),
+        ('very_high', 0.55, 0.80),
+    ]
+
+    all_rows = []
+    for n in n_values:
+        for B in B_values:
+            for regime_name, p_lo, p_hi in regimes:
+                print(f"\n  n={n}, B={B}, G={G}, regime={regime_name} "
+                      f"(p∈[{p_lo},{p_hi}])...")
+                df = generate_dataset_p_range(n, num_samples,
+                                               p_range=(p_lo, p_hi),
+                                               base_seed=seed)
+                for idx, row in df.iterrows():
+                    if (idx + 1) % 50 == 0:
+                        print(f"    sample {idx + 1}/{num_samples}")
+                    results = evaluate_row_greedy_variants(row, n, B, G)
+                    result_row = dict(row)
+                    result_row['n'] = n
+                    result_row['B'] = B
+                    result_row['regime'] = regime_name
+                    result_row['p_lo'] = p_lo
+                    result_row['p_hi'] = p_hi
+                    result_row.update(results)
+
+                    if 'U_D_A_optimal' in results and 'U_D_classical' in results:
+                        ud = results['U_D_classical']
+                        uda = results['U_D_A_optimal']
+                        result_row['augmented_benefit'] = (
+                            (uda - ud) / max(ud, 1e-10) * 100)
+                    all_rows.append(result_row)
+
+    return pd.DataFrame(all_rows)
+
+
+def plot_high_infection_results(df, output_dir):
+    """Plot augmented benefit by infection rate regime."""
+    setup_plot_style()
+
+    if 'augmented_benefit' not in df.columns:
+        print("  No augmented_benefit column — skipping high infection plot")
+        return
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+    # Box plot by regime
+    ax = axes[0]
+    regime_order = ['low', 'medium', 'high', 'very_high']
+    regimes_present = [r for r in regime_order if r in df['regime'].values]
+    data_by_regime = [df[df['regime'] == r]['augmented_benefit'].dropna().values
+                      for r in regimes_present]
+    bp = ax.boxplot(data_by_regime, labels=regimes_present, patch_artist=True)
+    colors = ['#2ecc71', '#f39c12', '#e74c3c', '#8e44ad']
+    for patch, color in zip(bp['boxes'], colors[:len(regimes_present)]):
+        patch.set_facecolor(color)
+    ax.set_xlabel('Infection Rate Regime')
+    ax.set_ylabel('Augmented Benefit (%)')
+    ax.set_title('Augmented Benefit by Infection Regime')
+    ax.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+
+    # Scatter: avg_p vs benefit with trend
+    ax = axes[1]
+    valid = df.dropna(subset=['augmented_benefit'])
+    import numpy as np
+    sc = ax.scatter(valid['avg_p'], valid['augmented_benefit'],
+                    c=valid['avg_p'], cmap='RdYlBu_r', s=20, alpha=0.5)
+    # Polynomial trend
+    if len(valid) > 10:
+        z = np.polyfit(valid['avg_p'], valid['augmented_benefit'], 2)
+        trend = np.poly1d(z)
+        x_trend = np.linspace(valid['avg_p'].min(), valid['avg_p'].max(), 100)
+        ax.plot(x_trend, trend(x_trend), 'r-', linewidth=2,
+                label=f'Trend (quadratic)')
+        ax.legend()
+    ax.set_xlabel('Average Infection Probability')
+    ax.set_ylabel('Augmented Benefit (%)')
+    ax.set_title('Augmented Benefit vs Infection Rate')
+    plt.colorbar(sc, ax=ax, label='Avg p')
+
+    fig.suptitle('High Infection Rate Analysis', fontsize=14, y=1.02)
+    plt.tight_layout()
+    path = os.path.join(output_dir, 'high_infection_analysis.png')
+    fig.savefig(path, dpi=300, bbox_inches='tight')
+    plt.close(fig)
+    print(f"  Saved: {path}")
+
+    # Print summary
+    print("\n  Augmented benefit by regime:")
+    for regime in regimes_present:
+        data = df[df['regime'] == regime]['augmented_benefit'].dropna()
+        if len(data) > 0:
+            print(f"    {regime:12s}: mean={data.mean():+.3f}%, "
+                  f"max={data.max():+.3f}%, n={len(data)}")
+
 
 def main():
     parser = argparse.ArgumentParser(
