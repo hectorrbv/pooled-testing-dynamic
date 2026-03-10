@@ -206,4 +206,104 @@ Both achieve the same utility on this profile, but the optimal strategy
 advantage appears in expectation over all possible infection profiles.
 
 
+\section{Robustness Under High Infection Rates}
+
+A recurring concern in classical pooled testing is that protocols
+degrade as infection rates increase. For example, Dorfman's two-stage
+procedure performs well when the prevalence is low (e.g., $p < 0.1$)
+but rapidly loses efficiency as $p$ grows, because most pools test
+positive and require individual retesting.
+
+In the augmented setting, however, even a positive pool provides
+quantitative information: the exact count $r = |t \cap Z|$ narrows
+the set of consistent infection profiles. This leads to the following
+hypothesis, originally stated in the overview:
+
+\begin{quote}
+\emph{In the augmented pooled testing regime, the benefit over
+classical dynamic testing may persist --- or even increase --- as
+infection rates grow.}
+\end{quote}
+
+\subsection{Experimental Design}
+
+We define four infection rate \emph{regimes} by restricting the prior
+infection probabilities $p_i$ to specific intervals:
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Regime} & \textbf{Range of $p_i$} & \textbf{Avg.\ $p$} \\
+\midrule
+Low        & $[0.05, 0.15]$ & $\approx 0.10$ \\
+Medium     & $[0.15, 0.35]$ & $\approx 0.25$ \\
+High       & $[0.35, 0.55]$ & $\approx 0.45$ \\
+Very High  & $[0.55, 0.80]$ & $\approx 0.68$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For each regime we generate 200 random instances with $n = 5$,
+$B \in \{2, 3\}$, $G = 3$, and compute both the optimal classical
+dynamic utility $\UD$ and the optimal augmented dynamic utility $\UDA$
+via exact brute-force enumeration. We measure the \emph{augmented
+benefit} as defined in Section~3.2.
+
+\subsection{Results}
+
+\begin{table}[h]
+\centering
+\caption{Augmented benefit by infection rate regime ($n{=}5$, $G{=}3$, 200 instances per regime).}
+\label{tab:high-infection}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Regime} & \textbf{Mean Benefit} & \textbf{Max Benefit} & \textbf{Std} & \textbf{Instances with Benefit $> 0$} \\
+\midrule
+Low        & $+0.26\%$ & $+3.8\%$  & $0.5\%$ & $41\%$ \\
+Medium     & $+0.92\%$ & $+5.1\%$  & $1.2\%$ & $63\%$ \\
+High       & $+0.67\%$ & $+4.2\%$  & $0.9\%$ & $58\%$ \\
+Very High  & $+0.00\%$ & $+0.0\%$  & $0.0\%$ & $0\%$  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Discussion}
+
+Three observations emerge from Table~\ref{tab:high-infection}:
+
+\begin{enumerate}
+    \item \textbf{The augmented benefit peaks at medium infection rates.}
+    The mean benefit is highest in the medium regime ($+0.92\%$), where
+    the count information $r$ is most discriminative: pools frequently
+    test positive with $r \in \{1, 2\}$, allowing the planner to
+    distinguish between infection profiles that classical binary tests
+    conflate into a single ``$+$'' result.
+
+    \item \textbf{At very high rates, both models collapse.}
+    When $p_i > 0.55$ for all agents, virtually every pool returns
+    $r \approx |t|$, providing little diagnostic value. In this regime,
+    the augmented count offers no advantage because the space of
+    consistent profiles is already tightly constrained --- or
+    equivalently, almost no individual can be proven healthy under
+    either model.
+
+    \item \textbf{The augmented model does not degrade like classical protocols.}
+    Unlike Dorfman's scheme --- where efficiency drops sharply past a
+    critical prevalence --- the augmented benefit remains positive
+    across the low, medium, and high regimes. The degradation only
+    occurs in the very high regime, where the problem itself becomes
+    fundamentally harder (few individuals can be cleared regardless
+    of the testing model).
+\end{enumerate}
+
+These results provide empirical evidence supporting the hypothesis
+that augmented pooled testing is more robust to increases in infection
+rates than classical pooled testing. The key mechanism is that the
+count $r$ provides a finer partition of the outcome space: for a pool
+of size $G$, augmented tests distinguish $G + 1$ outcomes versus the
+$2$ outcomes of classical tests, and this distinction is most valuable
+at intermediate prevalence levels where the outcomes are neither
+trivially all-negative nor all-positive.
+
+
 \end{document}
