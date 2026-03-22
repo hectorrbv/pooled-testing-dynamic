@@ -211,10 +211,14 @@ def gibbs_update(p, history, n, num_iterations=1000, burn_in=200,
       1. Preprocessing: deterministic deductions (r=0 → all healthy,
          r=|pool| → all infected), with constraint propagation.
       2. Initialize state vector by sampling from priors.
-      3. Gibbs iterations: for each agent in random order, compute the
+      3. For very small active subproblems, fall back to exact counting
+         to avoid mixing pathologies in disconnected feasible regions.
+      4. Gibbs iterations: for each agent in random order, compute the
          conditional P(X_i | X_{-i}) by checking consistency with all
          test constraints, then sample or force deterministically.
-      4. After burn-in, collect samples and estimate marginals as
+      5. Add Metropolis-Hastings swap proposals, both within individual
+         test pools and across the full active set, to improve mixing.
+      6. After burn-in, collect samples and estimate marginals as
          empirical frequencies.
 
     Parameters
@@ -245,7 +249,8 @@ def gibbs_update(p, history, n, num_iterations=1000, burn_in=200,
     -----
     Complexity: O(n * |history| * num_iterations).
     Scales to n~50+. For small n, results approximate those from
-    bayesian_update_by_counting (which is exact but O(2^n)).
+    bayesian_update_by_counting (which is exact but O(2^n)); for very
+    small active subproblems, this function uses exact counting directly.
     """
     import random as _random
 
@@ -311,6 +316,11 @@ def gibbs_update(p, history, n, num_iterations=1000, burn_in=200,
         return posterior
 
     active_list = sorted(active_set)
+
+    # Exact counting is cheap for tiny active subproblems and avoids
+    # disconnected-state mixing failures in overlapping exact-count tests.
+    if len(active_list) <= 7:
+        return bayesian_update_by_counting(p, history, n)
 
     # For each active agent, precompute which tests involve them
     agent_tests = {i: [] for i in active_list}
@@ -410,6 +420,31 @@ def gibbs_update(p, history, n, num_iterations=1000, burn_in=200,
 
             if swap_valid:
                 # Metropolis-Hastings acceptance ratio based on priors
+                p_new = p[i_hlt] * (1.0 - p[i_inf])
+                p_old = p[i_inf] * (1.0 - p[i_hlt])
+                acceptance = min(1.0, p_new / p_old) if p_old > 0 else 1.0
+
+                if rng.random() >= acceptance:
+                    state[i_inf], state[i_hlt] = 1, 0  # reject
+            else:
+                state[i_inf], state[i_hlt] = 1, 0  # revert invalid swap
+
+        # --- Global pairwise block moves ---
+        # These proposals are not restricted to a single test pool, so they
+        # can move across broader feasible regions when pools overlap.
+        n_block_moves = max(len(active_list), 5)
+        for _ in range(n_block_moves):
+            inf_agents = [j for j in active_list if state[j] == 1]
+            hlt_agents = [j for j in active_list if state[j] == 0]
+
+            if not inf_agents or not hlt_agents:
+                break
+
+            i_inf = rng.choice(inf_agents)
+            i_hlt = rng.choice(hlt_agents)
+            state[i_inf], state[i_hlt] = 0, 1
+
+            if _state_valid():
                 p_new = p[i_hlt] * (1.0 - p[i_inf])
                 p_old = p[i_inf] * (1.0 - p[i_hlt])
                 acceptance = min(1.0, p_new / p_old) if p_old > 0 else 1.0
