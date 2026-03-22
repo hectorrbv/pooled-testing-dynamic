@@ -1,0 +1,2 @@
+config,notes,n,B,G,regime,instance,seed,U_max,U_single,U_greedy_mosek,time_greedy_mosek,U_greedy_enum,time_greedy_enum,U_beta_greedy,time_beta_greedy,error
+D,Francisco two big tests,20,2,10,medium,0,42,103.71216602398339,15.639172055695756,36.09307999803148,0.11369895935058594,36.09307999803148,11.556559085845947,30.108336118493593,19.062657117843628,
