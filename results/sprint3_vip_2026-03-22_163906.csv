@@ -1,0 +1,2 @@
+config,n,B,G,instance,seed,U_max,U_single,U_greedy_mosek,time_greedy_mosek,U_beta_greedy,time_beta_greedy,error
+V1,20,6,10,0,0,72.91797303254674,39.34303568103794,46.0872393746045,10.744914054870605,45.0,4.22975492477417,
