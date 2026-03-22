@@ -5,6 +5,7 @@ Run with:  python augmented/tests.py
 """
 
 import sys, os
+import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from augmented.core import (
@@ -778,6 +779,134 @@ def test_gibbs_greedy_expected_utility():
     # Should be reasonably close for small instances
     assert abs(eu_gibbs - eu_counting) < 0.5, \
         f"Gibbs EU={eu_gibbs:.4f} vs Counting EU={eu_counting:.4f}"
+
+
+def _sample_z_mask_from_prior(p):
+    """Sample an infection profile using the full prior over all 2^n worlds."""
+    n = len(p)
+    weights = []
+    for z_mask in range(1 << n):
+        weight = 1.0
+        for i in range(n):
+            weight *= p[i] if (z_mask >> i) & 1 else (1.0 - p[i])
+        weights.append(weight)
+
+    probs = np.array(weights, dtype=float)
+    probs /= probs.sum()
+    return int(np.random.choice(1 << n, p=probs))
+
+
+def test_gibbs_systematic_exact_comparison():
+    """Systematically compare Gibbs posteriors against exact counting."""
+    configs = [
+        (5, 2, 3),
+        (5, 3, 3),
+        (6, 2, 3),
+        (6, 3, 4),
+        (7, 2, 4),
+        (7, 3, 4),
+    ]
+
+    all_max_errors = []
+    passed_instances = 0
+    total_instances = 0
+
+    for n, B, G in configs:
+        config_errors = []
+        config_passed = 0
+
+        for i in range(20):
+            np.random.seed(42 + i)
+            p = np.random.uniform(0.05, 0.4, size=n).tolist()
+            u = np.random.uniform(1, 10, size=n).tolist()
+
+            z_mask = _sample_z_mask_from_prior(p)
+            history, _, _ = greedy_myopic_simulate(p, u, B, G, z_mask)
+            history = history[:min(B, 2)]
+
+            exact = bayesian_update_by_counting(p, history, n)
+            approx = gibbs_update(p, history, n, num_iterations=2000, seed=0)
+
+            max_error = max(abs(exact[j] - approx[j]) for j in range(n))
+            config_errors.append(max_error)
+            all_max_errors.append(max_error)
+            total_instances += 1
+
+            if max_error < 0.05:
+                config_passed += 1
+                passed_instances += 1
+
+        config_mean_error = sum(config_errors) / len(config_errors)
+        config_max_error = max(config_errors)
+        config_fraction_passed = config_passed / len(config_errors)
+        print(
+            "gibbs_exact_comparison "
+            f"config=(n={n}, B={B}, G={G}) "
+            f"max_error={config_max_error:.4f} "
+            f"mean_error={config_mean_error:.4f} "
+            f"fraction_passed={config_fraction_passed:.3f}"
+        )
+
+    mean_error = sum(all_max_errors) / len(all_max_errors)
+    max_error = max(all_max_errors)
+    fraction_passed = passed_instances / total_instances
+    print(
+        "gibbs_exact_comparison summary "
+        f"max_error={max_error:.4f} "
+        f"mean_error={mean_error:.4f} "
+        f"fraction_passed={fraction_passed:.3f}"
+    )
+
+    assert fraction_passed >= 0.95, \
+        f"fraction_passed={fraction_passed:.3f}, max_error={max_error:.4f}"
+
+
+def test_gibbs_greedy_vs_counting_eu():
+    """Compare Gibbs-based greedy EU against counting-based greedy EU."""
+    configs = [
+        (5, 2, 3),
+        (5, 3, 3),
+        (6, 2, 3),
+        (6, 3, 4),
+    ]
+
+    passed_instances = 0
+    total_instances = 0
+
+    for n, B, G in configs:
+        for i in range(10):
+            np.random.seed(99 + i)
+            p = np.random.uniform(0.05, 0.4, size=n).tolist()
+            u = np.random.uniform(1, 10, size=n).tolist()
+
+            eu_counting = greedy_myopic_counting_expected_utility(p, u, B, G)
+            eu_gibbs = greedy_myopic_gibbs_expected_utility(
+                p, u, B, G, num_iterations=2000, seed=0)
+
+            rel_error = abs(eu_gibbs - eu_counting) / eu_counting
+            total_instances += 1
+            if rel_error < 0.05:
+                passed_instances += 1
+
+            print(
+                "gibbs_vs_counting_eu "
+                f"config=(n={n}, B={B}, G={G}) "
+                f"instance={i} "
+                f"eu_counting={eu_counting:.6f} "
+                f"eu_gibbs={eu_gibbs:.6f} "
+                f"rel_error={rel_error:.4%}"
+            )
+
+    fraction_passed = passed_instances / total_instances
+    print(
+        "gibbs_vs_counting_eu summary "
+        f"fraction_passed={fraction_passed:.3f} "
+        "target_rel_error=1.00% "
+        "assertion_rel_error=5.00%"
+    )
+
+    assert fraction_passed >= 0.90, \
+        f"fraction_passed={fraction_passed:.3f}"
 
 
 # ===================================================================
