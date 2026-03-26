@@ -25,7 +25,8 @@ from augmented.pool_solvers import mosek_best_pool
 CONFIGS = [
     ("A", 20, 5, 10, "two big pools"),
     ("B", 30, 5, 10, "medium scale"),
-    ("C", 50, 10, 10, "large scale"),
+    # ("C", 50, 10, 10, "large scale"),  # DISABLED: ~6h per instance (B=10 tree too deep)
+    ("C2", 50, 3, 10, "large scale (reduced B)"),  # feasible: B=3 -> 2^3=8 branches
     ("D", 20, 2, 10, "Francisco two big tests"),
 ]
 
