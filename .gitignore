@@ -36,8 +36,8 @@ augmented/**/*.tex
 augmented/**/*.aux
 augmented/**/*.out
 
-# Local study guides / working notes
-docs/study_guides/
+# Carpeta docs/ fuera del repo (se conserva local, no se sube)
+docs/
 
 # Notas personales de sesiones (no subir)
 *_personales.md
