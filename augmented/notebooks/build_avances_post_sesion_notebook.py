@@ -179,9 +179,14 @@ lo dice: el óptimo **dinámico pero binario** (adaptativo, sin leer el conteo).
 El solver lo da con su perilla `cap`: `cap=1` binariza (0 vs ≥1), `cap=None`
 deja el conteo completo.""")
 
-md(r"""**Afirmación.** En una instancia finita (n=5, G=4, B=4), el dinámico
-binario es **idéntico** al estático: adaptar sin contar no gana nada. Todo el
-beneficio es del conteo.""")
+md(r"""**Afirmación.** La forma limpia es un 2×2 (binario/conteo ×
+estático/dinámico). Sin adaptar, el conteo es *inerte*: solo se acredita "en un
+pool con conteo 0", que es el mismo evento que "pool limpio" del test binario, y
+la información extra del conteo nunca se usa — así que estático-binario =
+estático-conteo. Y en una instancia finita (n=5, G=4, B=4) el dinámico-binario
+resulta **idéntico** al estático. Tres de las cuatro celdas coinciden; solo la
+esquina *dinámico ∧ conteo* despega: el beneficio es la **interacción** de las
+dos palancas, no ninguna sola.""")
 
 code(r"""from augmented.solver import solve_optimal_dapts
 
@@ -224,14 +229,28 @@ ax.annotate('binario = estático:\nadaptar sin contar no aporta',
             arrowprops=dict(arrowstyle='->', color=TINTA, lw=0.8))
 fig.tight_layout(); plt.show()""")
 
-md(r"""**Lectura.** Las dos primeras barras coinciden en cada prevalencia: con
-pruebas binarias, ser dinámico no compra nada sobre el estático (cada individual
-es i.i.d.). Solo el conteo despega, y su ventaja crece con $q$. La separación no
-es premio por ser dinámico, es **premio por contar**.""")
+code(r"""# el 2x2 explícito en un ancla (q=0.20): tres celdas iguales, una despega.
+q0 = 0.20
+p0 = [1.0 - q0] * n_d; u0 = [1.0] * n_d
+est0 = B_d * q0                                        # estático (binario = conteo)
+dbin0 = solve_optimal_dapts(p0, u0, B_d, G_d, cap=1)[0]
+dcon0 = solve_optimal_dapts(p0, u0, B_d, G_d, cap=None)[0]
+# estático-conteo == estático-binario por el evento de acreditación: no hay que resolverlo
+assert abs(dbin0 - est0) < 1e-9 and dcon0 > dbin0 + 1e-6, 'el 2x2 no da la interacción'
+print(f'2x2 en q={q0}, n={n_d}, G={G_d}, B={B_d}   (utilidad esperada / u)')
+print(f'{"":>10}{"binario":>10}{"conteo":>10}')
+print(f'{"estático":>10}{est0:>10.3f}{est0:>10.3f}   <- conteo inerte sin adaptar')
+print(f'{"dinámico":>10}{dbin0:>10.3f}{dcon0:>10.3f}')
+print('tres celdas iguales; solo dinámico∧conteo gana -> es una interacción.')""")
 
-md(r"""**Para discutir.** ¿Por qué no reportar esta descomposición (estático /
-dinámico-binario / dinámico-conteo) como tabla de atribución? Cerraría de
-antemano la objeción de "movieron dos variables a la vez".""")
+md(r"""**Lectura.** Tres celdas del 2×2 coinciden en cada prevalencia; solo la
+esquina dinámico-conteo despega, y su ventaja crece con $q$. La separación no es
+premio por ser dinámico ni por contar por separado, sino por **contar y poder
+actuar sobre el conteo** a la vez.""")
+
+md(r"""**Para discutir.** El 2×2 cierra de antemano la objeción de "movieron dos
+variables a la vez". ¿Conviene que sea la primera figura del paper —antes que la
+curva de la §1— para fijar desde el arranque que el mérito es la interacción?""")
 
 # ===================================================================
 md(r"""## 2. Los regímenes tratables y un algoritmo eficiente
@@ -542,15 +561,20 @@ logG = round(math.log2(G)); k = B - logG
 sin_ruido = util_dinamico(B, G, q)[0]
 est = util_estatico(B, q)
 
-# autoverificación: (a) sin ruido recupera la §1; (b) la cota conservadora
-# (acertar las k+log2G decisiones del camino) nunca excede la verdad simulada.
+# cota inferior DEMOSTRABLE: el esquema acierta si el PRIMER grupo tiene un sano
+# (prob 1-(1-q)^G) y sus 1+log2G decisiones son correctas (prob >= (1-eps)^(1+log2G)).
+# Ignora los otros k-1 grupos y la recuperación de errores, así que es un piso real.
+def cota_inferior(sigma):
+    return (1 - (1 - q) ** G) * (1 - eps_por_paso(sigma)) ** (1 + logG)
+
+# autoverificación: (a) sin ruido recupera la §1; (b) la cota inferior nunca
+# excede la utilidad simulada.
 mc0, _ = dinamico_ruidoso_mc(B, G, q, 0.0, sims=20000, seed=1)
 assert abs(mc0 - sin_ruido) < 0.01, f'sigma=0 no recupera la §1: {mc0} vs {sin_ruido}'
 for s in (0.2, 0.3, 0.5):
     mc, _ = dinamico_ruidoso_mc(B, G, q, s, sims=20000, seed=1)
-    cota = sin_ruido * (1 - eps_por_paso(s)) ** (k + logG)
-    assert cota <= mc + 0.02, f'la cota conservadora excede la verdad en sigma={s}'
-print('autoverificación OK: sigma=0 recupera la §1; cota conservadora <= verdad MC')
+    assert cota_inferior(s) <= mc + 0.02, f'la cota inferior excede la verdad en sigma={s}'
+print('autoverificación OK: sigma=0 recupera la §1; cota inferior demostrable <= verdad MC')
 print(f'estático (sin ruido) = {est:.3f}   din. aumentado sin ruido = {sin_ruido:.3f}')
 for s in (0.0, 0.2, 0.3, 0.5, 0.8):
     mc, falso = dinamico_ruidoso_mc(B, G, q, s, sims=20000, seed=1)
@@ -561,14 +585,14 @@ code(r"""# figura: la separación contra el ruido (izq) y el precio en riesgo (d
 sigmas = np.linspace(0.0, 1.1, 23)
 util = [dinamico_ruidoso_mc(B, G, q, float(s), sims=12000, seed=2)[0] for s in sigmas]
 falso = [dinamico_ruidoso_mc(B, G, q, float(s), sims=12000, seed=2)[1] for s in sigmas]
-cota = [sin_ruido * (1 - eps_por_paso(float(s))) ** (k + logG) for s in sigmas]
+cota = [cota_inferior(float(s)) for s in sigmas]
 # umbral sigma*: donde la utilidad dinámica cruza el estático
 sig_star = next((float(s) for s, m in zip(sigmas, util) if m < est), None)
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 3.6))
 ax1.axhline(est, color=GRIS, lw=1.6, label='estático (individual)')
 ax1.plot(sigmas, util, marker='o', ms=3, color=AZUL, label='din. aumentado con ruido (simulado)')
-ax1.plot(sigmas, cota, ls=':', color=TINTA, lw=1, label='cota conservadora (todos los pasos)')
+ax1.plot(sigmas, cota, ls=':', color=TINTA, lw=1, label='cota inferior demostrable (vía el 1er grupo)')
 ax1.fill_between(sigmas, est, util, where=[u > est for u in util], color=AZUL, alpha=0.12)
 if sig_star is not None:
     ax1.axvline(sig_star, color=AMBAR, ls='--', lw=1.2)
@@ -587,9 +611,9 @@ fig.tight_layout(); plt.show()
 print(f'umbral de utilidad: σ* ≈ {sig_star:.2f} (≈ media persona de ruido)')""")
 
 md(r"""**Lectura.** La ventaja aguanta ruido hasta σ\* ≈ 0.5 —cerca de media
-persona de ruido en el conteo—. La cota conservadora (acertar las k+log₂G
-decisiones del camino) queda por debajo de la utilidad real, señal de que los
-errores a veces se recuperan. El segundo precio pesa más: el falso-limpio crece
+persona de ruido en el conteo—. La cota inferior demostrable (éxito ya solo por
+el primer grupo) queda muy por debajo de la utilidad real: la distancia es el
+valor de los otros grupos más la recuperación de errores. El segundo precio pesa más: el falso-limpio crece
 rápido —a σ=0.3 ya certifica a un infectado ~15% de las veces—, y para tamizaje
 ese es el error peligroso.""")
 
@@ -607,11 +631,12 @@ pruebas correlacionan a la gente. Para repartir la culpa usamos el mismo truco
 de la §1.1, un peldaño intermedio: el greedy con **scoring exacto** (sigue
 miope, pero puntúa con la P(r=0|H) conjunta verdadera).""")
 
-md(r"""**Afirmación.** hueco = OPT − greedy se parte en dos: **miopía** =
-OPT − greedy exacto (la parte que ningún scoring puede curar) e
-**independencia** = greedy exacto − greedy (la parte que el scoring exacto, ya
-implementado, cierra). La miopía domina — alrededor de tres cuartos en el
-régimen de referencia.""")
+md(r"""**Afirmación.** Por identidad telescópica, hueco = OPT − greedy =
+(OPT − greedy exacto) + (greedy exacto − greedy). Los dos sumandos son una
+*atribución* respecto del intermediario (el greedy exacto), no dos causas
+independientes: el primero, **miopía**, es lo que ningún scoring del paso arregla
+(pide otra política); el segundo, **independencia**, es lo que el scoring exacto
+—ya implementado— cierra. La miopía domina.""")
 
 code(r"""from augmented.greedy import greedy_myopic_expected_utility as greedy_eu
 from augmented.independence_gap import exact_greedy_myopic_expected_utility as exact_eu
@@ -663,16 +688,18 @@ un tercio —y justifica pagar el Gibbs— o el lookahead sigue siendo el único
 que rinde?""")
 
 # ===================================================================
-md(r"""## 5. El parámetro β: un lookahead barato
+md(r"""## 5. El parámetro β: una heurística de información
 
 **Intuición.** El greedy miope maximiza P(r=0)·Σu: limpiar ahora. El beta-greedy
-le suma un premiecito de información, β·info-gain, que a veces lo empuja a probar
-un pool que limpia menos hoy pero informa mejor para el paso siguiente. Es un
-proxy barato del lookahead — apunta a los tres cuartos de miopía de la §4.""")
+le suma un premiecito de información, β·info-gain (reducción de entropía), que a
+veces lo empuja a probar un pool que limpia menos pero informa más. Ojo: no es
+un lookahead —no evalúa la recompensa del paso siguiente, solo cuánto informa el
+actual—; es un proxy barato que *apunta* a la miopía de la §4 sin resolverla.""")
 
-md(r"""**Afirmación.** En la instancia del notebook de árboles, subir β mueve el
-pool de apertura hacia el que elige el óptimo y recupera ~85% del hueco. Pero es
-un hump: demasiado β cae por debajo del greedy plano.""")
+md(r"""**Afirmación.** β es situacional. En una instancia elegida (n=4, B=2, G=2,
+semilla 185) mueve el pool de apertura al que elige el óptimo y recupera casi
+todo el hueco —buena ilustración—. Pero un barrido de semillas dice que ayuda en
+la minoría de los casos, y que β grande suele empeorar (hump).""")
 
 code(r"""import random
 from augmented.solver import solve_optimal_dapts
@@ -711,15 +738,44 @@ ax.annotate(f'pico β={best_beta}\n{best_eu:.2f}', (best_beta, best_eu),
             textcoords='offset points', xytext=(8, -4), fontsize=8, color=AMBAR)
 ax.set_xlabel('β (peso del bono de información)')
 ax.set_ylabel('utilidad esperada')
-ax.set_title('β como lookahead barato: recupera la miopía, pero es un hump',
+ax.set_title('β en una instancia: recupera el hueco y luego cae (hump)',
              fontsize=10)
 ax.legend(fontsize=8, loc='lower right')
 fig.tight_layout(); plt.show()""")
 
-md(r"""**Lectura.** β hace de lookahead de un paso: el pool de apertura salta del
-miope al informativo y la utilidad casi toca el techo. Pero es frágil: es un hump
-(pasado el punto dulce elige peor) y a prevalencia alta se neutraliza ($P(r=0)$
-colapsa). Proxy útil, pero hay que sintonizarlo.""")
+code(r"""# ¿qué tan seguido ayuda β? barrido sobre 40 semillas (misma familia n=4,B=2,G=2)
+betas_s = [round(0.5 * kk, 2) for kk in range(0, 13)]      # 0..6
+ayuda = hump = con_hueco = 0
+recs = []
+for seed in range(40):
+    rs = random.Random(500 + seed)
+    ps = [rs.uniform(0.15, 0.7) for _ in range(4)]
+    us = [rs.uniform(1.0, 4.0) for _ in range(4)]
+    o = solve_optimal_dapts(ps, us, 2, 2)[0]
+    g0 = beu(ps, us, 2, 2, 0.0, 'entropy')
+    if o - g0 < 1e-9:
+        continue                                           # sin hueco, β no puede ayudar
+    con_hueco += 1
+    eus_s = [beu(ps, us, 2, 2, b, 'entropy') for b in betas_s]
+    if max(eus_s) > g0 + 1e-6:
+        ayuda += 1; recs.append((max(eus_s) - g0) / (o - g0))
+    if eus_s[-1] < g0 - 1e-6:
+        hump += 1                                          # β grande cae bajo el plano
+
+# autoverificación: β es situacional (ni siempre ni nunca ayuda)
+assert 0 < ayuda < con_hueco, 'β resultó no-situacional'
+rec_med = (sum(recs) / len(recs)) if recs else 0.0
+print(f'instancias con hueco: {con_hueco}/40')
+print(f'β ayuda en {ayuda}/{con_hueco} = {ayuda/con_hueco:.0%} de ellas '
+      f'(cuando ayuda, recupera {rec_med:.0%} en promedio)')
+print(f'β grande empeora (hump) en {hump}/{con_hueco} = {hump/con_hueco:.0%}')""")
+
+md(r"""**Lectura.** El barrido baja las expectativas: β ayuda en ~1/4 de las
+instancias con hueco, y cuando ayuda —a horizonte B=2— suele recuperarlo casi
+entero (fijar la apertura ya es la jugada óptima); en el resto no mueve nada. Y
+es frágil: β grande empeora en ~40% de los casos (hump), y a prevalencia alta se
+neutraliza ($P(r=0)$ colapsa). Es un proxy situacional y arriesgado, no una
+palanca general.""")
 
 md(r"""**Para discutir.** β modifica la *política*; la V̂ del certificado modifica
 la *cota*. ¿Es β un caso de la penalización, y su β óptima escala con el
