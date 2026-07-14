@@ -5,7 +5,7 @@ Pieza central: el ejemplo de separación estático vs dinámico-aumentado que
 propuso Francisco (población infinita homogénea, cerrado en forma analítica),
 verificado adversarialmente. Alrededor, los otros puntos de avance de la
 sesión: los regímenes tratables + DP eficiente, el modelo realista de pruebas
-(biomarkers), la anatomía del hueco del greedy, y el encuadre para publicar.
+(biomarkers), y la anatomía del hueco del greedy.
 
 Run:
     python augmented/notebooks/build_avances_post_sesion_notebook.py
@@ -43,9 +43,8 @@ aparecen todo el tiempo; conviene fijar los nombres desde ya:
 - **dinámico binario**: adaptativo, pero la prueba solo dice 0 vs ≥1;
 - **dinámico aumentado**: adaptativo y la prueba devuelve el conteo exacto.
 
-Alrededor: el algoritmo eficiente en regímenes tratables, el modelo de ruido,
-la anatomía del hueco del greedy y el encuadre de publicación. Cada número se
-regenera aquí.""")
+Alrededor: el algoritmo eficiente en regímenes tratables, el modelo de ruido y
+la anatomía del hueco del greedy. Cada número se regenera aquí.""")
 
 code(r"""import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(''))))
@@ -86,7 +85,8 @@ md(r"""## 1. El ejemplo de separación
 con utilidad u y probabilidad q de estar sana, con q<0.5. Las pruebas grupales
 son de tamaño G y el budget es B = k + log2(G). Se acredita u a quien queda en
 un pool con conteo cero. La pregunta ancla: ¿cuándo el **dinámico aumentado**
-le gana al mejor **estático**?
+le gana al mejor **estático**? (Supuestos: estados i.i.d., G potencia de 2,
+utilidad aditiva, crédito una vez por persona.)
 
 **Óptimo estático.** La métrica es utilidad por prueba. Una prueba individual
 rinde $u\,q$; una de grupo $g$ rinde $u\,g\,q^g\le u\,q$ para $q<1/2$. Individual
@@ -110,10 +110,11 @@ print(f'  ventaja del aumentado: {din-est:+.3f}u  ({100*(din/est-1):+.0f}%)')"""
 
 md(r"""**Un cambiecito que refuerza el ejemplo.** El mensaje original aproximaba
 la cobertura como $kG \sim B$; contando con cuidado, las $k = B-\log_2 G$
-pruebas frescas cubren $kG = (B-\log_2 G)\,G \approx B\,G$ personas. El factor
-$G$ no es cosmético: por Bernoulli $1-(1-q)^{B}\le B\,q$ siempre, así que con
-cobertura $\sim B$ el aumentado no ganaría nunca. Con la cobertura real gana con
-holgura — abajo, los dos exponentes sobre el ejemplo ancla.""")
+pruebas frescas cubren $kG = (B-\log_2 G)\,G$ personas — que es $\Theta(B\,G)$
+para $B\gg\log_2 G$ (en el ejemplo ancla, 32 exacto, no 96). El factor $G$ no es
+cosmético: por Bernoulli $1-(1-q)^{B}\le B\,q$ siempre, así que con cobertura
+$\sim B$ el aumentado no ganaría nunca. Con la cobertura real gana con holgura —
+abajo, los dos exponentes sobre el ejemplo ancla.""")
 
 code(r"""# los dos exponentes sobre el ejemplo ancla (q=0.1, G=16, B=6)
 con_B = 1 - (1 - q) ** B          # cobertura ~B (la aproximación del mensaje)
@@ -165,8 +166,9 @@ fig.tight_layout(); plt.show()""")
 
 md(r"""**Lectura.** La separación es fuerte con prevalencia alta y presupuesto
 moderado: hallar a un sano raro es caro individualmente ($B\,q$) pero barato con
-conteo. La cota topa en $u$ (solo cuenta al sano garantizado), así que la ventana
-de victoria es $1+\log_2 G \le B < 1/q$. Este ejemplo, solo, ya es un buen paper.""")
+conteo. La cota topa en $u$ (solo cuenta al sano garantizado); la condición de
+victoria es $B\,q < 1-(1-q)^{kG}$, y $1+\log_2 G \le B < 1/q$ es la ventana
+*necesaria* donde puede cumplirse. Este ejemplo, solo, ya es un buen paper.""")
 
 # -------------------------------------------------------------------
 md(r"""### 1.1 Atribución: ¿dinamismo o conteo?
@@ -234,9 +236,9 @@ antemano la objeción de "movieron dos variables a la vez".""")
 # ===================================================================
 md(r"""## 2. Los regímenes tratables y un algoritmo eficiente
 
-La inferencia exacta es #P-hard en general, pero se vuelve tratable cuando el
-traslape es simple. Dos familias, verificadas contra fuerza bruta y escaladas a
-tamaños imposibles de enumerar.
+El cómputo del marginal posterior exacto es #P-difícil en general, pero se vuelve
+tratable cuando el traslape es simple. Dos familias, verificadas contra fuerza
+bruta y escaladas a tamaños imposibles de enumerar.
 
 **Laminar: cajas dentro de cajas.** Imagínense pools anidados: si la caja
 grande A reporta 5 infectados y su sub-caja B reporta 2, la capa de en medio
@@ -449,10 +451,10 @@ n_univ = next(nn for nn in ns_bf if 2.0 ** nn / RATE > 4.35e17)
 print(f'DP laminar a n=6,000: {t_dp[-1]*1e3:.0f} ms.')
 print(f'la enumeración 2^n rebasa la edad del universo ya en n≈{n_univ}.')""")
 
-md(r"""**Lectura.** El DP cruza cuatro órdenes de magnitud de $n$ sin salir de los
-milisegundos; la fuerza bruta rebasa la edad del universo antes de n=90. No es
-"más rápido": resuelve un problema lineal donde el ingenuo enfrenta uno
-exponencial.""")
+md(r"""**Lectura.** El DP cruza más de dos órdenes de magnitud de $n$ (50→6,000)
+sin salir de los milisegundos; la fuerza bruta rebasa la edad del universo antes
+de n=90. No es "más rápido": es $O(m\,k)$ —lineal con $k$ fijo— donde el ingenuo
+enfrenta $2^n$.""")
 
 md(r"""**Dónde encaja.** `bayesian.py` ya explota el primer peldaño (componentes
 disjuntas); laminar y cadena son los siguientes. El frente del paper es meter
@@ -467,84 +469,89 @@ inferencia exacta es de verdad barata?""")
 md(r"""## 3. El modelo realista de pruebas: ¿sobrevive la separación al ruido?
 
 El conteo real llega con ruido. De cuatro modelos posibles (ver
-`paper/modelo_realista_pruebas.md`), aquí el que huele a qPCR: el conteo se
-observa con ruido gaussiano de desviación σ.""")
+`paper/modelo_realista_pruebas.md`), aquí un canal de juguete: el conteo
+verdadero r se observa como r + N(0, σ²) —ruido aditivo, independiente, sin
+truncar—. No es aún un modelo de qPCR (Ct y carga viral no son un conteo lineal);
+es el mínimo que hace ejecutable la pregunta del ruido.""")
 
 md(r"""**Intuición.** Hagan de cuenta que el binary search nunca lee el conteo
 fino: solo pregunta un bit por paso, ¿este bloque está saturado o no? Y esa
 discriminación es fácil — distinguir un bloque con un sano (conteo g-1) de uno
 saturado (conteo g) es distinguir *una persona* del ruido, sin importar el
-tamaño del bloque. Ojalá entonces aguante bastante ruido; abajo vemos que sí.""")
+tamaño del bloque. Ojalá entonces aguante ruido; abajo medimos cuánto.""")
 
-md(r"""**Afirmación.** Con umbral a la mitad, el error por paso es
-$\varepsilon(\sigma)=\Phi(-1/2\sigma)$, y la separación sobrevive hasta un σ\*.
-El ruido cobra un segundo precio: el *falso-limpio*, certificar sano a un
-infectado.""")
+md(r"""**Afirmación.** Con umbral a la mitad, el error peor-caso de una decisión
+adyacente es $\varepsilon(\sigma)=\Phi(-1/(2\sigma))$, y la separación sobrevive
+hasta un σ\* que mide la simulación. El estático se compara en su valor sin
+ruido ($B\,q$), como referencia ideal. El ruido cobra un segundo precio: el
+*falso-limpio*, certificar sano a un infectado.""")
 
 code(r"""from statistics import NormalDist
 Phi = NormalDist().cdf
 
 def eps_por_paso(sigma):
-    '''P(equivocar la decisión saturado/no): umbral a h-0.5 entre h y h-1,
-    gap de una persona, ruido sigma. Independiente del tamaño del bloque.'''
+    '''Error peor-caso de una decisión saturado/no: umbral a media persona,
+    gap de uno, ruido sigma. Independiente del tamaño del bloque.'''
     return 0.0 if sigma <= 0 else Phi(-0.5 / sigma)
 
 def _busca_ruidosa(grupo, sigma, rng):
-    '''grupo: lista 0/1 (1=infectado). Binary search de conteo con ruido.
-    Se entra solo si el conteo ruidoso del grupo < |grupo|-0.5. Devuelve el
-    índice certificado (o None si el grupo se leyó saturado y no se entró).'''
+    '''Devuelve (indice_certificado_o_None, pruebas_usadas). La 1a prueba lee el
+    conteo del grupo (¿saturado?); si no lo está, hace binary search de conteo.'''
     n = len(grupo)
     if sum(grupo) + rng.gauss(0, sigma) > n - 0.5:
-        return None
-    block = list(range(n))
+        return None, 1                        # 1 prueba: el grupo se leyó saturado
+    block = list(range(n)); usadas = 1
     while len(block) > 1:
-        half = len(block) // 2
-        L = block[:half]
+        half = len(block) // 2; L = block[:half]; usadas += 1
         if sum(grupo[i] for i in L) + rng.gauss(0, sigma) < len(L) - 0.5:
             block = L
         else:
             block = block[half:]
-    return block[0]
+    return block[0], usadas
 
 def dinamico_ruidoso_mc(B, G, q, sigma, sims=20000, seed=0):
-    '''Utilidad/u y tasa de falso-limpio por Monte Carlo. Utilidad = P(certificar
-    a un sano de verdad). Falso-limpio = P(el certificado esté infectado | se
-    certificó a alguien).'''
+    '''Utilidad/u y falso-limpio por Monte Carlo, con presupuesto honesto: lee
+    grupos frescos uno a uno y en el PRIMERO que lee como no-saturado entra,
+    certifica a quien encuentra y SE DETIENE — sin mirar la verdad latente para
+    decidir si sigue. Utilidad = P(el certificado esté sano de verdad).'''
     logG = round(math.log2(G)); k = B - logG
     if k < 1:
         return None, None
     rng = random.Random(seed)
     exitos = certificados = falsos = 0
     for _ in range(sims):
-        acreditado = False
+        tests = 0
         for _g in range(k):
             grupo = [0 if rng.random() < q else 1 for _ in range(G)]  # 0=sano
-            x = _busca_ruidosa(grupo, sigma, rng)
+            x, usadas = _busca_ruidosa(grupo, sigma, rng)
+            tests += usadas
             if x is None:
-                continue
+                continue                      # leído saturado: siguiente grupo fresco
+            assert tests <= B, f'presupuesto excedido: {tests} > {B}'
             certificados += 1
             if grupo[x] == 1:
-                falsos += 1
-            elif not acreditado:
-                exitos += 1; acreditado = True; break
+                falsos += 1                   # falso-limpio: se mide, no se actúa sobre ello
+            else:
+                exitos += 1
+            break                             # certifica y se detiene, acierte o no
     return exitos / sims, (falsos / certificados if certificados else 0.0)
 
 import random
 q, G, B = 0.1, 16, 6
-logG = round(math.log2(G))
+logG = round(math.log2(G)); k = B - logG
 sin_ruido = util_dinamico(B, G, q)[0]
 est = util_estatico(B, q)
 
 # autoverificación: (a) sin ruido recupera la §1; (b) la cota conservadora
-# "todos los pasos correctos" nunca excede la verdad simulada.
+# (acertar las k+log2G decisiones del camino) nunca excede la verdad simulada.
 mc0, _ = dinamico_ruidoso_mc(B, G, q, 0.0, sims=20000, seed=1)
 assert abs(mc0 - sin_ruido) < 0.01, f'sigma=0 no recupera la §1: {mc0} vs {sin_ruido}'
 for s in (0.2, 0.3, 0.5):
     mc, _ = dinamico_ruidoso_mc(B, G, q, s, sims=20000, seed=1)
-    cota = sin_ruido * (1 - eps_por_paso(s)) ** (logG + 1)
+    cota = sin_ruido * (1 - eps_por_paso(s)) ** (k + logG)
     assert cota <= mc + 0.02, f'la cota conservadora excede la verdad en sigma={s}'
-print('autoverificación OK: sigma=0 recupera la §1; la cota conservadora <= verdad MC')
-print(f'estático={est:.3f}  din. aumentado sin ruido={sin_ruido:.3f}')
+print('autoverificación OK: sigma=0 recupera la §1; cota conservadora <= verdad MC')
+print(f'estático (sin ruido) = {est:.3f}   din. aumentado sin ruido = {sin_ruido:.3f}')
 for s in (0.0, 0.2, 0.3, 0.5, 0.8):
     mc, falso = dinamico_ruidoso_mc(B, G, q, s, sims=20000, seed=1)
     print(f'  sigma={s}: aumentado MC={mc:.3f}  falso-limpio={falso:.3f}  '
@@ -554,7 +561,7 @@ code(r"""# figura: la separación contra el ruido (izq) y el precio en riesgo (d
 sigmas = np.linspace(0.0, 1.1, 23)
 util = [dinamico_ruidoso_mc(B, G, q, float(s), sims=12000, seed=2)[0] for s in sigmas]
 falso = [dinamico_ruidoso_mc(B, G, q, float(s), sims=12000, seed=2)[1] for s in sigmas]
-cota = [sin_ruido * (1 - eps_por_paso(float(s))) ** (logG + 1) for s in sigmas]
+cota = [sin_ruido * (1 - eps_por_paso(float(s))) ** (k + logG) for s in sigmas]
 # umbral sigma*: donde la utilidad dinámica cruza el estático
 sig_star = next((float(s) for s, m in zip(sigmas, util) if m < est), None)
 
@@ -577,13 +584,14 @@ ax2.set_ylabel('tasa de falso-limpio')
 ax2.set_title('El precio en riesgo: certificar sano a un infectado', fontsize=10)
 ax2.set_ylim(-0.02, max(0.05, max(falso) * 1.1))
 fig.tight_layout(); plt.show()
-print(f'umbral de utilidad: σ* ≈ {sig_star:.2f} '
-      f'(más de media persona de ruido antes de perder la ventaja)')""")
+print(f'umbral de utilidad: σ* ≈ {sig_star:.2f} (≈ media persona de ruido)')""")
 
-md(r"""**Lectura.** La ventaja sobrevive hasta σ\* ≈ 0.65 —más de media persona de
-ruido—; como solo hace falta un bit por paso, los errores a menudo se recuperan.
-Pero el falso-limpio crece rápido: a σ=0.3 ya certifica a un infectado ~15% de
-las veces. Para tamizaje ese es el error peligroso.""")
+md(r"""**Lectura.** La ventaja aguanta ruido hasta σ\* ≈ 0.5 —cerca de media
+persona de ruido en el conteo—. La cota conservadora (acertar las k+log₂G
+decisiones del camino) queda por debajo de la utilidad real, señal de que los
+errores a veces se recuperan. El segundo precio pesa más: el falso-limpio crece
+rápido —a σ=0.3 ya certifica a un infectado ~15% de las veces—, y para tamizaje
+ese es el error peligroso.""")
 
 md(r"""**Para discutir.** ¿El objetivo bajo ruido es la utilidad media o la
 utilidad *segura* (con el falso-limpio acotado)? ¿Y la re-medición (SPRT) empuja
@@ -645,13 +653,14 @@ fig.tight_layout(); plt.show()""")
 md(r"""**Lectura.** La palanca grande es la miopía: la tendrías aun con scoring
 perfecto, y solo el lookahead (o su proxy β, §5) la ataca. La independencia es
 la palanca chica y barata — el scoring exacto ya existe (counting a n chico,
-Gibbs a escala). Las proporciones se mueven con el régimen y las semillas, pero
-el orden no se invierte: primero miopía.""")
+*estimado* por Gibbs a escala). Las proporciones bailan bastante con el régimen y
+con tan pocas instancias; lo robusto es el orden (primero miopía), no los números.""")
 
-md(r"""**Para discutir.** La independencia crece con n en las mediciones de
-referencia. A escala (n=20–50, donde solo Gibbs puede puntuar exacto), ¿el
-cuarto se vuelve un tercio — y justificaría pagar el costo del scoring por
-Gibbs — o el lookahead sigue siendo el único gasto que vale?""")
+md(r"""**Para discutir.** Con estas pocas instancias las proporciones no son
+estables (aquí 36% y 18%). A escala (n=20–50, donde solo Gibbs *estima* el
+scoring), ¿vale medir con muchas semillas para ver si la independencia se vuelve
+un tercio —y justifica pagar el Gibbs— o el lookahead sigue siendo el único gasto
+que rinde?""")
 
 # ===================================================================
 md(r"""## 5. El parámetro β: un lookahead barato
@@ -715,22 +724,6 @@ colapsa). Proxy útil, pero hay que sintonizarlo.""")
 md(r"""**Para discutir.** β modifica la *política*; la V̂ del certificado modifica
 la *cota*. ¿Es β un caso de la penalización, y su β óptima escala con el
 horizonte, como la profundidad d(B) que buscamos para la V̂?""")
-
-# ===================================================================
-md(r"""## 6. Encuadre para publicar
-
-Del consejo de la sesión: (1) no mover dos variables a la vez —la atribución de la
-§1.1 lo cubre—; (2) la dureza #P y la fibra van a apéndice; (3) lo puramente
-dinámico es trabajo previo del grupo; (4) la terna mandable: separación +
-algoritmo eficiente + evidencia empírica.""")
-
-# ===================================================================
-md(r"""## 7. Cómo conecta con el certificado
-
-La separación mide *cuánto vale* el conteo en un caso resoluble; la línea del
-certificado mide *cuánto de ese valor se puede reclamar con cómputo finito*
-cuando ya no lo es. El corto plazo y el eje de fondo no compiten: la §1 es el
-extremo tratable del mismo objeto.""")
 
 # ===================================================================
 nbf.write(nb, OUT)
