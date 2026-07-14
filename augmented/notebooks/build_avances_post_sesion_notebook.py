@@ -4,8 +4,8 @@ Francisco del 9 de julio de 2026.
 Pieza central: el ejemplo de separación estático vs dinámico-aumentado que
 propuso Francisco (población infinita homogénea, cerrado en forma analítica),
 verificado adversarialmente. Alrededor, los otros puntos de avance de la
-sesión: la anatomía del hueco del greedy, el modelo realista de pruebas
-(biomarkers), y los regímenes tratables + DP eficiente.
+sesión: la anatomía del hueco del greedy, el parámetro β, los regímenes
+tratables + DP eficiente, y el modelo realista de pruebas (biomarkers).
 
 Run:
     python augmented/notebooks/build_avances_post_sesion_notebook.py
@@ -43,8 +43,8 @@ aparecen todo el tiempo; conviene fijar los nombres desde ya:
 - **dinámico binario**: adaptativo, pero la prueba solo dice 0 vs ≥1;
 - **dinámico aumentado**: adaptativo y la prueba devuelve el conteo exacto.
 
-Alrededor: la anatomía del hueco del greedy, el modelo de ruido, y el algoritmo
-eficiente en regímenes tratables. Cada número se regenera aquí.""")
+Alrededor: la anatomía del hueco del greedy, el parámetro β, los regímenes
+tratables y el modelo de ruido. Cada número se regenera aquí.""")
 
 code(r"""import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(''))))
@@ -308,7 +308,7 @@ ax.legend(fontsize=8, loc='upper center', ncol=1)
 fig.tight_layout(); plt.show()""")
 
 md(r"""**Lectura.** La palanca grande es la miopía: la tendrías aun con scoring
-perfecto, y solo el lookahead (o su proxy β, §5) la ataca. La independencia es
+perfecto, y solo el lookahead (o su proxy β, §3) la ataca. La independencia es
 la palanca chica y barata — el scoring exacto ya existe (counting a n chico,
 *estimado* por Gibbs a escala). Las proporciones bailan bastante con el régimen y
 con tan pocas instancias; lo robusto es el orden (primero miopía), no los números.""")
@@ -320,141 +320,98 @@ un tercio —y justifica pagar el Gibbs— o el lookahead sigue siendo el único
 que rinde?""")
 
 # ===================================================================
-md(r"""## 3. El modelo realista de pruebas: ¿sobrevive la separación al ruido?
+md(r"""## 3. El parámetro β: una heurística de información
 
-El conteo real llega con ruido. De cuatro modelos posibles (ver
-`paper/modelo_realista_pruebas.md`), aquí un canal de juguete: el conteo
-verdadero r se observa como r + N(0, σ²) —ruido aditivo, independiente, sin
-truncar—. No es aún un modelo de qPCR (Ct y carga viral no son un conteo lineal);
-es el mínimo que hace ejecutable la pregunta del ruido.""")
+**Intuición.** El greedy miope maximiza P(r=0)·Σu: limpiar ahora. El beta-greedy
+le suma un premiecito de información, β·info-gain (reducción de entropía), que a
+veces lo empuja a probar un pool que limpia menos pero informa más. Ojo: no es
+un lookahead —no evalúa la recompensa del paso siguiente, solo cuánto informa el
+actual—; es un proxy barato que *apunta* a la miopía de la §2 sin resolverla.""")
 
-md(r"""**Intuición.** Hagan de cuenta que el binary search nunca lee el conteo
-fino: solo pregunta un bit por paso, ¿este bloque está saturado o no? Y esa
-discriminación es fácil — distinguir un bloque con un sano (conteo g-1) de uno
-saturado (conteo g) es distinguir *una persona* del ruido, sin importar el
-tamaño del bloque. Ojalá entonces aguante ruido; abajo medimos cuánto.""")
+md(r"""**Afirmación.** β es situacional. En una instancia elegida (n=4, B=2, G=2,
+semilla 185) mueve el pool de apertura al que elige el óptimo y recupera casi
+todo el hueco —buena ilustración—. Pero un barrido de semillas dice que ayuda en
+la minoría de los casos, y que β grande suele empeorar (hump).""")
 
-md(r"""**Afirmación.** Con umbral a la mitad, el error peor-caso de una decisión
-adyacente es $\varepsilon(\sigma)=\Phi(-1/(2\sigma))$, y la separación sobrevive
-hasta un σ\* que mide la simulación. El estático se compara en su valor sin
-ruido ($B\,q$), como referencia ideal. El ruido cobra un segundo precio: el
-*falso-limpio*, certificar sano a un infectado.""")
+code(r"""import random
+from augmented.solver import solve_optimal_dapts
+from augmented.state_reward_greedy import (greedy_myopic_beta_expected_utility as beu,
+                                           _beta_best_pool)
+from augmented.core import mask_str
 
-code(r"""from statistics import NormalDist
-Phi = NormalDist().cdf
+# misma instancia que el notebook de árboles (n=4, B=2, G=2, semilla 185)
+rb = random.Random(185); nb_, Bb, Gb = 4, 2, 2
+pb = [rb.uniform(0.15, 0.7) for _ in range(nb_)]
+ub = [rb.uniform(1.0, 4.0) for _ in range(nb_)]
+opt_b = solve_optimal_dapts(pb, ub, Bb, Gb)[0]
+greedy_plano = beu(pb, ub, Bb, Gb, 0.0)                 # beta=0 == greedy miope
 
-def eps_por_paso(sigma):
-    '''Error peor-caso de una decisión saturado/no: umbral a media persona,
-    gap de uno, ruido sigma. Independiente del tamaño del bloque.'''
-    return 0.0 if sigma <= 0 else Phi(-0.5 / sigma)
+betas = [round(0.25 * k, 2) for k in range(0, 33)]      # 0..8
+eus = [beu(pb, ub, Bb, Gb, b, 'entropy') for b in betas]
+best_eu = max(eus); best_beta = betas[eus.index(best_eu)]
 
-def _busca_ruidosa(grupo, sigma, rng):
-    '''Devuelve (indice_certificado_o_None, pruebas_usadas). La 1a prueba lee el
-    conteo del grupo (¿saturado?); si no lo está, hace binary search de conteo.'''
-    n = len(grupo)
-    if sum(grupo) + rng.gauss(0, sigma) > n - 0.5:
-        return None, 1                        # 1 prueba: el grupo se leyó saturado
-    block = list(range(n)); usadas = 1
-    while len(block) > 1:
-        half = len(block) // 2; L = block[:half]; usadas += 1
-        if sum(grupo[i] for i in L) + rng.gauss(0, sigma) < len(L) - 0.5:
-            block = L
-        else:
-            block = block[half:]
-    return block[0], usadas
+# autoverificación: beta>0 mejora al greedy plano y ninguna beta supera al óptimo
+assert best_eu > greedy_plano + 1e-6, 'ningún beta ayuda en esta instancia'
+assert best_eu <= opt_b + 1e-9, 'beta-greedy superó al óptimo (imposible)'
+recuperado = (best_eu - greedy_plano) / (opt_b - greedy_plano)
+print(f'óptimo={opt_b:.3f}  greedy plano (β=0)={greedy_plano:.3f}  '
+      f'mejor β={best_beta} → EU={best_eu:.3f}')
+print(f'β recupera {recuperado:.0%} del hueco greedy→óptimo')
+for b in (0.0, 1.0, 3.0, 5.0):
+    print(f'  β={b}: EU={beu(pb,ub,Bb,Gb,b,"entropy"):.3f}  '
+          f'abre con {mask_str(_beta_best_pool(pb,ub,Gb,nb_,0,b,"entropy"), nb_)}')""")
 
-def dinamico_ruidoso_mc(B, G, q, sigma, sims=20000, seed=0):
-    '''Utilidad/u y falso-limpio por Monte Carlo, con presupuesto honesto: lee
-    grupos frescos uno a uno y en el PRIMERO que lee como no-saturado entra,
-    certifica a quien encuentra y SE DETIENE — sin mirar la verdad latente para
-    decidir si sigue. Utilidad = P(el certificado esté sano de verdad).'''
-    logG = round(math.log2(G)); k = B - logG
-    if k < 1:
-        return None, None
-    rng = random.Random(seed)
-    exitos = certificados = falsos = 0
-    for _ in range(sims):
-        tests = 0
-        for _g in range(k):
-            grupo = [0 if rng.random() < q else 1 for _ in range(G)]  # 0=sano
-            x, usadas = _busca_ruidosa(grupo, sigma, rng)
-            tests += usadas
-            if x is None:
-                continue                      # leído saturado: siguiente grupo fresco
-            assert tests <= B, f'presupuesto excedido: {tests} > {B}'
-            certificados += 1
-            if grupo[x] == 1:
-                falsos += 1                   # falso-limpio: se mide, no se actúa sobre ello
-            else:
-                exitos += 1
-            break                             # certifica y se detiene, acierte o no
-    return exitos / sims, (falsos / certificados if certificados else 0.0)
+code(r"""fig, ax = plt.subplots(figsize=(6.5, 3.6))
+ax.plot(betas, eus, color=AZUL, lw=1.8)
+ax.axhline(opt_b, color=GRIS, ls='--', lw=1.2, label='óptimo aumentado (techo)')
+ax.axhline(greedy_plano, color=TINTA, ls=':', lw=1.0, label='greedy plano (β=0)')
+ax.plot([best_beta], [best_eu], 'o', color=AMBAR, ms=8, zorder=3)
+ax.annotate(f'pico β={best_beta}\n{best_eu:.2f}', (best_beta, best_eu),
+            textcoords='offset points', xytext=(8, -4), fontsize=8, color=AMBAR)
+ax.set_xlabel('β (peso del bono de información)')
+ax.set_ylabel('utilidad esperada')
+ax.set_title('β en una instancia: recupera el hueco y luego cae (hump)',
+             fontsize=10)
+ax.legend(fontsize=8, loc='lower right')
+fig.tight_layout(); plt.show()""")
 
-import random
-q, G, B = 0.1, 16, 6
-logG = round(math.log2(G)); k = B - logG
-sin_ruido = util_dinamico(B, G, q)[0]
-est = util_estatico(B, q)
+code(r"""# ¿qué tan seguido ayuda β? barrido sobre 40 semillas (misma familia n=4,B=2,G=2)
+betas_s = [round(0.5 * kk, 2) for kk in range(0, 13)]      # 0..6
+ayuda = hump = con_hueco = 0
+recs = []
+for seed in range(40):
+    rs = random.Random(500 + seed)
+    ps = [rs.uniform(0.15, 0.7) for _ in range(4)]
+    us = [rs.uniform(1.0, 4.0) for _ in range(4)]
+    o = solve_optimal_dapts(ps, us, 2, 2)[0]
+    g0 = beu(ps, us, 2, 2, 0.0, 'entropy')
+    if o - g0 < 1e-9:
+        continue                                           # sin hueco, β no puede ayudar
+    con_hueco += 1
+    eus_s = [beu(ps, us, 2, 2, b, 'entropy') for b in betas_s]
+    if max(eus_s) > g0 + 1e-6:
+        ayuda += 1; recs.append((max(eus_s) - g0) / (o - g0))
+    if eus_s[-1] < g0 - 1e-6:
+        hump += 1                                          # β grande cae bajo el plano
 
-# cota inferior DEMOSTRABLE: el esquema acierta si el PRIMER grupo tiene un sano
-# (prob 1-(1-q)^G) y sus 1+log2G decisiones son correctas (prob >= (1-eps)^(1+log2G)).
-# Ignora los otros k-1 grupos y la recuperación de errores, así que es un piso real.
-def cota_inferior(sigma):
-    return (1 - (1 - q) ** G) * (1 - eps_por_paso(sigma)) ** (1 + logG)
+# autoverificación: β es situacional (ni siempre ni nunca ayuda)
+assert 0 < ayuda < con_hueco, 'β resultó no-situacional'
+rec_med = (sum(recs) / len(recs)) if recs else 0.0
+print(f'instancias con hueco: {con_hueco}/40')
+print(f'β ayuda en {ayuda}/{con_hueco} = {ayuda/con_hueco:.0%} de ellas '
+      f'(cuando ayuda, recupera {rec_med:.0%} en promedio)')
+print(f'β grande empeora (hump) en {hump}/{con_hueco} = {hump/con_hueco:.0%}')""")
 
-# autoverificación: (a) sin ruido recupera la §1; (b) la cota inferior nunca
-# excede la utilidad simulada.
-mc0, _ = dinamico_ruidoso_mc(B, G, q, 0.0, sims=20000, seed=1)
-assert abs(mc0 - sin_ruido) < 0.01, f'sigma=0 no recupera la §1: {mc0} vs {sin_ruido}'
-for s in (0.2, 0.3, 0.5):
-    mc, _ = dinamico_ruidoso_mc(B, G, q, s, sims=20000, seed=1)
-    assert cota_inferior(s) <= mc + 0.02, f'la cota inferior excede la verdad en sigma={s}'
-print('autoverificación OK: sigma=0 recupera la §1; cota inferior demostrable <= verdad MC')
-print(f'estático (sin ruido) = {est:.3f}   din. aumentado sin ruido = {sin_ruido:.3f}')
-for s in (0.0, 0.2, 0.3, 0.5, 0.8):
-    mc, falso = dinamico_ruidoso_mc(B, G, q, s, sims=20000, seed=1)
-    print(f'  sigma={s}: aumentado MC={mc:.3f}  falso-limpio={falso:.3f}  '
-          f'eps/paso={eps_por_paso(s):.3f}')""")
+md(r"""**Lectura.** El barrido baja las expectativas: β ayuda en ~1/4 de las
+instancias con hueco, y cuando ayuda —a horizonte B=2— suele recuperarlo casi
+entero (fijar la apertura ya es la jugada óptima); en el resto no mueve nada. Y
+es frágil: β grande empeora en ~40% de los casos (hump), y a prevalencia alta se
+neutraliza ($P(r=0)$ colapsa). Es un proxy situacional y arriesgado, no una
+palanca general.""")
 
-code(r"""# figura: la separación contra el ruido (izq) y el precio en riesgo (der)
-sigmas = np.linspace(0.0, 1.1, 23)
-util = [dinamico_ruidoso_mc(B, G, q, float(s), sims=12000, seed=2)[0] for s in sigmas]
-falso = [dinamico_ruidoso_mc(B, G, q, float(s), sims=12000, seed=2)[1] for s in sigmas]
-cota = [cota_inferior(float(s)) for s in sigmas]
-# umbral sigma*: donde la utilidad dinámica cruza el estático
-sig_star = next((float(s) for s, m in zip(sigmas, util) if m < est), None)
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 3.6))
-ax1.axhline(est, color=GRIS, lw=1.6, label='estático (individual)')
-ax1.plot(sigmas, util, marker='o', ms=3, color=AZUL, label='din. aumentado con ruido (simulado)')
-ax1.plot(sigmas, cota, ls=':', color=TINTA, lw=1, label='cota inferior demostrable (vía el 1er grupo)')
-ax1.fill_between(sigmas, est, util, where=[u > est for u in util], color=AZUL, alpha=0.12)
-if sig_star is not None:
-    ax1.axvline(sig_star, color=AMBAR, ls='--', lw=1.2)
-    ax1.annotate(f'σ* ≈ {sig_star:.2f}', (sig_star, est), textcoords='offset points',
-                 xytext=(4, 30), fontsize=8, color=AMBAR)
-ax1.set_xlabel('ruido en el conteo  σ'); ax1.set_ylabel('utilidad esperada / u')
-ax1.set_title('La separación aguanta ruido hasta σ*', fontsize=10)
-ax1.legend(fontsize=8, loc='upper right')
-
-ax2.plot(sigmas, falso, marker='s', ms=3, color=AMBAR)
-ax2.set_xlabel('ruido en el conteo  σ')
-ax2.set_ylabel('tasa de falso-limpio')
-ax2.set_title('El precio en riesgo: certificar sano a un infectado', fontsize=10)
-ax2.set_ylim(-0.02, max(0.05, max(falso) * 1.1))
-fig.tight_layout(); plt.show()
-print(f'umbral de utilidad: σ* ≈ {sig_star:.2f} (≈ media persona de ruido)')""")
-
-md(r"""**Lectura.** La ventaja aguanta ruido hasta σ\* ≈ 0.5 —cerca de media
-persona de ruido en el conteo—. La cota inferior demostrable (éxito ya solo por
-el primer grupo) queda muy por debajo de la utilidad real: la distancia es el
-valor de los otros grupos más la recuperación de errores. El segundo precio pesa más: el falso-limpio crece
-rápido —a σ=0.3 ya certifica a un infectado ~15% de las veces—, y para tamizaje
-ese es el error peligroso.""")
-
-md(r"""**Para discutir.** ¿El objetivo bajo ruido es la utilidad media o la
-utilidad *segura* (con el falso-limpio acotado)? ¿Y la re-medición (SPRT) empuja
-σ\* arriba y el falso-limpio abajo a la vez, o hay un trade-off duro?""")
+md(r"""**Para discutir.** β modifica la *política*; la V̂ del certificado modifica
+la *cota*. ¿Es β un caso de la penalización, y su β óptima escala con el
+horizonte, como la profundidad d(B) que buscamos para la V̂?""")
 
 # ===================================================================
 md(r"""## 4. Los regímenes tratables y un algoritmo eficiente
@@ -689,98 +646,141 @@ historias que el greedy genera —para saber en qué fracción de los pasos la
 inferencia exacta es de verdad barata?""")
 
 # ===================================================================
-md(r"""## 5. El parámetro β: una heurística de información
+md(r"""## 5. El modelo realista de pruebas: ¿sobrevive la separación al ruido?
 
-**Intuición.** El greedy miope maximiza P(r=0)·Σu: limpiar ahora. El beta-greedy
-le suma un premiecito de información, β·info-gain (reducción de entropía), que a
-veces lo empuja a probar un pool que limpia menos pero informa más. Ojo: no es
-un lookahead —no evalúa la recompensa del paso siguiente, solo cuánto informa el
-actual—; es un proxy barato que *apunta* a la miopía de la §2 sin resolverla.""")
+El conteo real llega con ruido. De cuatro modelos posibles (ver
+`paper/modelo_realista_pruebas.md`), aquí un canal de juguete: el conteo
+verdadero r se observa como r + N(0, σ²) —ruido aditivo, independiente, sin
+truncar—. No es aún un modelo de qPCR (Ct y carga viral no son un conteo lineal);
+es el mínimo que hace ejecutable la pregunta del ruido.""")
 
-md(r"""**Afirmación.** β es situacional. En una instancia elegida (n=4, B=2, G=2,
-semilla 185) mueve el pool de apertura al que elige el óptimo y recupera casi
-todo el hueco —buena ilustración—. Pero un barrido de semillas dice que ayuda en
-la minoría de los casos, y que β grande suele empeorar (hump).""")
+md(r"""**Intuición.** Hagan de cuenta que el binary search nunca lee el conteo
+fino: solo pregunta un bit por paso, ¿este bloque está saturado o no? Y esa
+discriminación es fácil — distinguir un bloque con un sano (conteo g-1) de uno
+saturado (conteo g) es distinguir *una persona* del ruido, sin importar el
+tamaño del bloque. Ojalá entonces aguante ruido; abajo medimos cuánto.""")
 
-code(r"""import random
-from augmented.solver import solve_optimal_dapts
-from augmented.state_reward_greedy import (greedy_myopic_beta_expected_utility as beu,
-                                           _beta_best_pool)
-from augmented.core import mask_str
+md(r"""**Afirmación.** Con umbral a la mitad, el error peor-caso de una decisión
+adyacente es $\varepsilon(\sigma)=\Phi(-1/(2\sigma))$, y la separación sobrevive
+hasta un σ\* que mide la simulación. El estático se compara en su valor sin
+ruido ($B\,q$), como referencia ideal. El ruido cobra un segundo precio: el
+*falso-limpio*, certificar sano a un infectado.""")
 
-# misma instancia que el notebook de árboles (n=4, B=2, G=2, semilla 185)
-rb = random.Random(185); nb_, Bb, Gb = 4, 2, 2
-pb = [rb.uniform(0.15, 0.7) for _ in range(nb_)]
-ub = [rb.uniform(1.0, 4.0) for _ in range(nb_)]
-opt_b = solve_optimal_dapts(pb, ub, Bb, Gb)[0]
-greedy_plano = beu(pb, ub, Bb, Gb, 0.0)                 # beta=0 == greedy miope
+code(r"""from statistics import NormalDist
+Phi = NormalDist().cdf
 
-betas = [round(0.25 * k, 2) for k in range(0, 33)]      # 0..8
-eus = [beu(pb, ub, Bb, Gb, b, 'entropy') for b in betas]
-best_eu = max(eus); best_beta = betas[eus.index(best_eu)]
+def eps_por_paso(sigma):
+    '''Error peor-caso de una decisión saturado/no: umbral a media persona,
+    gap de uno, ruido sigma. Independiente del tamaño del bloque.'''
+    return 0.0 if sigma <= 0 else Phi(-0.5 / sigma)
 
-# autoverificación: beta>0 mejora al greedy plano y ninguna beta supera al óptimo
-assert best_eu > greedy_plano + 1e-6, 'ningún beta ayuda en esta instancia'
-assert best_eu <= opt_b + 1e-9, 'beta-greedy superó al óptimo (imposible)'
-recuperado = (best_eu - greedy_plano) / (opt_b - greedy_plano)
-print(f'óptimo={opt_b:.3f}  greedy plano (β=0)={greedy_plano:.3f}  '
-      f'mejor β={best_beta} → EU={best_eu:.3f}')
-print(f'β recupera {recuperado:.0%} del hueco greedy→óptimo')
-for b in (0.0, 1.0, 3.0, 5.0):
-    print(f'  β={b}: EU={beu(pb,ub,Bb,Gb,b,"entropy"):.3f}  '
-          f'abre con {mask_str(_beta_best_pool(pb,ub,Gb,nb_,0,b,"entropy"), nb_)}')""")
+def _busca_ruidosa(grupo, sigma, rng):
+    '''Devuelve (indice_certificado_o_None, pruebas_usadas). La 1a prueba lee el
+    conteo del grupo (¿saturado?); si no lo está, hace binary search de conteo.'''
+    n = len(grupo)
+    if sum(grupo) + rng.gauss(0, sigma) > n - 0.5:
+        return None, 1                        # 1 prueba: el grupo se leyó saturado
+    block = list(range(n)); usadas = 1
+    while len(block) > 1:
+        half = len(block) // 2; L = block[:half]; usadas += 1
+        if sum(grupo[i] for i in L) + rng.gauss(0, sigma) < len(L) - 0.5:
+            block = L
+        else:
+            block = block[half:]
+    return block[0], usadas
 
-code(r"""fig, ax = plt.subplots(figsize=(6.5, 3.6))
-ax.plot(betas, eus, color=AZUL, lw=1.8)
-ax.axhline(opt_b, color=GRIS, ls='--', lw=1.2, label='óptimo aumentado (techo)')
-ax.axhline(greedy_plano, color=TINTA, ls=':', lw=1.0, label='greedy plano (β=0)')
-ax.plot([best_beta], [best_eu], 'o', color=AMBAR, ms=8, zorder=3)
-ax.annotate(f'pico β={best_beta}\n{best_eu:.2f}', (best_beta, best_eu),
-            textcoords='offset points', xytext=(8, -4), fontsize=8, color=AMBAR)
-ax.set_xlabel('β (peso del bono de información)')
-ax.set_ylabel('utilidad esperada')
-ax.set_title('β en una instancia: recupera el hueco y luego cae (hump)',
-             fontsize=10)
-ax.legend(fontsize=8, loc='lower right')
-fig.tight_layout(); plt.show()""")
+def dinamico_ruidoso_mc(B, G, q, sigma, sims=20000, seed=0):
+    '''Utilidad/u y falso-limpio por Monte Carlo, con presupuesto honesto: lee
+    grupos frescos uno a uno y en el PRIMERO que lee como no-saturado entra,
+    certifica a quien encuentra y SE DETIENE — sin mirar la verdad latente para
+    decidir si sigue. Utilidad = P(el certificado esté sano de verdad).'''
+    logG = round(math.log2(G)); k = B - logG
+    if k < 1:
+        return None, None
+    rng = random.Random(seed)
+    exitos = certificados = falsos = 0
+    for _ in range(sims):
+        tests = 0
+        for _g in range(k):
+            grupo = [0 if rng.random() < q else 1 for _ in range(G)]  # 0=sano
+            x, usadas = _busca_ruidosa(grupo, sigma, rng)
+            tests += usadas
+            if x is None:
+                continue                      # leído saturado: siguiente grupo fresco
+            assert tests <= B, f'presupuesto excedido: {tests} > {B}'
+            certificados += 1
+            if grupo[x] == 1:
+                falsos += 1                   # falso-limpio: se mide, no se actúa sobre ello
+            else:
+                exitos += 1
+            break                             # certifica y se detiene, acierte o no
+    return exitos / sims, (falsos / certificados if certificados else 0.0)
 
-code(r"""# ¿qué tan seguido ayuda β? barrido sobre 40 semillas (misma familia n=4,B=2,G=2)
-betas_s = [round(0.5 * kk, 2) for kk in range(0, 13)]      # 0..6
-ayuda = hump = con_hueco = 0
-recs = []
-for seed in range(40):
-    rs = random.Random(500 + seed)
-    ps = [rs.uniform(0.15, 0.7) for _ in range(4)]
-    us = [rs.uniform(1.0, 4.0) for _ in range(4)]
-    o = solve_optimal_dapts(ps, us, 2, 2)[0]
-    g0 = beu(ps, us, 2, 2, 0.0, 'entropy')
-    if o - g0 < 1e-9:
-        continue                                           # sin hueco, β no puede ayudar
-    con_hueco += 1
-    eus_s = [beu(ps, us, 2, 2, b, 'entropy') for b in betas_s]
-    if max(eus_s) > g0 + 1e-6:
-        ayuda += 1; recs.append((max(eus_s) - g0) / (o - g0))
-    if eus_s[-1] < g0 - 1e-6:
-        hump += 1                                          # β grande cae bajo el plano
+import random
+q, G, B = 0.1, 16, 6
+logG = round(math.log2(G)); k = B - logG
+sin_ruido = util_dinamico(B, G, q)[0]
+est = util_estatico(B, q)
 
-# autoverificación: β es situacional (ni siempre ni nunca ayuda)
-assert 0 < ayuda < con_hueco, 'β resultó no-situacional'
-rec_med = (sum(recs) / len(recs)) if recs else 0.0
-print(f'instancias con hueco: {con_hueco}/40')
-print(f'β ayuda en {ayuda}/{con_hueco} = {ayuda/con_hueco:.0%} de ellas '
-      f'(cuando ayuda, recupera {rec_med:.0%} en promedio)')
-print(f'β grande empeora (hump) en {hump}/{con_hueco} = {hump/con_hueco:.0%}')""")
+# cota inferior DEMOSTRABLE: el esquema acierta si el PRIMER grupo tiene un sano
+# (prob 1-(1-q)^G) y sus 1+log2G decisiones son correctas (prob >= (1-eps)^(1+log2G)).
+# Ignora los otros k-1 grupos y la recuperación de errores, así que es un piso real.
+def cota_inferior(sigma):
+    return (1 - (1 - q) ** G) * (1 - eps_por_paso(sigma)) ** (1 + logG)
 
-md(r"""**Lectura.** El barrido baja las expectativas: β ayuda en ~1/4 de las
-instancias con hueco, y cuando ayuda —a horizonte B=2— suele recuperarlo casi
-entero (fijar la apertura ya es la jugada óptima); en el resto no mueve nada. Y
-es frágil: β grande empeora en ~40% de los casos (hump), y a prevalencia alta se
-neutraliza ($P(r=0)$ colapsa). Es un proxy situacional y arriesgado, no una
-palanca general.""")
+# autoverificación: (a) sin ruido recupera la §1; (b) la cota inferior nunca
+# excede la utilidad simulada.
+mc0, _ = dinamico_ruidoso_mc(B, G, q, 0.0, sims=20000, seed=1)
+assert abs(mc0 - sin_ruido) < 0.01, f'sigma=0 no recupera la §1: {mc0} vs {sin_ruido}'
+for s in (0.2, 0.3, 0.5):
+    mc, _ = dinamico_ruidoso_mc(B, G, q, s, sims=20000, seed=1)
+    assert cota_inferior(s) <= mc + 0.02, f'la cota inferior excede la verdad en sigma={s}'
+print('autoverificación OK: sigma=0 recupera la §1; cota inferior demostrable <= verdad MC')
+print(f'estático (sin ruido) = {est:.3f}   din. aumentado sin ruido = {sin_ruido:.3f}')
+for s in (0.0, 0.2, 0.3, 0.5, 0.8):
+    mc, falso = dinamico_ruidoso_mc(B, G, q, s, sims=20000, seed=1)
+    print(f'  sigma={s}: aumentado MC={mc:.3f}  falso-limpio={falso:.3f}  '
+          f'eps/paso={eps_por_paso(s):.3f}')""")
 
-md(r"""**Para discutir.** β modifica la *política*; la V̂ del certificado modifica
-la *cota*. ¿Es β un caso de la penalización, y su β óptima escala con el
-horizonte, como la profundidad d(B) que buscamos para la V̂?""")
+code(r"""# figura: la separación contra el ruido (izq) y el precio en riesgo (der)
+sigmas = np.linspace(0.0, 1.1, 23)
+util = [dinamico_ruidoso_mc(B, G, q, float(s), sims=12000, seed=2)[0] for s in sigmas]
+falso = [dinamico_ruidoso_mc(B, G, q, float(s), sims=12000, seed=2)[1] for s in sigmas]
+cota = [cota_inferior(float(s)) for s in sigmas]
+# umbral sigma*: donde la utilidad dinámica cruza el estático
+sig_star = next((float(s) for s, m in zip(sigmas, util) if m < est), None)
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 3.6))
+ax1.axhline(est, color=GRIS, lw=1.6, label='estático (individual)')
+ax1.plot(sigmas, util, marker='o', ms=3, color=AZUL, label='din. aumentado con ruido (simulado)')
+ax1.plot(sigmas, cota, ls=':', color=TINTA, lw=1, label='cota inferior demostrable (vía el 1er grupo)')
+ax1.fill_between(sigmas, est, util, where=[u > est for u in util], color=AZUL, alpha=0.12)
+if sig_star is not None:
+    ax1.axvline(sig_star, color=AMBAR, ls='--', lw=1.2)
+    ax1.annotate(f'σ* ≈ {sig_star:.2f}', (sig_star, est), textcoords='offset points',
+                 xytext=(4, 30), fontsize=8, color=AMBAR)
+ax1.set_xlabel('ruido en el conteo  σ'); ax1.set_ylabel('utilidad esperada / u')
+ax1.set_title('La separación aguanta ruido hasta σ*', fontsize=10)
+ax1.legend(fontsize=8, loc='upper right')
+
+ax2.plot(sigmas, falso, marker='s', ms=3, color=AMBAR)
+ax2.set_xlabel('ruido en el conteo  σ')
+ax2.set_ylabel('tasa de falso-limpio')
+ax2.set_title('El precio en riesgo: certificar sano a un infectado', fontsize=10)
+ax2.set_ylim(-0.02, max(0.05, max(falso) * 1.1))
+fig.tight_layout(); plt.show()
+print(f'umbral de utilidad: σ* ≈ {sig_star:.2f} (≈ media persona de ruido)')""")
+
+md(r"""**Lectura.** La ventaja aguanta ruido hasta σ\* ≈ 0.5 —cerca de media
+persona de ruido en el conteo—. La cota inferior demostrable (éxito ya solo por
+el primer grupo) queda muy por debajo de la utilidad real: la distancia es el
+valor de los otros grupos más la recuperación de errores. El segundo precio pesa más: el falso-limpio crece
+rápido —a σ=0.3 ya certifica a un infectado ~15% de las veces—, y para tamizaje
+ese es el error peligroso.""")
+
+md(r"""**Para discutir.** ¿El objetivo bajo ruido es la utilidad media o la
+utilidad *segura* (con el falso-limpio acotado)? ¿Y la re-medición (SPRT) empuja
+σ\* arriba y el falso-limpio abajo a la vez, o hay un trade-off duro?""")
 
 # ===================================================================
 nbf.write(nb, OUT)
