@@ -48,11 +48,38 @@ DOS cotas, se devuelve el minimo (el minimo de cotas validas es valido):
    exacto y >= U_revealK. En el ancla insignia baja el techo de 3.2 a ~3.04
    (T=3), gap 2.314 -> 2.152, en segundos.
 
+COLA POR DILUCION DE SENUELOS (m-monotonia). El termino g>T de la mezcla se
+acotaba flojo por min(g, B*G) = "acredita TODOS los limpios" (ignora el costo
+de busqueda). Lo apretamos con un techo VALIDO y mas barato:
+
+  Lema (dilucion). En el juego de revelacion-de-conteos, agrandar la poblacion
+  m de una celda con su numero de limpios j FIJO solo puede BAJAR el valor
+  optimo: dp((m+1,j),B) <= dp((m,j),B). Prueba: revelar la identidad de una
+  persona ACTIVA extra es un regalo de informacion al adversario maximizador
+  (su optimo solo puede subir); una vez que se sabe activa es un senuelo inutil
+  que el adversario descarta (incluirla vuelve cualquier pool no-todo-limpio y
+  no aporta informacion), luego el juego se reduce EXACTAMENTE a (m,j). Por
+  tanto dp((m,j),B) <= dp((m',j),B) para todo j <= m' <= m.
+
+  Corolario: para el termino g del ancla (m=n), dp((n,g),B) <= dp((m',g),B)
+  con m' <= n; ademas dp <= #limpios y dp <= B*G, luego el surrogate satisface
+  dp((m',g),B) <= min(g, B*G) (la cola floja) => techo estricto y valido. Menos
+  senuelos = menos ramificacion, asi que m' < n es tratable donde dp((n,g),B)
+  no lo es (dp((32,4),6) exacto = 3.389 cuesta ~90 s > la puerta de 60 s;
+  dp((24,4),6) = 3.664 cuesta ~24 s). Aplicamos el surrogate al termino de
+  mayor masa*holgura del ancla insignia (g=4, m'=24): techo 3.0436 -> 2.9804,
+  gap insignia 2.152 -> 2.086, ancla en ~34 s. La cola g>=5 sigue floja (su
+  masa*holgura no paga su costo: el surrogate util pide m' cerca de n, justo
+  donde el DP explota — el costo y la calidad estan acoplados via m').
+
 Direccion para apretar mas (sesiones futuras): full-reveal-K (revelar SOLO el
 total, no el perfil por celda) es una cota valida ESTRICTAMENTE mas ajustada
 que U_cell (a n=32 U_cell ~ 2x mas floja que su version laminar), pero su
 estado es correlacionado (no factoriza) y requiere un DP en espacio de conteos
-con estados acoplados; ese es el build pendiente hacia el gap ~1.
+con estados acoplados; ese es el build pendiente hacia el gap ~1. Sub-lever
+abierto: subir m' de la cola g=4 (o cubrir g=5,6) exige comprimir el estado
+correlacionado del DP (poda de acciones DEMOSTRABLEMENTE no-dominante; ni el
+pooling inter-celda ni los splits informativos son dominados) — multi-sesion.
 """
 
 from __future__ import annotations
@@ -68,6 +95,11 @@ _CELL_MAX_N = 40
 _CELL_GG_CAP = 3
 # Debajo de este n se computan TODOS los #limpios (bateria exacta, domina V*).
 _CELL_EXACT_N = 14
+# Cola por dilucion de senuelos (m-monotonia, ver docstring): para g>T se
+# reemplaza min(g,B*G) por dp((min(n,m'),g),B), un techo valido y mas barato.
+# Solo el termino de mayor masa*holgura (g=4) paga su costo; el resto queda
+# flojo. m'=24 mantiene el ancla insignia bajo la puerta de 60 s.
+_CELL_TAIL_MCAP = {4: 24}
 
 
 def _u_pi(p, u, B, G):
@@ -191,7 +223,15 @@ def _u_cell(pa, w, n, B, G):
         if wg <= 0.0:
             continue
         if gg > T:
-            total += wg * min(gg, cap)  # cola valida: acreditados <= #limpios
+            # Cola: min(g,B*G) es valido (acreditados <= #limpios). Si hay un
+            # m' en el schedule, dp((min(n,m'),g),B) es un techo VALIDO y mas
+            # ajustado por m-monotonia (dp((n,g),B) <= dp((m',g),B) <= min(g,cap)
+            # para m'<=n; ver docstring). Solo se activa donde es barato.
+            mcap = _CELL_TAIL_MCAP.get(gg)
+            if mcap is not None and gg <= mcap:
+                total += wg * dp(((min(n, mcap), gg),), B)
+            else:
+                total += wg * min(gg, cap)
         else:
             total += wg * dp(((n, gg),), B)
     return w * total
