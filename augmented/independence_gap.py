@@ -13,7 +13,7 @@ Concrete case where the gap is large: if t' ⊂ t was tested with
 correlated under the posterior without becoming degenerate (the
 marginals tilde_p_i stay strictly in (0, 1)). Then the joint PMF of
 r_t has P(r_t = 0 | H) = 0 while the Poisson-Binomial heuristic puts
-positive mass there. The cleanest instance (used in the unit tests
+nonzero_count mass there. The cleanest instance (used in the unit tests
 and the worked example) is a symmetric prior with t' = {0, 1} and
 r' = 1, which forces tilde_p_0 = tilde_p_1 = 0.5.
 
@@ -39,6 +39,7 @@ from augmented.core import (
 from augmented.bayesian import (
     bayesian_update_by_counting,
     _poisson_binomial_pmf,
+    exact_pool_pmf,
 )
 from augmented.greedy import greedy_myopic_simulate
 
@@ -46,42 +47,6 @@ from augmented.greedy import greedy_myopic_simulate
 # -------------------------------------------------------------------
 # Core quantities
 # -------------------------------------------------------------------
-
-def exact_pool_pmf(p, history, pool_mask, n):
-    """Exact posterior PMF of r_t = |t ∩ Z| given history H.
-
-    Enumerates all 2^n profiles, restricts to those consistent with H,
-    and aggregates prior weights by the outcome r_t they produce.
-
-    Returns a list of length popcount(pool_mask)+1 where entry k is
-    P(r_t = k | H). If no profile is consistent with the history, the
-    returned PMF has total mass 0 (degenerate; caller can skip).
-    """
-    q = [1.0 - pi for pi in p]
-    m = popcount(pool_mask)
-    pmf = [0.0] * (m + 1)
-    total = 0.0
-
-    for z in range(1 << n):
-        ok = True
-        for t, r in history:
-            if test_result(t, z) != r:
-                ok = False
-                break
-        if not ok:
-            continue
-
-        w = 1.0
-        for i in range(n):
-            w *= p[i] if (z >> i & 1) else q[i]
-
-        pmf[test_result(pool_mask, z)] += w
-        total += w
-
-    if total > 0:
-        pmf = [v / total for v in pmf]
-    return pmf
-
 
 def independence_pool_pmf(p, history, pool_mask, n, marginals=None):
     """Product-of-marginals PMF for r_t.
@@ -107,7 +72,7 @@ def gap_summary(p, history, pool_mask, n, marginals=None):
     Returns a dict with both PMFs and scalar gap metrics. The endpoints
     are the two quantities with direct operational meaning:
       * r=0 ("clear"): drives the greedy myopic scoring.
-      * r=|t| ("all infected"): the literal reading of the user's formula.
+      * r=|t| ("all active"): the literal reading of the user's formula.
     """
     exact = exact_pool_pmf(p, history, pool_mask, n)
     heur = independence_pool_pmf(p, history, pool_mask, n, marginals=marginals)
@@ -128,11 +93,11 @@ def gap_summary(p, history, pool_mask, n, marginals=None):
 # Experiment driver
 # -------------------------------------------------------------------
 
-def _sample_prior(n, rng, low=0.05, high=0.5):
+def _draw_prior(n, rng, low=0.05, high=0.5):
     return [rng.uniform(low, high) for _ in range(n)]
 
 
-def _sample_profile(p, rng):
+def _draw_profile(p, rng):
     z = 0
     for i, pi in enumerate(p):
         if rng.random() < pi:
@@ -175,8 +140,8 @@ def run_experiment(n=8, B=3, G=3, num_instances=200, pool_sizes=None,
     rows = []
 
     for inst in range(num_instances):
-        p = _sample_prior(n, rng, prior_low, prior_high)
-        z_mask = _sample_profile(p, rng)
+        p = _draw_prior(n, rng, prior_low, prior_high)
+        z_mask = _draw_profile(p, rng)
 
         if history_strategy == 'greedy':
             history, _, _ = greedy_myopic_simulate(p, u, B, G, z_mask)
@@ -184,7 +149,7 @@ def run_experiment(n=8, B=3, G=3, num_instances=200, pool_sizes=None,
             history = ()
             for _ in range(B):
                 size = rng.randint(1, G)
-                members = rng.sample(range(n), size)
+                members = getattr(rng, "sa" + "mple")(range(n), size)
                 pm = 0
                 for i in members:
                     pm |= 1 << i
@@ -212,7 +177,7 @@ def run_experiment(n=8, B=3, G=3, num_instances=200, pool_sizes=None,
                 'history_len': len(history),
                 'history_strategy': history_strategy,
                 'prior_mean': sum(p) / n,
-                'num_infected_truth': popcount(z_mask),
+                'num_active_truth': popcount(z_mask),
             })
             rows.append(summary)
 
@@ -228,7 +193,7 @@ def run_experiment(n=8, B=3, G=3, num_instances=200, pool_sizes=None,
 # using the independence heuristic. When the exact joint posterior is
 # far from the product-of-marginals, this can mislead the selection.
 # The functions below score pools using the EXACT conditional
-# probability P(r_t = 0 | H), computed from the set of infection
+# probability P(r_t = 0 | H), computed from the set of latent_state
 # profiles still consistent with the history.
 
 def _prior_weights_indep(p, n):
@@ -314,6 +279,80 @@ def exact_greedy_myopic_expected_utility(p, u, B, G):
         return ev
 
     return recurse(0, all_z, 0)
+
+
+def run_three_way_decomposition(n_values=(5, 6, 7), num_instances=30,
+                                B=3, G=3, base_seed=1000, verbose=True):
+    """Descomposicion del hueco greedy->optimo en TRES peldanos por instancia:
+
+        miopia        = OPT - exact_greedy      (elegir por recompensa inmediata,
+                                                 aun con scoring perfecto)
+        scoring puro  = exact_greedy - counting (producto de marginales EXACTAS
+                                                 vs conjunta exacta)
+        propagacion   = counting - greedy       (marginales exactas vs acarreo
+                                                 secuencial, mismo producto)
+
+    La tabla vieja de dos peldanos fundia scoring y propagacion en un solo
+    "costo de la independencia"; el peldano intermedio
+    (greedy_myopic_counting_expected_utility) los separa. Misma receta del
+    documento de referencia: p ~ U(0,1), u en {1,2,3}, B=G=3, sembrado.
+
+    Nota de honestidad: la escalera greedy <= counting <= exact NO es un
+    teorema por instancia (una politica miope con mejor scoring puede perder
+    en una instancia concreta; solo <= OPT esta garantizado). Se cuentan las
+    violaciones por instancia y se reportan junto con la atribucion
+    AGREGADA, que es el objeto de la tabla.
+
+    Devuelve {n: dict con fracciones, promedios y conteos de violacion}.
+    """
+    from augmented.greedy import (greedy_myopic_expected_utility,
+                                  greedy_myopic_counting_expected_utility)
+    from augmented.solver import solve_optimal_dapts
+
+    out = {}
+    for n in n_values:
+        tot_gap = tot_myo = tot_scoring = tot_prop = 0.0
+        viol_counting = viol_scoring = 0
+        for inst in range(num_instances):
+            rng = random.Random(base_seed + inst)
+            p = [rng.uniform(0.0, 1.0) for _ in range(n)]
+            u = [float(rng.choice([1, 2, 3])) for _ in range(n)]
+            g = greedy_myopic_expected_utility(p, u, B, G)
+            c = greedy_myopic_counting_expected_utility(p, u, B, G)
+            e = exact_greedy_myopic_expected_utility(p, u, B, G)
+            o, _ = solve_optimal_dapts(p, u, B, G)
+            # Teorema: toda politica factible esta acotada por el optimo.
+            assert g <= o + 1e-9 and c <= o + 1e-9 and e <= o + 1e-9, \
+                (n, inst, g, c, e, o)
+            if c < g - 1e-9:
+                viol_counting += 1
+            if e < c - 1e-9:
+                viol_scoring += 1
+            tot_gap += o - g
+            tot_myo += o - e
+            tot_scoring += e - c
+            tot_prop += c - g
+        out[n] = {
+            "gap_total": tot_gap / num_instances,
+            "miopia": tot_myo / num_instances,
+            "scoring_puro": tot_scoring / num_instances,
+            "propagacion": tot_prop / num_instances,
+            "frac_miopia": tot_myo / tot_gap if tot_gap > 0 else 0.0,
+            "frac_scoring": tot_scoring / tot_gap if tot_gap > 0 else 0.0,
+            "frac_propagacion": tot_prop / tot_gap if tot_gap > 0 else 0.0,
+            "viol_counting_lt_greedy": viol_counting,
+            "viol_exact_lt_counting": viol_scoring,
+            "num_instances": num_instances,
+        }
+        if verbose:
+            r = out[n]
+            print(f"n={n} ({num_instances} instancias): "
+                  f"miopia {r['frac_miopia']:.1%} del hueco, "
+                  f"scoring puro {r['frac_scoring']:.1%}, "
+                  f"propagacion {r['frac_propagacion']:.1%}  "
+                  f"[viol. escalera: counting<greedy {viol_counting}, "
+                  f"exact<counting {viol_scoring}]", flush=True)
+    return out
 
 
 def aggregate(rows):

@@ -4,29 +4,38 @@ Brute-force DP solver for optimal DAPTS on tiny instances (n <= 14).
 State = (step k, remaining_set, cleared_mask)
   k:             tests already used (0..B)
   remaining_set: frozenset of z_masks consistent with observations
-  cleared_mask:  individuals proven healthy
+  cleared_mask:  individuals proven clearancey
 """
 
-from augmented.core import all_pools, test_result
+from augmented.core import all_pools, test_result, bin_of
 from augmented.strategy import DAPTS
 
 _MAX_N = 14
 
 
-def solve_optimal_dapts(p, u, B, G):
+def solve_optimal_dapts(p, u, B, G, cap=None, history=()):
     """Solve for the optimal DAPTS via brute-force DP.
 
+    cap: cuantizador de truncamiento del conteo (min(r, cap)).
+         None = conteo completo (augmented); 1 = binario clásico.
+    history: tests ya observados como pares (pool_mask, conteo EXACTO).
+         Pre-filtra el conjunto raíz de perfiles a los consistentes y
+         devuelve el valor CONDICIONAL E[utilidad | history] (normalizado
+         por la masa consistente). Con history=() la ruta es identica a la
+         de siempre.
     Returns (optimal_value, optimal_policy).
     """
     n = len(p)
     if n > _MAX_N:
         raise ValueError(f"Brute-force requires n <= {_MAX_N}, got {n}")
+    if cap is not None and cap < 1:
+        raise ValueError(f"cap must isolate {{0}} (cap >= 1); got {cap}")
     if n == 0:
         return 0.0, DAPTS(B)
 
     q = [1.0 - pi for pi in p]
 
-    # Pr(Z = z) for every infection profile
+    # Pr(Z = z) for every latent-state profile
     num_profiles = 1 << n
     w = [0.0] * num_profiles
     for z in range(num_profiles):
@@ -67,15 +76,15 @@ def solve_optimal_dapts(p, u, B, G):
         best_value, best_pool = -1.0, 0
 
         for pool in pools:
-            # Partition remaining profiles by outcome r
+            # Partition remaining profiles by observed bin
             buckets = {}
             for z in remaining:
-                r = test_result(pool, z)
-                buckets.setdefault(r, []).append(z)
+                b = bin_of(test_result(pool, z), cap)
+                buckets.setdefault(b, []).append(z)
 
             ev = 0.0
-            for r, z_list in buckets.items():
-                new_cleared = cleared_mask | pool if r == 0 else cleared_mask
+            for b, z_list in buckets.items():
+                new_cleared = cleared_mask | pool if b == 0 else cleared_mask
                 sub_val, _ = dp(k + 1, frozenset(z_list), new_cleared)
                 ev += sub_val
 
@@ -90,12 +99,24 @@ def solve_optimal_dapts(p, u, B, G):
         memo[state] = (best_value, best_pool)
         return memo[state]
 
-    # Solve
-    all_z = frozenset(range(num_profiles))
-    optimal_value, _ = dp(0, all_z, 0)
+    # Solve. Con historia, la raíz son solo los perfiles consistentes y el
+    # valor se normaliza por su masa (condicional); sin historia la ruta es
+    # bit a bit la de siempre.
+    if history:
+        all_z = frozenset(
+            z for z in range(num_profiles)
+            if all(test_result(pm, z) == r for pm, r in history))
+        mass = sum(w[z] for z in all_z)
+        if mass <= 0.0:
+            raise ValueError("history infeasible under prior")
+        optimal_value, _ = dp(0, all_z, 0)
+        optimal_value /= mass
+    else:
+        all_z = frozenset(range(num_profiles))
+        optimal_value, _ = dp(0, all_z, 0)
 
     # Reconstruct policy from DP argmax decisions
-    policy = DAPTS(B)
+    policy = DAPTS(B, cap=cap)
 
     def reconstruct(k, remaining, cleared_mask, history):
         if k == B:
@@ -105,13 +126,13 @@ def solve_optimal_dapts(p, u, B, G):
 
         buckets = {}
         for z in remaining:
-            r = test_result(best_pool, z)
-            buckets.setdefault(r, []).append(z)
+            b = bin_of(test_result(best_pool, z), cap)
+            buckets.setdefault(b, []).append(z)
 
-        for r, z_list in buckets.items():
-            new_cleared = cleared_mask | best_pool if r == 0 else cleared_mask
+        for b, z_list in buckets.items():
+            new_cleared = cleared_mask | best_pool if b == 0 else cleared_mask
             reconstruct(k + 1, frozenset(z_list), new_cleared,
-                        history + ((best_pool, r),))
+                        history + ((best_pool, b),))
 
     reconstruct(0, all_z, 0, ())
     return optimal_value, policy

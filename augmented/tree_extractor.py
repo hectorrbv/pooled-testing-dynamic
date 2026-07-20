@@ -11,7 +11,33 @@ Supports text output and DOT format for Graphviz visualization.
 """
 
 from augmented.core import mask_str, indices_from_mask, test_result, popcount
-from augmented.bayesian import bayesian_update_single_test
+from augmented.bayesian import bayesian_update_single_test, bayesian_update
+
+
+class GreedyPolicy:
+    """Adaptador que expone el greedy miope como una policy con la misma
+    interfaz que el DAPTS óptimo (`.choose(k, history)`), para poder extraer
+    su árbol de decisión con `extract_tree`. En cada nodo reconstruye la
+    creencia y los limpiados desde la historia (updates secuenciales, como el
+    greedy) y elige el pool miope. Así se pueden dibujar greedy y óptimo lado a
+    lado sobre el mismo árbol."""
+
+    def __init__(self, p, u, G, B, cap=None):
+        self.p = list(p)
+        self.u = list(u)
+        self.G = G
+        self.B = B
+        self.cap = cap
+        self.n = len(p)
+
+    def choose(self, k, history):
+        from augmented.greedy import _myopic_best_pool
+        current_p = bayesian_update(self.p, history, self.n)
+        cleared_mask = 0
+        for pool, r in history:
+            if r == 0:
+                cleared_mask |= pool
+        return _myopic_best_pool(current_p, self.u, self.G, self.n, cleared_mask)
 
 
 def extract_tree(policy, p, u, n):
@@ -22,7 +48,7 @@ def extract_tree(policy, p, u, n):
     policy : DAPTS
         A solved DAPTS strategy.
     p : list[float]
-        Prior infection probabilities.
+        Prior latent-state probabilities.
     u : list[float]
         Individual utilities.
     n : int
@@ -41,6 +67,17 @@ def extract_tree(policy, p, u, n):
           - 'children': dict mapping outcome r -> child node
           - 'utility': expected utility at terminal nodes
     """
+    if getattr(policy, "cap", None) is not None:
+        # A truncated policy keys histories on binned counts min(r, cap) and
+        # its "r >= cap" branch aggregates several exact counts, so both the
+        # raw-count branching below and bayesian_update_single_test (which
+        # conditions on an exact count) would be wrong. Faithful rendering of
+        # truncated trees needs range-conditioned posteriors; not yet done.
+        raise NotImplementedError(
+            "extract_tree does not support truncated (cap<G) policies; "
+            f"got policy.cap={policy.cap}. Use cap=None (full counts)."
+        )
+
     def _build(k, history, cleared_mask, current_p):
         if k > policy.B:
             # Terminal node

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Construye notebook_maestro.ipynb (REEMPLAZA el anterior) como CARTAS DE
+"""Construye 12_maestro.ipynb (REEMPLAZA el anterior) como CARTAS DE
 DISCUSION: cada carta = figura + minimo texto + preguntas abiertas. Lee las
 celdas verificadas del workflow (discusion_cells.json: lista de
 {id,title,setup_md,code,questions_md}).
@@ -13,14 +13,14 @@ import nbformat as nbf
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CELLS = os.path.join(HERE, "maestro_cells.json")
-OUT = os.path.join(HERE, "notebook_maestro.ipynb")
+OUT = os.path.join(HERE, "12_maestro.ipynb")
 
 
 def _u(s):
     return html.unescape(s or "")
 
 
-PORTADA = r"""# Cartas de discusion — Dynamic Augmented Pooled Testing
+PORTADA = r"""# Notebook 12 - Cartas de discusion: ejemplos chicos con preguntas abiertas
 
 Cada carta es un ejemplo chico con su figura y un par de preguntas abiertas,
 pensado para discutir y abrir direcciones. Poco texto: la figura manda.
@@ -32,7 +32,7 @@ _d = os.path.abspath(os.getcwd())
 while _d != os.path.dirname(_d) and not os.path.isfile(os.path.join(_d, "augmented", "__init__.py")):
     _d = os.path.dirname(_d)
 if not os.path.isfile(os.path.join(_d, "augmented", "__init__.py")):
-    _fb = "/Users/hectorbecerrilvillamil/Desktop/PooledTesting/pooled-testing-dynamic"
+    _fb = "/Users/hectorbecerrilvillamil/Desktop/GroupCounting/group-count-dynamic"
     if os.path.isfile(os.path.join(_fb, "augmented", "__init__.py")):
         _d = _fb
 if _d not in sys.path:

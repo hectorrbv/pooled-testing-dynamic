@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Construye notebook_compendio.ipynb: un ejemplo clave por notebook previo,
+"""Construye 11_compendio.ipynb: un ejemplo clave por notebook previo,
 grafica primero, texto breve. Lee compendio_cells.json ({cards:[{id,title,
 intro_md,code}]}).
 """
@@ -12,14 +12,14 @@ import nbformat as nbf
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CELLS = os.path.join(HERE, "compendio_cells.json")
-OUT = os.path.join(HERE, "notebook_compendio.ipynb")
+OUT = os.path.join(HERE, "11_compendio.ipynb")
 
 
 def _u(s):
     return html.unescape(s or "")
 
 
-PORTADA = r"""# Compendio de ejemplos — Dynamic Augmented Pooled Testing
+PORTADA = r"""# Notebook 11 - Compendio: un ejemplo clave de cada notebook, con su figura
 
 Un ejemplo clave de cada notebook del proyecto, contado con su figura y un par de
 frases. La grafica manda; el texto solo la enmarca. Todo sale de correr el codigo
@@ -32,7 +32,7 @@ _d = os.path.abspath(os.getcwd())
 while _d != os.path.dirname(_d) and not os.path.isfile(os.path.join(_d, "augmented", "__init__.py")):
     _d = os.path.dirname(_d)
 if not os.path.isfile(os.path.join(_d, "augmented", "__init__.py")):
-    _fb = "/Users/hectorbecerrilvillamil/Desktop/PooledTesting/pooled-testing-dynamic"
+    _fb = "/Users/hectorbecerrilvillamil/Desktop/GroupCounting/group-count-dynamic"
     if os.path.isfile(os.path.join(_fb, "augmented", "__init__.py")):
         _d = _fb
 if _d not in sys.path:

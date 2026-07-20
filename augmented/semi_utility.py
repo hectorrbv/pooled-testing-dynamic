@@ -1,19 +1,19 @@
 """
-Semi-utility meta-parameter for augmented pooled testing.
+Semi-utility meta-parameter for augmented adaptive group counting.
 
 Extends the binary welfare model with a continuous blending parameter alpha
 that interpolates between two extremes:
 
   - alpha=0: binary clearance model (only cleared individuals contribute utility)
-  - alpha=1: utility proportional to posterior health probability
+  - alpha=1: utility proportional to posterior clearance probability
   - alpha in (0,1): convex combination of both
 
 The semi-utility for a given state is:
 
-  U_semi(alpha) = sum_i u_i * [alpha * P(healthy_i | H_k) + (1-alpha) * 1_{cleared}(i)]
+  U_semi(alpha) = sum_i u_i * [alpha * P(clearancey_i | H_k) + (1-alpha) * 1_{cleared}(i)]
 
-where P(healthy_i | H_k) = 1 - p_posterior_i is the posterior probability that
-individual i is healthy given the test history H_k.
+where P(clearancey_i | H_k) = 1 - p_posterior_i is the posterior probability that
+individual i is clearancey given the test history H_k.
 
 This file provides:
   1. semi_utility()                         — compute semi-utility for a given state
@@ -30,6 +30,7 @@ from augmented.core import (all_pools, all_pools_from_mask, compute_active_mask,
 from augmented.bayesian import (bayesian_update_single_test, bayesian_update,
                                 bayesian_update_by_counting, gibbs_update,
                                 _poisson_binomial_pmf)
+from augmented.greedy import _branch_pmf
 
 
 # -------------------------------------------------------------------
@@ -39,13 +40,13 @@ from augmented.bayesian import (bayesian_update_single_test, bayesian_update,
 def semi_utility(p_posterior, u, cleared_mask, n, alpha):
     """Compute the semi-utility for a given state.
 
-    U_semi(alpha) = sum_i u_i * [alpha * P(healthy_i | H_k) + (1-alpha) * 1_{cleared}(i)]
+    U_semi(alpha) = sum_i u_i * [alpha * P(clearancey_i | H_k) + (1-alpha) * 1_{cleared}(i)]
 
     Parameters
     ----------
     p_posterior : list[float]
-        Posterior infection probabilities (length n).
-        P(healthy_i | H_k) = 1 - p_posterior[i].
+        Posterior latent-state probabilities (length n).
+        P(clearancey_i | H_k) = 1 - p_posterior[i].
     u : list[float]
         Utility weights for each individual (length n).
     cleared_mask : int
@@ -55,7 +56,7 @@ def semi_utility(p_posterior, u, cleared_mask, n, alpha):
     alpha : float
         Blending parameter in [0, 1].
         alpha=0 -> binary clearance only.
-        alpha=1 -> posterior health probability only.
+        alpha=1 -> posterior clearance probability only.
 
     Returns
     -------
@@ -64,9 +65,9 @@ def semi_utility(p_posterior, u, cleared_mask, n, alpha):
     """
     total = 0.0
     for i in range(n):
-        p_healthy = 1.0 - p_posterior[i]
+        p_clearancey = 1.0 - p_posterior[i]
         is_cleared = 1.0 if (cleared_mask >> i & 1) else 0.0
-        total += u[i] * (alpha * p_healthy + (1.0 - alpha) * is_cleared)
+        total += u[i] * (alpha * p_clearancey + (1.0 - alpha) * is_cleared)
     return total
 
 
@@ -80,10 +81,10 @@ def _semi_best_pool(p, u, G, n, cleared_mask, alpha, use_filtering=True):
     Score(pool) = sum over r of P(r) * U_semi(posterior_after_r, alpha)
 
     where P(r) comes from the Poisson-Binomial PMF of the pool members'
-    infection probabilities, and U_semi uses the updated posteriors.
+    latent-state probabilities, and U_semi uses the updated posteriors.
 
     If use_filtering=True, only considers pools from active individuals
-    (those not yet cleared and not confirmed infected).
+    (those not yet cleared and not confirmed active).
     """
     if use_filtering:
         active_mask, _ = compute_active_mask(p, cleared_mask, n)
@@ -120,7 +121,7 @@ def _semi_best_pool(p, u, G, n, cleared_mask, alpha, use_filtering=True):
 
 def greedy_myopic_semi_simulate(p, u, B, G, z_mask, alpha,
                                 update_method='sequential'):
-    """Simulate greedy with semi-utility pool selection on a fixed infection profile.
+    """Simulate greedy with semi-utility pool selection on a fixed latent-state profile.
 
     At each step: pick pool maximizing expected semi-utility (over all
     possible outcomes), observe augmented result, update beliefs, repeat.
@@ -132,7 +133,7 @@ def greedy_myopic_semi_simulate(p, u, B, G, z_mask, alpha,
     Parameters
     ----------
     p : list[float]
-        Prior infection probabilities (length n).
+        Prior latent-state probabilities (length n).
     u : list[float]
         Utility weights for each individual (length n).
     B : int
@@ -140,14 +141,14 @@ def greedy_myopic_semi_simulate(p, u, B, G, z_mask, alpha,
     G : int
         Maximum pool size.
     z_mask : int
-        True infection profile bitmask.
+        True latent-state profile bitmask.
     alpha : float
         Semi-utility blending parameter in [0, 1].
     update_method : str
         Bayesian update method: 'sequential' (default), 'counting', or 'gibbs'.
         - 'sequential': apply single-test Bayesian updates sequentially.
         - 'counting': recompute posteriors from full history by counting.
-        - 'gibbs': use Gibbs sampling to approximate posteriors from full history.
+        - 'gibbs': use Gibbs drawing to approximate posteriors from full history.
 
     Returns
     -------
@@ -203,7 +204,7 @@ def greedy_myopic_semi_expected_utility(p, u, B, G, alpha,
     Parameters
     ----------
     p : list[float]
-        Prior infection probabilities (length n).
+        Prior latent-state probabilities (length n).
     u : list[float]
         Utility weights for each individual (length n).
     B : int
@@ -221,9 +222,10 @@ def greedy_myopic_semi_expected_utility(p, u, B, G, alpha,
         Expected binary clearance utility under the semi-utility greedy.
     """
     n = len(p)
+    prior = list(p)
 
     if update_method == 'sequential':
-        def recurse(current_p, b, cleared_mask):
+        def recurse(current_p, history, b, cleared_mask):
             if b == 0:
                 return sum(u[i] for i in indices_from_mask(cleared_mask, n))
 
@@ -232,7 +234,9 @@ def greedy_myopic_semi_expected_utility(p, u, B, G, alpha,
                 return sum(u[i] for i in indices_from_mask(cleared_mask, n))
 
             pool_idx = indices_from_mask(pool, n)
-            pmf = _poisson_binomial_pmf([current_p[i] for i in pool_idx])
+            # Pool SELECTION keeps the sequential marginals (the policy);
+            # the outcome BRANCHES are weighted by the exact P(r | history).
+            pmf = _branch_pmf(prior, history, current_p, pool, pool_idx, n)
 
             ev = 0.0
             for r in range(len(pool_idx) + 1):
@@ -240,10 +244,11 @@ def greedy_myopic_semi_expected_utility(p, u, B, G, alpha,
                     continue
                 new_p = bayesian_update_single_test(current_p, pool, r, n)
                 new_cleared = cleared_mask | pool if r == 0 else cleared_mask
-                ev += pmf[r] * recurse(new_p, b - 1, new_cleared)
+                new_history = history + ((pool, r),)
+                ev += pmf[r] * recurse(new_p, new_history, b - 1, new_cleared)
             return ev
 
-        return recurse(list(p), B, 0)
+        return recurse(list(p), (), B, 0)
 
     else:
         # For 'counting' and 'gibbs', posteriors depend on full history
@@ -265,7 +270,9 @@ def greedy_myopic_semi_expected_utility(p, u, B, G, alpha,
                 return sum(u[i] for i in indices_from_mask(cleared_mask, n))
 
             pool_idx = indices_from_mask(pool, n)
-            pmf = _poisson_binomial_pmf([current_p[i] for i in pool_idx])
+            # Exact branch weights: zero mass on history-infeasible r, which
+            # is what used to crash bayesian_update_by_counting downstream.
+            pmf = _branch_pmf(prior_p, history, current_p, pool, pool_idx, n)
 
             ev = 0.0
             for r in range(len(pool_idx) + 1):

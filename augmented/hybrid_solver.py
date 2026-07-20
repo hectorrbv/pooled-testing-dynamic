@@ -1,11 +1,11 @@
 """
-Hybrid greedy -> brute-force solver for augmented pooled testing.
+Hybrid greedy -> brute-force solver for augmented adaptive group counting.
 
 Combines greedy pool selection for the first K steps with exact DP
 (solve_optimal_dapts) for the remaining B-K steps.  Includes
 entropy-based scoring and branch value estimation.
 
-Part A: Entropy, information gain, infection-aware scoring
+Part A: Entropy, information gain, state-aware scoring
 Part B: Branch value estimation (lower/upper bounds)
 Part C: Core hybrid solver
 """
@@ -19,14 +19,15 @@ from augmented.core import (
 from augmented.bayesian import (
     bayesian_update_single_test, _poisson_binomial_pmf,
 )
-from augmented.greedy import _myopic_best_pool, greedy_myopic_expected_utility
+from augmented.greedy import (_myopic_best_pool, greedy_myopic_expected_utility,
+                              _branch_pmf)
 from augmented.solver import solve_optimal_dapts
 from augmented.tree_extractor import extract_tree
 from augmented.baselines import u_max
 
 
 # ===================================================================
-# Part A: Entropy, information gain, infection-aware scoring
+# Part A: Entropy, information gain, state-aware scoring
 # ===================================================================
 
 def _safe_binary_entropy(x):
@@ -37,7 +38,7 @@ def _safe_binary_entropy(x):
 
 
 def expected_info_gain(pool_mask, p, n):
-    """Expected reduction in posterior entropy from testing pool.
+    """Expected reduction in posterior entropy from counting pool.
 
     H_before - E[H_after | outcomes].
 
@@ -67,7 +68,7 @@ def expected_info_gain(pool_mask, p, n):
     return h_before - e_h_after
 
 
-def infection_aware_score(pool_mask, p, u, n, cleared_mask, alpha=0.5):
+def latent_state_aware_score(pool_mask, p, u, n, cleared_mask, alpha=0.5):
     """Score = alpha * P(r=0)*sum(u_i uncleared) + (1-alpha) * expected_info_gain.
 
     Blends the standard myopic gain with information-theoretic value.
@@ -106,8 +107,8 @@ def estimate_branch_value(p_posterior, u, remaining_B, G, cleared_mask, n):
     cleared_indices = indices_from_mask(cleared_mask, n)
     cleared_utility = sum(u[i] for i in cleared_indices)
 
-    # Identify active agents (uncertain infection status)
-    active_mask, confirmed_infected_mask = compute_active_mask(
+    # Identify active agents (uncertain latent_state status)
+    active_mask, confirmed_active_mask = compute_active_mask(
         p_posterior, cleared_mask, n
     )
     active_indices = indices_from_mask(active_mask, n)
@@ -143,8 +144,8 @@ def estimate_branch_value(p_posterior, u, remaining_B, G, cleared_mask, n):
 # Part C: Hybrid solver helpers
 # ===================================================================
 
-def _infection_aware_best_pool(p, u, G, n, cleared_mask, alpha):
-    """Pick pool maximizing infection_aware_score."""
+def _latent_state_aware_best_pool(p, u, G, n, cleared_mask, alpha):
+    """Pick pool maximizing latent_state_aware_score."""
     active_mask, _ = compute_active_mask(p, cleared_mask, n)
     if active_mask == 0:
         return 0
@@ -154,7 +155,7 @@ def _infection_aware_best_pool(p, u, G, n, cleared_mask, alpha):
 
     best_pool, best_score = 0, -1.0
     for pool in pools:
-        s = infection_aware_score(pool, p, u, n, cleared_mask, alpha)
+        s = latent_state_aware_score(pool, p, u, n, cleared_mask, alpha)
         if s > best_score:
             best_score = s
             best_pool = pool
@@ -259,7 +260,7 @@ def hybrid_greedy_bruteforce(p, u, B, G, greedy_steps,
     Parameters
     ----------
     p : list[float]
-        Prior infection probabilities.
+        Prior latent-state probabilities.
     u : list[float]
         Individual utilities.
     B : int
@@ -348,7 +349,7 @@ def _full_greedy_tree(p, u, B, G, n, greedy_score_fn):
             }, utility
 
         pool_indices = indices_from_mask(pool, n)
-        pmf = _poisson_binomial_pmf([current_p[i] for i in pool_indices])
+        pmf = _branch_pmf(p, history, current_p, pool, pool_indices, n)
 
         children = {}
         ev = 0.0
@@ -433,7 +434,7 @@ def _hybrid_recurse(p, u, B, G, n, K, greedy_score_fn,
         }, utility
 
     pool_indices = indices_from_mask(pool, n)
-    pmf = _poisson_binomial_pmf([current_p[i] for i in pool_indices])
+    pmf = _branch_pmf(p, history, current_p, pool, pool_indices, n)
 
     children = {}
     ev = 0.0
@@ -501,9 +502,11 @@ def _dp_phase(p, u, G, n, current_p, cleared_mask, step,
     cleared_indices = indices_from_mask(cleared_mask, n)
     cleared_utility = sum(u[i] for i in cleared_indices)
 
-    # Identify active agents
-    active_mask, confirmed_infected_mask = compute_active_mask(
-        current_p, cleared_mask, n
+    # Identify active agents. include_known_clearancey=True: un agente
+    # deducido limpio pero no acreditado sigue siendo cosechable por el DP
+    # (el filtro de historia lo fija limpio en todos los perfiles).
+    active_mask, confirmed_active_mask = compute_active_mask(
+        current_p, cleared_mask, n, include_known_clearancey=True
     )
     active_indices = indices_from_mask(active_mask, n)
     n_active = len(active_indices)
@@ -524,18 +527,37 @@ def _dp_phase(p, u, G, n, current_p, cleared_mask, step,
     # If too many active agents for DP, fall back to continued greedy
     if n_active > 14:
         return _greedy_fallback(
-            u, G, n, current_p, cleared_mask, step,
+            p, u, G, n, current_p, cleared_mask, step,
             history, remaining_budget, greedy_score_fn
         )
 
-    # Build reduced subproblem
-    sub_p = [current_p[i] for i in active_indices]
+    # Build reduced subproblem over the ORIGINAL prior: the DP no longer
+    # receives an independent belief fabricated from sequential marginals —
+    # it conditions on the real greedy-phase history, reduced to the active
+    # sub-population (confirmed-active members subtracted from each count;
+    # cleared members contribute zero and drop out).
+    sub_p = [p[i] for i in active_indices]
     sub_u = [u[i] for i in active_indices]
     sub_n = n_active
     sub_G = min(G, sub_n)
 
-    # Solve exact DP on reduced subproblem
-    dp_val, dp_policy = solve_optimal_dapts(sub_p, sub_u, remaining_budget, sub_G)
+    pos = {orig: sub for sub, orig in enumerate(active_indices)}
+    sub_history = []
+    for pool_mask, r in history:
+        eff_r = r - popcount(pool_mask & confirmed_active_mask)
+        sub_pool = 0
+        for orig in active_indices:
+            if pool_mask >> orig & 1:
+                sub_pool |= (1 << pos[orig])
+        if sub_pool == 0:
+            if eff_r != 0:
+                raise ValueError("historia infactible en _dp_phase")
+            continue  # test fully explained by cleared/confirmed agents
+        sub_history.append((sub_pool, eff_r))
+
+    # Solve exact DP on reduced subproblem, conditioned on the history
+    dp_val, dp_policy = solve_optimal_dapts(
+        sub_p, sub_u, remaining_budget, sub_G, history=tuple(sub_history))
 
     # Extract tree from sub-policy
     sub_tree = extract_tree(dp_policy, sub_p, sub_u, sub_n)
@@ -558,9 +580,12 @@ def _dp_phase(p, u, G, n, current_p, cleared_mask, step,
     return sub_tree, total_eu
 
 
-def _greedy_fallback(u, G, n, current_p, cleared_mask, step,
+def _greedy_fallback(p, u, G, n, current_p, cleared_mask, step,
                       history, remaining_budget, greedy_score_fn):
-    """Fall back to greedy when DP is infeasible (n_active > 14)."""
+    """Fall back to greedy when DP is infeasible (n_active > 14).
+
+    ``p`` is the ORIGINAL prior (it weights the exact branch pmf together
+    with the full history); ``current_p`` are the carried marginals."""
     def _recurse(cp, cm, s, h, rb):
         if rb == 0:
             utility = sum(u[i] for i in indices_from_mask(cm, n))
@@ -592,7 +617,7 @@ def _greedy_fallback(u, G, n, current_p, cleared_mask, step,
             }, utility
 
         pool_indices = indices_from_mask(pool, n)
-        pmf = _poisson_binomial_pmf([cp[i] for i in pool_indices])
+        pmf = _branch_pmf(p, h, cp, pool, pool_indices, n)
 
         children = {}
         ev = 0.0

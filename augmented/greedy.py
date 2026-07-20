@@ -1,5 +1,5 @@
 """
-Greedy algorithms for augmented pooled testing.
+Greedy algorithms for augmented adaptive group counting.
 
 Three greedy strategies:
   1. greedy_myopic:  at each step, pick pool maximizing P(r=0) * Σ u_i
@@ -19,7 +19,27 @@ from augmented.core import (all_pools, all_pools_from_mask, compute_active_mask,
 from augmented.bayesian import (bayesian_update_single_test,
                                 bayesian_update_by_counting,
                                 gibbs_update,
+                                exact_pool_pmf,
                                 _poisson_binomial_pmf)
+
+
+# Above this population size the exact branch distribution P(r|history)
+# (exact_pool_pmf enumerates 2^n profiles) is infeasible, so the expected-utility
+# recursions fall back to the Poisson-Binomial of the current posterior
+# marginals. The exact path covers the regime where these functions claim an
+# exact value (the paper lives at n<=14, well inside this bound); beyond it the
+# true expected utility is itself intractable and only an approximation is
+# possible. 18 keeps 2^n enumeration cheap (~262k) while spanning every exact use.
+EXACT_PMF_MAX_N = 18
+
+
+def _branch_pmf(prior, history, current_p, pool, pool_idx, n):
+    """Outcome distribution P(r | history) used to weight the EU recursion's
+    branches: exact (over consistent profiles) when n is small enough, else the
+    Poisson-Binomial of the posterior marginals."""
+    if n <= EXACT_PMF_MAX_N:
+        return exact_pool_pmf(prior, history, pool, n)
+    return _poisson_binomial_pmf([current_p[i] for i in pool_idx])
 
 
 # -------------------------------------------------------------------
@@ -32,10 +52,14 @@ def _myopic_best_pool(p, u, G, n, cleared_mask, use_filtering=True):
     Score(t) = prod(1-p_i for i in t) * sum(u_i for i in t if i not cleared)
 
     If use_filtering=True, only considers pools from active individuals
-    (those not yet cleared and not confirmed infected).
+    (those not yet cleared and not confirmed active).
     """
     if use_filtering:
-        active_mask, _ = compute_active_mask(p, cleared_mask, n)
+        # Keep deduced-clearancey (zero-risk) individuals eligible so the greedy
+        # can harvest their utility in a guaranteed-r=0 pool instead of
+        # forfeiting it (only confirmed-active and already-cleared are dropped).
+        active_mask, _ = compute_active_mask(p, cleared_mask, n,
+                                             include_known_clearancey=True)
         if active_mask == 0:
             return 0  # no uncertain individuals left
         pools = all_pools_from_mask(active_mask, G, include_empty=False)
@@ -60,8 +84,9 @@ def _myopic_best_pool(p, u, G, n, cleared_mask, use_filtering=True):
     return best_pool
 
 
-def greedy_myopic_simulate(p, u, B, G, z_mask, pool_selector=None):
-    """Simulate myopic greedy on a fixed infection profile z_mask.
+def greedy_myopic_simulate(p, u, B, G, z_mask, pool_selector=None, *,
+                           belief_update=None):
+    """Simulate myopic greedy on a fixed latent-state profile z_mask.
 
     At each step: pick best myopic pool, observe augmented result,
     update beliefs via Bayesian update, repeat.
@@ -71,10 +96,18 @@ def greedy_myopic_simulate(p, u, B, G, z_mask, pool_selector=None):
     pool_selector : callable or None
         If provided, called as pool_selector(p, u, G, n, cleared_mask)
         to select the pool at each step.  Defaults to _myopic_best_pool.
+    belief_update : callable or None
+        If provided, called as belief_update(prior, history, n) with the
+        ORIGINAL prior and the FULL history to recompute the carried
+        marginals after each observation (matches
+        bayesian_update_by_counting / gibbs_update signatures; gibbs_update
+        needs a lambda to pin its extra kwargs).  Defaults to the legacy
+        sequential bayesian_update_single_test carrying.
 
     Returns (history, cleared_mask, utility).
     """
     n = len(p)
+    prior = list(p)
     current_p = list(p)
     cleared_mask = 0
     history = ()
@@ -90,7 +123,10 @@ def greedy_myopic_simulate(p, u, B, G, z_mask, pool_selector=None):
         history = history + ((pool, r),)
         if r == 0:
             cleared_mask |= pool
-        current_p = bayesian_update_single_test(current_p, pool, r, n)
+        if belief_update is None:
+            current_p = bayesian_update_single_test(current_p, pool, r, n)
+        else:
+            current_p = belief_update(prior, history, n)
 
     utility = sum(u[i] for i in indices_from_mask(cleared_mask, n))
     return history, cleared_mask, utility
@@ -109,8 +145,9 @@ def greedy_myopic_expected_utility(p, u, B, G, pool_selector=None):
         to select the pool at each step.  Defaults to _myopic_best_pool.
     """
     n = len(p)
+    prior = list(p)
 
-    def recurse(current_p, b, cleared_mask):
+    def recurse(current_p, history, b, cleared_mask):
         if b == 0:
             return sum(u[i] for i in indices_from_mask(cleared_mask, n))
 
@@ -122,7 +159,11 @@ def greedy_myopic_expected_utility(p, u, B, G, pool_selector=None):
             return sum(u[i] for i in indices_from_mask(cleared_mask, n))
 
         pool_idx = indices_from_mask(pool, n)
-        pmf = _poisson_binomial_pmf([current_p[i] for i in pool_idx])
+        # Pool SELECTION uses the sequential single-test marginals (that is the
+        # policy), but the outcome BRANCHES are weighted by P(r | history) ---
+        # exact when feasible (then this equals the true value of
+        # greedy_myopic_simulate), Poisson-Binomial fallback at large n.
+        pmf = _branch_pmf(prior, history, current_p, pool, pool_idx, n)
 
         ev = 0.0
         for r in range(len(pool_idx) + 1):
@@ -130,10 +171,11 @@ def greedy_myopic_expected_utility(p, u, B, G, pool_selector=None):
                 continue
             new_p = bayesian_update_single_test(current_p, pool, r, n)
             new_cleared = cleared_mask | pool if r == 0 else cleared_mask
-            ev += pmf[r] * recurse(new_p, b - 1, new_cleared)
+            new_history = history + ((pool, r),)
+            ev += pmf[r] * recurse(new_p, new_history, b - 1, new_cleared)
         return ev
 
-    return recurse(list(p), B, 0)
+    return recurse(list(p), (), B, 0)
 
 
 # -------------------------------------------------------------------
@@ -211,7 +253,7 @@ def _greedy_future(p, u, G, n, b, cleared_mask):
 
 
 def greedy_lookahead_simulate(p, u, B, G, z_mask):
-    """Simulate lookahead greedy on a fixed infection profile.
+    """Simulate lookahead greedy on a fixed latent-state profile.
 
     At step 1: uses full lookahead to pick the best pool.
     At steps 2+: falls back to myopic (otherwise it's the full DP solver).
@@ -250,7 +292,7 @@ def greedy_myopic_counting_simulate(p, u, B, G, z_mask, pool_selector=None):
     """Simulate myopic greedy with full-history Bayesian update by counting.
 
     Like greedy_myopic_simulate but at each step computes posteriors by
-    enumerating all 2^n infection profiles consistent with the FULL
+    enumerating all 2^n latent-state profiles consistent with the FULL
     history, rather than applying sequential single-test updates.
 
     This uses bayesian_update_by_counting(p, history, n) which considers
@@ -287,9 +329,9 @@ def greedy_myopic_counting_simulate(p, u, B, G, z_mask, pool_selector=None):
 def greedy_myopic_gibbs_simulate(p, u, B, G, z_mask,
                                  num_iterations=1000, burn_in=200, seed=None,
                                  pool_selector=None):
-    """Simulate myopic greedy with Gibbs sampling posterior updates.
+    """Simulate myopic greedy with Gibbs drawing posterior updates.
 
-    Like greedy_myopic_counting_simulate but uses Gibbs sampling (MCMC)
+    Like greedy_myopic_counting_simulate but uses Gibbs drawing (MCMC)
     to approximate posteriors instead of exact enumeration. Scales to
     larger populations (n~50+) where counting (O(2^n)) is infeasible.
 
@@ -300,7 +342,7 @@ def greedy_myopic_gibbs_simulate(p, u, B, G, z_mask,
     history = ()
 
     for _ in range(B):
-        # Compute posteriors from full history using Gibbs sampling
+        # Compute posteriors from full history using Gibbs drawing
         if history:
             current_p = gibbs_update(p, history, n,
                                      num_iterations=num_iterations,
@@ -326,9 +368,9 @@ def greedy_myopic_gibbs_simulate(p, u, B, G, z_mask,
 def greedy_myopic_gibbs_expected_utility(p, u, B, G,
                                           num_iterations=1000, burn_in=200,
                                           seed=42, pool_selector=None):
-    """Expected utility of myopic greedy with Gibbs sampling posteriors.
+    """Expected utility of myopic greedy with Gibbs drawing posteriors.
 
-    At each step picks the myopic-best pool using Gibbs-sampled posteriors,
+    At each step picks the myopic-best pool using Gibbs-drawn posteriors,
     then recurses over all possible outcomes weighted by their probabilities.
     Uses a fixed seed for reproducibility within the recursive tree.
     """
@@ -354,7 +396,12 @@ def greedy_myopic_gibbs_expected_utility(p, u, B, G,
             return sum(u[i] for i in indices_from_mask(cleared_mask, n))
 
         pool_idx = indices_from_mask(pool, n)
-        pmf = _poisson_binomial_pmf([current_p[i] for i in pool_idx])
+        # Branch weights are the outcome distribution P(r | history): exact over
+        # consistent profiles when feasible (NOT the Poisson-Binomial of the
+        # posterior marginals, which assumes an independence that conditioning on
+        # history destroys), with a Poisson-Binomial fallback at large n where
+        # exact enumeration (and the true EU itself) is intractable.
+        pmf = _branch_pmf(prior_p, history, current_p, pool, pool_idx, n)
 
         ev = 0.0
         for r in range(len(pool_idx) + 1):
@@ -395,7 +442,12 @@ def greedy_myopic_counting_expected_utility(p, u, B, G, pool_selector=None):
             return sum(u[i] for i in indices_from_mask(cleared_mask, n))
 
         pool_idx = indices_from_mask(pool, n)
-        pmf = _poisson_binomial_pmf([current_p[i] for i in pool_idx])
+        # Branch weights are the outcome distribution P(r | history): exact over
+        # consistent profiles when feasible (NOT the Poisson-Binomial of the
+        # posterior marginals, which assumes an independence that conditioning on
+        # history destroys), with a Poisson-Binomial fallback at large n where
+        # exact enumeration (and the true EU itself) is intractable.
+        pmf = _branch_pmf(prior_p, history, current_p, pool, pool_idx, n)
 
         ev = 0.0
         for r in range(len(pool_idx) + 1):

@@ -16,6 +16,11 @@ from augmented.core import (
     mask_from_indices, indices_from_mask, compute_active_mask,
 )
 
+# Backend que realmente produjo el ultimo pool devuelto por
+# mosek_best_pool / gurobi_best_pool: "mosek", "gurobi" o "heuristic".
+# Los numeros publicados dependen de esto; nunca mas un fallback silencioso.
+LAST_BACKEND = None
+
 
 def _heuristic_best_pool(active_indices, p, u, G):
     """Fallback: pick G individuals with highest u_i * q_i."""
@@ -39,10 +44,7 @@ def mosek_best_pool(p, u, G, n, cleared_mask):
 
     Returns pool bitmask (0 if no useful pool).
     """
-    from mosek.fusion import (
-        Model, Domain, Expr, ObjectiveSense, Var, SolutionStatus,
-    )
-
+    global LAST_BACKEND
     # Identify active individuals
     active_mask, _ = compute_active_mask(p, cleared_mask, n)
     active_indices = indices_from_mask(active_mask, n)
@@ -68,6 +70,11 @@ def mosek_best_pool(p, u, G, n, cleared_mask):
     EPS = 1e-8
 
     try:
+        # Import inside the try so a missing backend / license falls back to the
+        # heuristic instead of raising (active_indices is already computed above).
+        from mosek.fusion import (
+            Model, Domain, Expr, ObjectiveSense, Var, SolutionStatus,
+        )
         with Model('mosek_pool') as M:
             M.setSolverParam("log", "0")
             M.setSolverParam("mioMaxTime", 30.0)
@@ -104,6 +111,7 @@ def mosek_best_pool(p, u, G, n, cleared_mask):
             sol_status = M.getPrimalSolutionStatus()
             if sol_status not in (SolutionStatus.Optimal,
                                   SolutionStatus.Feasible):
+                LAST_BACKEND = "heuristic"
                 return _heuristic_best_pool(active_indices, p, u, G)
 
             # Extract solution
@@ -112,13 +120,17 @@ def mosek_best_pool(p, u, G, n, cleared_mask):
                         if x_vals[i] > 0.5]
 
             if not selected:
+                LAST_BACKEND = "heuristic"
                 return _heuristic_best_pool(active_indices, p, u, G)
 
+            LAST_BACKEND = "mosek"
             return mask_from_indices(selected)
 
     except Exception as e:
+        LAST_BACKEND = "heuristic"
         warnings.warn(
-            f"mosek_best_pool failed ({e}), using heuristic fallback",
+            f"mosek no disponible ({e}): usando _heuristic_best_pool "
+            "(calidad inferior)",
             RuntimeWarning, stacklevel=2,
         )
         return _heuristic_best_pool(active_indices, p, u, G)
@@ -138,9 +150,7 @@ def gurobi_best_pool(p, u, G, n, cleared_mask):
 
     Returns pool bitmask (0 if no useful pool).
     """
-    import gurobipy as gp
-    from gurobipy import GRB
-
+    global LAST_BACKEND
     # Identify active individuals
     active_mask, _ = compute_active_mask(p, cleared_mask, n)
     active_indices = indices_from_mask(active_mask, n)
@@ -164,6 +174,10 @@ def gurobi_best_pool(p, u, G, n, cleared_mask):
     U_max = G * max(active_u)
 
     try:
+        # Import inside the try so a missing backend / license falls back to the
+        # heuristic instead of raising (active_indices is already computed above).
+        import gurobipy as gp
+        from gurobipy import GRB
         with gp.Env(empty=True) as env:
             env.setParam('OutputFlag', 0)
             env.start()
@@ -215,22 +229,59 @@ def gurobi_best_pool(p, u, G, n, cleared_mask):
                 )
 
                 if not has_solution:
+                    LAST_BACKEND = "heuristic"
                     return _heuristic_best_pool(active_indices, p, u, G)
 
                 selected = [active_indices[i] for i in range(n_active)
                             if x[i].X > 0.5]
 
                 if not selected:
+                    LAST_BACKEND = "heuristic"
                     return _heuristic_best_pool(active_indices, p, u, G)
 
+                LAST_BACKEND = "gurobi"
                 return mask_from_indices(selected)
 
     except Exception as e:
+        LAST_BACKEND = "heuristic"
         warnings.warn(
-            f"gurobi_best_pool failed ({e}), using heuristic fallback",
+            f"gurobi no disponible ({e}): usando _heuristic_best_pool "
+            "(calidad inferior)",
             RuntimeWarning, stacklevel=2,
         )
         return _heuristic_best_pool(active_indices, p, u, G)
+
+
+def sample_best_pool(draws, u, G, n, cleared_mask):
+    """Seleccion de pool por frecuencia conjunta muestral.
+
+    score(t) = (#draws con t completamente limpio / S) * sum(u_i, i en t no
+    acreditado). Construccion greedy: en cada paso agrega el miembro que
+    maximiza el score del pool extendido; se detiene si ningun miembro lo
+    mejora. Mata el sesgo de independencia del producto de marginales
+    (los draws ya cargan las correlaciones del posterior).
+    """
+    S = len(draws)
+    if S == 0:
+        return 0
+    candidates = [i for i in range(n) if not (cleared_mask >> i & 1)]
+    pool, alive, gain, best_score = 0, list(range(S)), 0.0, 0.0
+    for _ in range(G):
+        best = None
+        for i in candidates:
+            if pool >> i & 1:
+                continue
+            bit = 1 << i
+            alive_i = [k for k in alive if not (draws[k] & bit)]
+            g = gain + (u[i] if not (cleared_mask >> i & 1) else 0.0)
+            score = (len(alive_i) / S) * g
+            if score > best_score + 1e-15:
+                best, best_score, best_alive, best_gain = i, score, alive_i, g
+        if best is None:
+            break
+        pool |= (1 << best)
+        alive, gain = best_alive, best_gain
+    return pool
 
 
 def solver_best_pool(p, u, G, n, cleared_mask, solver='mosek'):
