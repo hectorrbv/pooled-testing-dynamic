@@ -9,6 +9,41 @@ quien demostró revisa los tests del otro y quien programó revisa los
 enunciados. Los bloques están pensados para que ninguna persona espere a la
 otra.
 
+## Estado de Persona B — lunes y martes
+
+- [x] Inferencia laminar extraída a
+  [`augmented/laminar_inference.py`](../../augmented/laminar_inference.py), con
+  jerarquía padre-hijos suministrada por el llamador.
+- [x] Selector por escenarios extraído a
+  [`augmented/scenario_milp.py`](../../augmented/scenario_milp.py).
+- [x] Identidades contra conteo exacto y fuerza bruta, más validaciones
+  degeneradas, en
+  [`augmented/tests_laminar_milp.py`](../../augmented/tests_laminar_milp.py).
+- [x] Proposición B enunciada y demostrada en
+  [`augmented/paper/proposicion_b_policy_improvement.md`](../../augmented/paper/proposicion_b_policy_improvement.md).
+
+## Estado experimental — miércoles a viernes
+
+- [x] Cuatro cantidades con firma común y $V^{\mathcal L}$ exacto mediante
+  bibliotecas laminares maximales en
+  [`augmented/laminar_benchmarks.py`](../../augmented/laminar_benchmarks.py).
+- [x] Atlas v1 completo: 2,592 filas, 18 prevalencias, las 12 combinaciones
+  $(n,B,G)$ y cuatro regímenes de dispersión. CSV por instancia/celda y mapas
+  en `augmented/data/laminar_week/` y `notebooks/figures/22_laminar_week/`.
+- [x] Búsqueda adversaria desde tres regiones; mínimo local encontrado
+  $V^{\mathcal L}/V^*=0.9069$ (evidencia, no cota).
+- [x] Barrido homogéneo $B\le2$: igualdad numérica en toda la malla; $B=1$
+  es identidad y $B=2$ queda como conjetura explícita.
+- [x] Diagnóstico de independencia: el producto de marginales falla incluso
+  para descendientes compatibles; la PMF conservada por átomos coincide con
+  enumeración.
+- [x] Validación MILP con $n\le12$ y $S\in\{25,50,100,250,500\}$: identidad
+  contra fuerza bruta en la muestra y `mip_gap=0` en 80 corridas.
+- [x] Pipeline partículas → MILP → conteo → átomos → rollout en $n=40$,
+  $S=100$, con greedy plano, MILP miope y greedy laminar como controles.
+- [x] Notebook 22 regenerado y ejecutado como registro de resultados,
+  hipótesis refutadas y decisión sugerida para el notebook 23.
+
 ## El marco que fijó Francisco
 
 Al modular las características de la población (número de personas, tasas de
