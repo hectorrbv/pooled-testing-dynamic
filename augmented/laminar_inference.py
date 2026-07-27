@@ -358,7 +358,26 @@ def laminar_forest_marginals(p, history, hierarchy):
     return posterior, atoms
 
 
+# --- Tensor condicional de subpools (sesion 27-jul) ---
+# La implementacion vive en laminar_tables.py, que trabaja con priors locales
+# del pool en vez de mascaras sobre la poblacion entera.  Se re-exporta aqui
+# para que `from augmented.laminar_inference import subpool_tensor` funcione,
+# que es como lo pide el plan del 27-jul.
+from augmented.laminar_tables import (  # noqa: E402
+    Atom,
+    split_after_test,
+    subpool_tensor,
+    subpool_tensor_brute,
+    subset_pmf_cache,
+)
+
+
 __all__ = [
+    "Atom",
+    "split_after_test",
+    "subpool_tensor",
+    "subpool_tensor_brute",
+    "subset_pmf_cache",
     "LaminarAtom",
     "conditional_bernoulli_marginals",
     "laminar_atoms",

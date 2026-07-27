@@ -1,245 +1,256 @@
-"""Tests for the subset-count tables and their reuse after a split.
+"""Tests del tensor condicional de subpools.
 
-Run with::
+Corre con ``pytest augmented/tests_laminar_tables.py`` (o ``pytest`` a secas
+desde la raíz, que colecciona todo el repo).
 
-    PYTHONPATH=. python augmented/tests_laminar_tables.py
+La estrategia es de identidad: cada afirmación se comprueba contra un cálculo
+independiente. La forma cerrada contra la enumeración de mundos, la caché
+contra convoluciones directas, y los átomos hijos contra tensores construidos
+desde cero.
 """
 
-import os
-import sys
-
 import numpy as np
+import pytest
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from augmented.core import indices_from_mask, mask_from_indices
-from augmented.laminar_inference import laminar_forest_marginals
 from augmented.laminar_tables import (
-    absolute_mask,
-    conditional_subset_table,
-    local_index,
-    restrict_cache,
-    split_subset_tables,
+    split_after_test,
+    subpool_tensor,
+    subpool_tensor_brute,
     subset_pmf_cache,
-    table_row,
 )
 
 
-def _assert_raises(fragment, function, *args, **kwargs):
-    try:
-        function(*args, **kwargs)
-    except ValueError as exc:
-        assert fragment in str(exc), f"unexpected error: {exc}"
-    else:
-        raise AssertionError(f"expected ValueError containing {fragment!r}")
+def _instancia(seed, m_lo=2, m_hi=8):
+    """Un pool aleatorio: cuántas personas y con qué priors."""
+
+    rng = np.random.default_rng(seed)
+    m = int(rng.integers(m_lo, m_hi + 1))
+    return m, rng.uniform(0.05, 0.95, size=m).tolist()
 
 
-def _enumerated_table(p, pool_mask, observed, subset_mask):
-    """``P(R(subset)=r | R(pool)=observed)`` by enumerating every world."""
+# --------------------------------------------------------------------------
+# La identidad central: dos vías independientes que deben coincidir
+# --------------------------------------------------------------------------
 
-    n = len(p)
-    subset_size = subset_mask.bit_count()
-    weights = np.zeros(subset_size + 1, dtype=float)
-    for world in range(1 << n):
-        if (world & pool_mask).bit_count() != observed:
-            continue
-        probability = 1.0
-        for index in range(n):
-            probability *= p[index] if world & (1 << index) else 1.0 - p[index]
-        weights[(world & subset_mask).bit_count()] += probability
-    total = weights.sum()
-    assert total > 0.0, "the conditioning event must have positive mass"
-    return weights / total
+def test_forma_cerrada_igual_a_enumeracion():
+    """La fórmula y la fuerza bruta dan lo mismo, para todo r y todo subconjunto."""
 
-
-def test_conditional_table_matches_world_enumeration():
-    rng = np.random.default_rng(20260727)
-    for _ in range(6):
-        n = int(rng.integers(4, 8))
-        p = rng.uniform(0.1, 0.9, size=n)
-        pool = int(mask_from_indices(
-            rng.choice(n, size=int(rng.integers(3, n + 1)), replace=False)
-        ))
-        pool_size = pool.bit_count()
-        cache = subset_pmf_cache(p, pool)
-        for observed in range(pool_size + 1):
-            table = conditional_subset_table(cache, observed)
-            for index in range(1 << pool_size):
-                subset = absolute_mask(cache, index)
-                expected = _enumerated_table(p, pool, observed, subset)
-                got = table[index, : subset.bit_count() + 1]
-                assert np.allclose(got, expected, atol=1e-12), (
-                    f"subset {subset:b} under count {observed}"
+    for seed in range(25):
+        m, p = _instancia(seed)
+        for r in range(m + 1):
+            esperado = subpool_tensor_brute(p, r)
+            obtenido = subpool_tensor(p, r)
+            assert set(obtenido) == set(esperado)
+            for s in esperado:
+                assert np.allclose(obtenido[s], esperado[s], atol=1e-12), (
+                    f"seed={seed} r={r} s={s:b}"
                 )
 
 
-def test_every_table_row_is_a_distribution():
-    rng = np.random.default_rng(11)
-    p = rng.uniform(0.05, 0.95, size=9)
-    pool = mask_from_indices([0, 2, 3, 5, 7, 8])
-    cache = subset_pmf_cache(p, pool)
-    for observed in range(pool.bit_count() + 1):
-        table = conditional_subset_table(cache, observed)
-        assert np.allclose(table.sum(axis=1), 1.0, atol=1e-12)
-        assert np.all(table >= -1e-15)
-        full = local_index(cache, pool)
-        assert abs(table[full, observed] - 1.0) < 1e-12
+def test_cache_es_poisson_binomial():
+    """Φ[s] coincide con convolucionar a mano las Bernoulli del bloque."""
+
+    m, p = _instancia(3, m_lo=6, m_hi=6)
+    cache = subset_pmf_cache(p)
+    for s in range(1 << m):
+        a_mano = np.array([1.0])
+        for person in range(m):
+            if s & (1 << person):
+                a_mano = np.convolve(a_mano, [1.0 - p[person], p[person]])
+        assert np.allclose(cache[s], a_mano, atol=1e-13), f"bloque {s:b}"
 
 
-def test_split_tables_equal_tables_built_from_scratch():
-    rng = np.random.default_rng(4242)
-    for _ in range(8):
-        n = int(rng.integers(6, 10))
-        p = rng.uniform(0.1, 0.9, size=n)
-        pool = int(mask_from_indices(
-            rng.choice(n, size=int(rng.integers(4, min(n, 7) + 1)), replace=False)
-        ))
-        members = indices_from_mask(pool, n)
-        cache = subset_pmf_cache(p, pool)
+# --------------------------------------------------------------------------
+# Las tres propiedades que dictó Francisco en sesión
+# --------------------------------------------------------------------------
 
-        chosen = rng.choice(
-            members, size=int(rng.integers(1, len(members))), replace=False
-        )
-        tested = int(mask_from_indices(chosen))
-        residual = pool & ~tested
-        for pool_count in range(pool.bit_count() + 1):
-            for tested_count in range(tested.bit_count() + 1):
-                residual_count = pool_count - tested_count
-                if not 0 <= residual_count <= residual.bit_count():
+def test_cada_columna_suma_uno():
+    """'Por cada columna la suma de elementos es igual a 1.'"""
+
+    for seed in range(20):
+        m, p = _instancia(seed)
+        for r in range(m + 1):
+            for s, columna in subpool_tensor(p, r).items():
+                assert abs(columna.sum() - 1.0) < 1e-12, f"s={s:b} r={r}"
+
+
+def test_columna_del_pool_entero_es_indicadora():
+    """'El posterior de T' cuando T'=T es nada más r': unos y ceros.
+
+    Ya observaste el conteo del pool, así que ahí no queda incertidumbre.
+    """
+
+    for seed in range(20):
+        m, p = _instancia(seed)
+        for r in range(m + 1):
+            columna = subpool_tensor(p, r)[(1 << m) - 1]
+            esperado = np.zeros(m + 1)
+            esperado[r] = 1.0
+            assert np.allclose(columna, esperado, atol=1e-12)
+
+
+def test_ley_de_soporte():
+    """'Algunas entradas son vacías', y se sabe exactamente cuáles.
+
+    El conteo de un subconjunto no puede contradecir al del pool. Con r
+    positivos en total y ``m − |s|`` personas fuera del subconjunto, dentro
+    tiene que haber al menos ``r − (m − |s|)``, y como mucho ``min(r, |s|)``.
+    Fuera de ese rango la probabilidad es cero exacto; dentro es positiva.
+    """
+
+    for seed in range(20):
+        m, p = _instancia(seed)
+        for r in range(m + 1):
+            for s, columna in subpool_tensor(p, r).items():
+                tamano = s.bit_count()
+                minimo = max(0, r - (m - tamano))
+                maximo = min(r, tamano)
+                for k in range(len(columna)):
+                    if minimo <= k <= maximo:
+                        assert columna[k] > 0.0, f"s={s:b} r={r} k={k}"
+                    else:
+                        assert columna[k] == 0.0, f"s={s:b} r={r} k={k}"
+
+
+def test_la_celda_imposible_del_ejemplo_de_bolsillo():
+    """Con 2 positivos entre 4, es imposible que tres personas estén limpias.
+
+    Los dos positivos no caben en la única persona que queda fuera. Un
+    producto de marginales independientes le daría masa positiva a esta celda.
+    """
+
+    tensor = subpool_tensor([0.2, 0.4, 0.6, 0.8], r=2)
+    assert tensor[0b0111][0] == 0.0
+    assert np.allclose(tensor[0b0011], [0.5353, 0.4498, 0.0149], atol=1e-4)
+
+
+# --------------------------------------------------------------------------
+# La división: los hijos salen de la caché del padre
+# --------------------------------------------------------------------------
+
+def test_los_hijos_reusan_los_arreglos_del_padre():
+    """No es que coincidan: son el MISMO objeto en memoria.
+
+    Es la forma más directa de comprobar que la división no recalcula nada.
+    """
+
+    from augmented.laminar_tables import _restricted_cache
+
+    m, p = _instancia(7, m_lo=6, m_hi=6)
+    padre = subset_pmf_cache(p)
+    miembros = [0, 2, 5]
+    hijo = _restricted_cache(padre, miembros)
+
+    for hijo_mask in range(1 << len(miembros)):
+        padre_mask = 0
+        for j, persona in enumerate(miembros):
+            if hijo_mask & (1 << j):
+                padre_mask |= 1 << persona
+        assert hijo[hijo_mask] is padre[padre_mask]
+
+
+def test_division_igual_a_construir_desde_cero():
+    """Los átomos de la división coinciden con tensores hechos de cero."""
+
+    for seed in range(10):
+        m, p = _instancia(seed, m_lo=4, m_hi=7)
+        priors = np.asarray(p)
+        rng = np.random.default_rng(1000 + seed)
+        probado = int(rng.integers(1, (1 << m) - 1))
+        residuo = ((1 << m) - 1) ^ probado
+
+        for r in range(m + 1):
+            for conteo in range(probado.bit_count() + 1):
+                if not 0 <= r - conteo <= residuo.bit_count():
                     continue
-                tested_atom, residual_atom = split_subset_tables(
-                    cache, tested, tested_count, pool_count
+                atomo_probado, atomo_residual = split_after_test(
+                    p, r, probado, conteo
                 )
-                assert tested_atom.cache.convolutions == 0
-                assert residual_atom.cache.convolutions == 0
-
-                fresh_tested = conditional_subset_table(
-                    subset_pmf_cache(p, tested), tested_count
-                )
-                fresh_residual = conditional_subset_table(
-                    subset_pmf_cache(p, residual), residual_count
-                )
-                assert np.allclose(tested_atom.table, fresh_tested, atol=1e-12)
-                assert np.allclose(
-                    residual_atom.table, fresh_residual, atol=1e-12
-                )
-
-
-def test_split_tables_match_enumeration_of_the_full_history():
-    """The sibling's count is irrelevant inside an atom, as Lemma A claims."""
-
-    rng = np.random.default_rng(777)
-    n = 8
-    p = rng.uniform(0.15, 0.85, size=n)
-    pool = mask_from_indices([0, 1, 2, 3, 4, 5])
-    tested = mask_from_indices([0, 1, 2])
-    residual = pool & ~tested
-    cache = subset_pmf_cache(p, pool)
-
-    for pool_count in range(1, pool.bit_count()):
-        for tested_count in range(tested.bit_count() + 1):
-            if not 0 <= pool_count - tested_count <= residual.bit_count():
-                continue
-            tested_atom, _ = split_subset_tables(
-                cache, tested, tested_count, pool_count
-            )
-            for index in range(1 << tested.bit_count()):
-                subset = absolute_mask(tested_atom.cache, index)
-                if not subset:
-                    continue
-                weights = np.zeros(subset.bit_count() + 1, dtype=float)
-                for world in range(1 << n):
-                    if (world & pool).bit_count() != pool_count:
-                        continue
-                    if (world & tested).bit_count() != tested_count:
-                        continue
-                    probability = 1.0
-                    for position in range(n):
-                        probability *= (
-                            p[position] if world & (1 << position)
-                            else 1.0 - p[position]
+                for atomo, mask, propio in (
+                    (atomo_probado, probado, conteo),
+                    (atomo_residual, residuo, r - conteo),
+                ):
+                    miembros = [i for i in range(m) if mask & (1 << i)]
+                    desde_cero = subpool_tensor(priors[miembros], propio)
+                    assert set(atomo.tensor) == set(desde_cero)
+                    for s in desde_cero:
+                        assert np.allclose(
+                            atomo.tensor[s], desde_cero[s], atol=1e-12
                         )
-                    weights[(world & subset).bit_count()] += probability
-                if weights.sum() <= 0.0:
+
+
+def test_division_coincide_con_enumerar_la_historia_completa():
+    """El conteo del hermano es irrelevante dentro de un átomo.
+
+    Es la factorización entre átomos, comprobada contra la enumeración de
+    mundos que respetan AMBOS conteos a la vez.
+    """
+
+    m = 6
+    p = np.random.default_rng(99).uniform(0.15, 0.85, size=m)
+    probado = 0b000111
+
+    for r in range(1, m):
+        for conteo in range(probado.bit_count() + 1):
+            if not 0 <= r - conteo <= m - probado.bit_count():
+                continue
+            atomo, _ = split_after_test(p.tolist(), r, probado, conteo)
+
+            for s_local in range(1 << len(atomo.members)):
+                s_global = 0
+                for j, persona in enumerate(atomo.members):
+                    if s_local & (1 << j):
+                        s_global |= 1 << persona
+
+                pesos = np.zeros(s_local.bit_count() + 1)
+                for world in range(1 << m):
+                    if world.bit_count() != r:
+                        continue
+                    if (world & probado).bit_count() != conteo:
+                        continue
+                    prob = 1.0
+                    for persona in range(m):
+                        prob *= (p[persona] if world & (1 << persona)
+                                 else 1.0 - p[persona])
+                    pesos[(world & s_global).bit_count()] += prob
+                if pesos.sum() <= 0.0:
                     continue
-                expected = weights / weights.sum()
-                got = table_row(tested_atom.cache, tested_atom.table, subset)
-                assert np.allclose(got, expected, atol=1e-12)
+                assert np.allclose(
+                    atomo.tensor[s_local], pesos / pesos.sum(), atol=1e-12
+                )
 
 
-def test_singleton_rows_match_the_laminar_forest_marginals():
-    rng = np.random.default_rng(31337)
-    n = 7
-    p = rng.uniform(0.1, 0.9, size=n)
-    pool = mask_from_indices([0, 1, 2, 3, 4])
-    tested = mask_from_indices([0, 1])
-    cache = subset_pmf_cache(p, pool)
-    pool_count, tested_count = 3, 1
+# --------------------------------------------------------------------------
+# Entradas degeneradas: fallar fuerte y explicando
+# --------------------------------------------------------------------------
 
-    tested_atom, residual_atom = split_subset_tables(
-        cache, tested, tested_count, pool_count
-    )
-    history = ((pool, pool_count), (tested, tested_count))
-    hierarchy = {pool: (tested,), tested: ()}
-    posterior, _ = laminar_forest_marginals(p, history, hierarchy)
-
-    for atom in (tested_atom, residual_atom):
-        for member in atom.cache.members:
-            row = table_row(atom.cache, atom.table, 1 << member)
-            assert abs(row[1] - posterior[member]) < 1e-12
+@pytest.mark.parametrize("p, r, fragmento", [
+    ([0.5, 0.5], 3, "fuera del rango"),
+    ([0.5, 0.5], -1, "fuera del rango"),
+    ([], 0, "vacío"),
+    ([0.5, 1.5], 1, "debe estar en"),
+    ([0.5, float("nan")], 1, "finito"),
+])
+def test_rechaza_entradas_invalidas(p, r, fragmento):
+    for funcion in (subpool_tensor, subpool_tensor_brute):
+        with pytest.raises(ValueError, match=fragmento):
+            funcion(p, r)
 
 
-def test_cache_cost_is_one_convolution_per_non_empty_subset():
-    p = np.full(10, 0.3)
-    pool = (1 << 10) - 1
-    cache = subset_pmf_cache(p, pool)
-    assert cache.convolutions == (1 << 10) - 1
-    assert restrict_cache(cache, mask_from_indices([0, 1, 2])).convolutions == 0
+def test_rechaza_conteo_de_probabilidad_nula():
+    """Pedir 2 positivos cuando dos personas son imposibles no tiene sentido."""
+
+    for funcion in (subpool_tensor, subpool_tensor_brute):
+        with pytest.raises(ValueError, match="probabilidad nula"):
+            funcion([0.0, 0.0, 0.5, 0.5], 4)
 
 
-def test_tables_reject_degenerate_requests():
-    p = np.array([0.0, 0.0, 0.5, 0.5])
-    cache = subset_pmf_cache(p, 0b1111)
-    _assert_raises("zero probability", conditional_subset_table, cache, 4)
-    _assert_raises("outside the pool size", conditional_subset_table, cache, 5)
-
-    healthy = subset_pmf_cache(np.full(4, 0.4), 0b1111)
-    _assert_raises(
-        "strict subset", split_subset_tables, healthy, 0b1111, 2, 2
-    )
-    _assert_raises(
-        "non-empty subset", split_subset_tables, healthy, 0, 0, 2
-    )
-    _assert_raises(
-        "not attainable", split_subset_tables, healthy, 0b0011, 0, 3
-    )
-    _assert_raises(
-        "contained in the cached pool", restrict_cache, healthy, 0b10000
-    )
-    _assert_raises("empty or outside", subset_pmf_cache, np.full(4, 0.4), 0)
-
-
-def _run_all():
-    import traceback
-
-    tests = [
-        value for name, value in sorted(globals().items())
-        if name.startswith("test_") and callable(value)
-        and getattr(value, "__module__", None) == __name__
-    ]
-    passed = failed = 0
-    for test in tests:
-        try:
-            test()
-            print(f"  PASS  {test.__name__}")
-            passed += 1
-        except Exception:
-            print(f"  FAIL  {test.__name__}")
-            traceback.print_exc()
-            failed += 1
-    print(f"\n{passed} passed, {failed} failed out of {passed + failed} tests")
-    return failed == 0
-
-
-if __name__ == "__main__":
-    sys.exit(0 if _run_all() else 1)
+@pytest.mark.parametrize("probado, conteo, r, fragmento", [
+    (0b1111, 2, 2, "no lo parte"),
+    (0, 0, 2, "vacío"),
+    (0b10000, 1, 2, "se sale del pool"),
+    (0b0011, 0, 3, "incompatible"),
+])
+def test_division_rechaza_lo_imposible(probado, conteo, r, fragmento):
+    with pytest.raises(ValueError, match=fragmento):
+        split_after_test([0.4] * 4, r, probado, conteo)

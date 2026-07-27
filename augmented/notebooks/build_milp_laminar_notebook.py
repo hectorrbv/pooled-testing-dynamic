@@ -569,46 +569,41 @@ greedy $\max_{t'\subseteq t}u(t')\,P((t',0)\mid(t,r))$.""")
 
 
 code(r"""from augmented.laminar_tables import (
-    absolute_mask, conditional_subset_table, split_subset_tables,
-    subset_pmf_cache,
+    split_after_test, subpool_tensor, subset_pmf_cache,
 )
 
-demo_p = np.array([0.2, 0.4, 0.6, 0.8])
+# El pool se describe por sus priors locales: la persona i del pool tiene
+# prior p[i]. Un subconjunto es una mascara de bits sobre esas m personas.
+demo_p = [0.2, 0.4, 0.6, 0.8]
 demo_u = np.array([1.0, 1.5, 0.8, 2.0])
-demo_pool, demo_count = 0b1111, 2
+demo_r = 2
 
-demo_cache = subset_pmf_cache(demo_p, demo_pool)
-demo_table = conditional_subset_table(demo_cache, demo_count)
+demo_cache = subset_pmf_cache(demo_p)
+Q = subpool_tensor(demo_p, demo_r, cache=demo_cache)
 
 
 def _name(mask):
-    members = indices_from_mask(mask, 4)
-    return '{' + ','.join(str(member) for member in members) + '}'
+    miembros = [i for i in range(4) if mask & (1 << i)]
+    return '{' + ','.join(map(str, miembros)) + '}'
 
 
-columns, frame = {}, {}
-for index in range(1 << 4):
-    mask = absolute_mask(demo_cache, index)
-    size = mask.bit_count()
-    column = np.full(5, np.nan)
-    column[: size + 1] = demo_table[index, : size + 1]
-    columns[_name(mask)] = mask
-    frame[_name(mask)] = column
+frame = {}
+for s, columna in Q.items():
+    padded = np.full(5, np.nan)
+    padded[: len(columna)] = columna
+    frame[_name(s)] = padded
 
-shown = pd.DataFrame(frame, index=[f'r={r}' for r in range(5)])
+shown = pd.DataFrame(frame, index=[f'r={k}' for k in range(5)])
 display(shown.round(4))
 assert np.allclose(np.nansum(shown.values, axis=0), 1.0)
 assert shown.loc['r=0', '{0,1,2}'] == 0.0
 assert shown.loc['r=2', '{0,1,2,3}'] == 1.0
 
 greedy = pd.DataFrame([
-    {'t_prima': name,
-     'u(t_prima)': float(demo_u[indices_from_mask(mask, 4)].sum()),
-     'P(r=0 | obs)': float(demo_table[
-         [key for key in range(1 << 4)
-          if absolute_mask(demo_cache, key) == mask][0], 0]),
-     }
-    for name, mask in columns.items() if mask
+    {'t_prima': _name(s),
+     'u(t_prima)': float(demo_u[[i for i in range(4) if s & (1 << i)]].sum()),
+     'P(r=0 | obs)': float(Q[s][0])}
+    for s in range(1, 1 << 4)
 ])
 greedy['producto'] = greedy['u(t_prima)'] * greedy['P(r=0 | obs)']
 display(greedy.sort_values('producto', ascending=False).head(6)
@@ -622,27 +617,32 @@ observación; la tabla de arriba se arma con dos entradas suyas y una
 división.""")
 
 
-code(r"""for mask in (0b0011, 0b1100, 0b1111):
-    index = [key for key in range(1 << 4)
-             if absolute_mask(demo_cache, key) == mask][0]
-    print(f'PB_{_name(mask):<10} = {np.round(demo_cache.pmfs[index], 4)}')
+code(r"""for s in (0b0011, 0b1100, 0b1111):
+    print(f'Φ_{_name(s):<10} = {np.round(demo_cache[s], 4)}')
 
-inside, outside = 0b0011, 0b1100
-manual = (demo_cache.pmfs[inside][1] * demo_cache.pmfs[outside][1]
-          / demo_cache.pmfs[0b1111][2])
-print(f'\nP(R({_name(inside)})=1 | R(t)=2) por la identidad: {manual:.6f}')
-print(f'                                    en la tabla: '
-      f'{demo_table[inside, 1]:.6f}')
-assert abs(manual - demo_table[inside, 1]) < 1e-12
+dentro, fuera = 0b0011, 0b1100
+manual = demo_cache[dentro][1] * demo_cache[fuera][1] / demo_cache[0b1111][2]
+print(f'\nP(conteo({_name(dentro)})=1 | conteo(T)=2)')
+print(f'   por la identidad: {manual:.6f}')
+print(f'   en el tensor:     {Q[dentro][1]:.6f}')
+assert abs(manual - Q[dentro][1]) < 1e-12
 
-# La misma caché sirve para cualquier conteo observado, sin recalcular nada.
+# La misma cache sirve para cualquier conteo observado, sin recalcular nada.
 otras = pd.DataFrame({
-    f'R(t)={other}': conditional_subset_table(demo_cache, other)[
-        [0b0011, 0b1100, 0b0001], 0]
-    for other in (1, 2, 3)
+    f'conteo(T)={otro}': [
+        subpool_tensor(demo_p, otro, cache=demo_cache)[s][0]
+        for s in (0b0011, 0b1100, 0b0001)
+    ]
+    for otro in (1, 2, 3)
 }, index=['{0,1}', '{2,3}', '{0}'])
 display(otras.round(4))
-print('filas r=0 para tres observaciones distintas, misma caché')""")
+print('fila r=0 para tres observaciones distintas, misma caché')
+
+# Y al partir el pool, los hijos toman prestados los arreglos del padre.
+probado, residual = split_after_test(demo_p, demo_r, 0b0011, 1, cache=demo_cache)
+print(f'\ntras probar {{0,1}} y obtener 1: '
+      f'atomo probado {probado.members} con conteo {probado.count}, '
+      f'residual {residual.members} con conteo {residual.count}')""")
 
 
 code(r"""tables = pd.read_csv(DATA / 'subset_tables.csv')

@@ -35,8 +35,8 @@ from augmented.laminar_inference import (
     laminar_pool_pmf,
 )
 from augmented.laminar_tables import (
-    conditional_subset_table,
-    split_subset_tables,
+    split_after_test,
+    subpool_tensor,
     subset_pmf_cache,
 )
 from augmented.laminar_pipeline import (
@@ -435,7 +435,7 @@ def run_subset_tables(reps=12):
             pool_count = max(1, min(G - 1, int(round(p.sum()))))
 
             started = time.perf_counter()
-            cache = subset_pmf_cache(p, pool)
+            cache = subset_pmf_cache(p)
             cache_seconds = time.perf_counter() - started
 
             # One split: the parent cache saves only the children's own
@@ -447,22 +447,28 @@ def run_subset_tables(reps=12):
                 continue
 
             started = time.perf_counter()
-            tested_atom, residual_atom = split_subset_tables(
-                cache, tested, tested_count, pool_count
+            tested_atom, residual_atom = split_after_test(
+                p, pool_count, tested, tested_count, cache=cache
             )
             one_reuse_seconds = time.perf_counter() - started
 
             started = time.perf_counter()
-            fresh_tested = conditional_subset_table(
-                subset_pmf_cache(p, tested), tested_count
-            )
-            fresh_residual = conditional_subset_table(
-                subset_pmf_cache(p, residual), pool_count - tested_count
-            )
+            fresh = {
+                mask: subpool_tensor(
+                    p[[i for i in range(G) if mask & (1 << i)]], count
+                )
+                for mask, count in (
+                    (tested, tested_count),
+                    (residual, pool_count - tested_count),
+                )
+            }
             one_scratch_seconds = time.perf_counter() - started
             max_error = max(
-                float(np.abs(tested_atom.table - fresh_tested).max()),
-                float(np.abs(residual_atom.table - fresh_residual).max()),
+                float(np.abs(atom.tensor[s] - fresh[mask][s]).max())
+                for atom, mask in (
+                    (tested_atom, tested), (residual_atom, residual)
+                )
+                for s in fresh[mask]
             )
 
             # Every candidate split: this is the loop a rollout actually runs
@@ -478,26 +484,27 @@ def run_subset_tables(reps=12):
 
             started = time.perf_counter()
             for subset in candidates:
-                split_subset_tables(
-                    cache, subset,
+                split_after_test(
+                    p, pool_count, subset,
                     min(subset.bit_count(), max(0, pool_count // 2)),
-                    pool_count,
+                    cache=cache,
                 )
             sweep_reuse_seconds = time.perf_counter() - started
 
+            # Construir la caché de un bloque de tamaño b cuesta 2**b - 1
+            # convoluciones; el conteo es determinista, no hace falta
+            # instrumentar el módulo para saberlo.
             started = time.perf_counter()
             sweep_scratch_convolutions = 0
             for subset in candidates:
                 inside_count = min(subset.bit_count(), max(0, pool_count // 2))
                 complement = pool & ~subset
-                inside_cache = subset_pmf_cache(p, subset)
-                outside_cache = subset_pmf_cache(p, complement)
-                conditional_subset_table(inside_cache, inside_count)
-                conditional_subset_table(
-                    outside_cache, pool_count - inside_count
-                )
+                inside = [i for i in range(G) if subset & (1 << i)]
+                outside = [i for i in range(G) if complement & (1 << i)]
+                subpool_tensor(p[inside], inside_count)
+                subpool_tensor(p[outside], pool_count - inside_count)
                 sweep_scratch_convolutions += (
-                    inside_cache.convolutions + outside_cache.convolutions
+                    (1 << len(inside)) - 1 + (1 << len(outside)) - 1
                 )
             sweep_scratch_seconds = time.perf_counter() - started
 
@@ -506,7 +513,7 @@ def run_subset_tables(reps=12):
                 "replicate": replicate,
                 "pool_count": pool_count,
                 "candidates": len(candidates),
-                "cache_convolutions": cache.convolutions,
+                "cache_convolutions": (1 << G) - 1,
                 "cache_seconds": cache_seconds,
                 "one_scratch_seconds": one_scratch_seconds,
                 "one_reuse_seconds": one_reuse_seconds,

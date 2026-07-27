@@ -1,255 +1,340 @@
-"""Subset-count tables for one pool, and their reuse after a split.
+"""El tensor condicional de subpools: la maquinaria del greedy laminar.
 
-The session of 27 July asked for a single object per test: given a pool ``T``
-tested with exact count ``R``, the probability ``P(R(T')=r' | R(T)=R)`` for
-*every* subset ``T' subseteq T`` and every count ``r'``.  It also asked whether,
-when a later test splits ``T`` into two atoms, the children's tables can be
-derived from the parent's instead of being recomputed from scratch.
+Pregunta que resuelve este módulo
+---------------------------------
+Probaste un pool ``T`` de ``m`` personas y salió el conteo exacto ``r``.
+Ahora quieres saber, para *cada* subconjunto ``T'`` de ese pool y *cada*
+resultado ``k`` posible, la probabilidad
 
-Both answers live in one identity.  Because the prior is a product measure,
-for any ``S subseteq T``
+    Q[T'][k] = P( conteo(T') = k  |  conteo(T) = r ).
 
-    P(R(S)=r | R(T)=R) = PB_S(r) * PB_{T\\S}(R-r) / PB_T(R),
+Con esa tabla decides qué probar después: la fila ``k=0`` es la probabilidad
+de que el subconjunto salga limpio, que es cuando se cobra la utilidad.
 
-where ``PB_S`` is the unconditional Poisson-binomial pmf of the block ``S``.
-Conditioning therefore never touches the blocks themselves: it reweights a
-family of pmfs that does not depend on any observation.  The reusable object
-is that family --- the *subset pmf cache* --- and not the conditional table.
+Convención de coordenadas
+-------------------------
+El pool se representa por sus priors *locales*: ``p`` es una lista de largo
+``m``, donde ``p[i]`` es la probabilidad de que la persona ``i`` del pool sea
+positiva.  Un subconjunto es una máscara de bits ``s`` en ``[0, 2**m)``: el
+bit ``i`` prendido significa "la persona ``i`` está en el subconjunto".
 
-The consequence for the split is exact rather than approximate.  Testing
-``T' subseteq T`` and observing ``r'`` creates the atoms ``T'`` (count ``r'``)
-and ``D = T \\ T'`` (count ``R - r'``).  Every block appearing in a child's
-table is a subset of ``T``, so it is already cached: the children cost zero
-new convolutions.  What the cache buys is not one split but all of them ---
-every candidate action and every hypothetical outcome a rollout enumerates
-reuses the same precomputation.
+Es deliberado que este módulo NO use los índices globales de la población.
+Una vez que estás dentro de un pool, quién sea la persona 37 del mundo es
+ruido; lo único que importa es su prior.  Un solo sistema de coordenadas se
+lee mucho mejor que dos.
 
-Masks are integer bitmasks over the full population, as everywhere else in
-:mod:`augmented`.  Inside a cache, subsets are addressed by a *local* index
-over the pool members, which is what keeps the storage at ``2^g`` rows.
+La identidad que lo hace todo
+-----------------------------
+Como el prior es un producto (las personas son independientes *antes* de
+observar), para cualquier ``S`` dentro del pool::
+
+                        Φ[S][k] · Φ[T∖S][r−k]
+    P(conteo(S)=k | ·) = ─────────────────────
+                              Φ[T][r]
+
+donde ``Φ[S]`` es la pmf Poisson-binomial del bloque ``S``: la distribución
+de "cuántos positivos hay en S" bajo el prior, *sin condicionar en nada*.
+
+Leer esa fórmula con cuidado da la lección central del módulo: **condicionar
+no toca los bloques**.  Solo reponderá una familia de pmf que no depende de
+ninguna observación.  Por eso el objeto que conviene guardar es esa familia
+--- la caché ``Φ`` --- y no la tabla condicional, que cambia con cada ``r``.
+
+Y de ahí sale gratis la respuesta a la pregunta de la sesión del 27-jul: al
+partir el pool en dos átomos, todo bloque de un hijo ya es un bloque del
+padre, así que los hijos **no cuestan ni una convolución nueva**.
+
+Ejemplo de bolsillo
+-------------------
+::
+
+    >>> p = [0.2, 0.4, 0.6, 0.8]
+    >>> Q = subpool_tensor(p, r=2)      # observamos 2 positivos entre los 4
+    >>> Q[0b0011].round(4)              # el subconjunto {0, 1}
+    array([0.5353, 0.4498, 0.0149])
+    >>> Q[0b0111][0]                    # {0,1,2} limpio: imposible
+    0.0
+
+Esa última celda es exactamente cero, y no por redondeo: si hay 2 positivos
+entre 4 personas, no caben en la única persona que queda fuera de {0,1,2}.
+Multiplicar marginales independientes le daría masa positiva y mentiría.
 """
 
 from numbers import Integral
-from typing import NamedTuple
 
 import numpy as np
 
-from augmented.core import indices_from_mask
+
+__all__ = [
+    "subset_pmf_cache",
+    "subpool_tensor",
+    "subpool_tensor_brute",
+    "split_after_test",
+    "Atom",
+]
 
 
-class PoolSubsetCache(NamedTuple):
-    """Unconditional block pmfs for every subset of one pool.
+# --------------------------------------------------------------------------
+# Validación
+# --------------------------------------------------------------------------
 
-    ``members`` lists the absolute individual indices in ascending order, so
-    local subset index ``k`` means ``{members[j] : bit j of k is set}``.
-    ``pmfs[k]`` is the Poisson-binomial pmf of that block, of length
-    ``popcount(k) + 1``.  ``convolutions`` records how many convolution steps
-    were spent building the cache; a cache restricted from a parent reports
-    zero, which is the claim this module exists to make checkable.
+def _validated_priors(p):
+    """Los priors del pool, como arreglo, o ``ValueError`` explicando por qué no."""
+
+    priors = np.asarray(p, dtype=float)
+    if priors.ndim != 1:
+        raise ValueError("los priors del pool deben ser una secuencia 1-D")
+    if priors.size == 0:
+        raise ValueError("el pool está vacío")
+    if not np.all(np.isfinite(priors)):
+        raise ValueError("todo prior debe ser finito")
+    if np.any((priors < 0.0) | (priors > 1.0)):
+        raise ValueError("todo prior debe estar en [0, 1]")
+    return priors
+
+
+def _validated_count(r, m, name="el conteo"):
+    if isinstance(r, bool) or not isinstance(r, Integral):
+        raise ValueError(f"{name} debe ser entero")
+    r = int(r)
+    if not 0 <= r <= m:
+        raise ValueError(f"{name} está fuera del rango [0, {m}]")
+    return r
+
+
+# --------------------------------------------------------------------------
+# Φ: la caché de bloques.  El objeto reusable.
+# --------------------------------------------------------------------------
+
+def subset_pmf_cache(p):
+    """Φ[s] = pmf del conteo de positivos del bloque ``s``, bajo el prior.
+
+    Devuelve una tupla indexada por máscara: ``Φ[s]`` es un arreglo de largo
+    ``popcount(s) + 1`` donde ``Φ[s][k] = P(el bloque s tiene k positivos)``.
+
+    Se construye con un programa dinámico sobre subconjuntos.  La clave es
+    que cada bloque está a *una sola convolución* del bloque que resulta de
+    quitarle su miembro más bajo::
+
+        Φ[s] = Φ[s sin su bit más bajo]  ⊛  (1−p_i, p_i)
+
+    Así la familia entera cuesta ``2**m − 1`` convoluciones en vez de
+    construir cada uno de los ``2**m`` bloques por separado.
+
+    No depende de ninguna observación: por eso se calcula una vez por pool y
+    sirve para todo conteo ``r`` y para todos los hijos que vengan después.
     """
 
-    pool_mask: int
-    members: tuple
-    pmfs: tuple
-    convolutions: int
+    priors = _validated_priors(p)
+    m = len(priors)
 
+    cache = [None] * (1 << m)
+    cache[0] = np.array([1.0])          # bloque vacío: 0 positivos con certeza
 
-class AtomTable(NamedTuple):
-    """One atom after a split: its cache, its count and its subset table."""
-
-    cache: PoolSubsetCache
-    count: int
-    table: np.ndarray
-
-
-def _as_integer(value, name):
-    if isinstance(value, bool) or not isinstance(value, Integral):
-        raise ValueError(f"{name} must be an integer")
-    return int(value)
-
-
-def _validated_probabilities(p):
-    probabilities = np.asarray(p, dtype=float)
-    if probabilities.ndim != 1:
-        raise ValueError("p must be a one-dimensional sequence")
-    if not np.all(np.isfinite(probabilities)):
-        raise ValueError("every prior probability must be finite")
-    if np.any((probabilities < 0.0) | (probabilities > 1.0)):
-        raise ValueError("every prior probability must lie in [0, 1]")
-    return probabilities
-
-
-def subset_pmf_cache(p, pool_mask):
-    """Poisson-binomial pmf of every subset of ``pool_mask``.
-
-    Built by a subset dynamic program: each block is one convolution away
-    from the block without its lowest member, so the whole family costs
-    ``2^g - 1`` convolution steps rather than ``2^g`` independent builds.
-    """
-
-    priors = _validated_probabilities(p)
-    n = len(priors)
-    pool = _as_integer(pool_mask, "pool mask")
-    if pool <= 0 or pool >= (1 << n):
-        raise ValueError("pool mask is empty or outside the prior universe")
-
-    members = tuple(indices_from_mask(pool, n))
-    size = 1 << len(members)
-    pmfs = [None] * size
-    pmfs[0] = np.array([1.0], dtype=float)
-    convolutions = 0
-    for subset in range(1, size):
-        lowest = subset & -subset
-        probability = priors[members[lowest.bit_length() - 1]]
-        pmfs[subset] = np.convolve(
-            pmfs[subset ^ lowest],
-            np.array([1.0 - probability, probability], dtype=float),
+    for subset in range(1, 1 << m):
+        lowest_bit = subset & -subset               # aísla el bit más bajo
+        person = lowest_bit.bit_length() - 1        # a qué persona corresponde
+        probability = priors[person]
+        cache[subset] = np.convolve(
+            cache[subset ^ lowest_bit],             # el bloque sin esa persona
+            np.array([1.0 - probability, probability]),
         )
-        convolutions += 1
-    return PoolSubsetCache(pool, members, tuple(pmfs), convolutions)
+    return tuple(cache)
 
 
-def local_index(cache, subset_mask):
-    """Local index of an absolute ``subset_mask`` inside ``cache``."""
+# --------------------------------------------------------------------------
+# El tensor, por las dos vías
+# --------------------------------------------------------------------------
 
-    subset = _as_integer(subset_mask, "subset mask")
-    if subset & ~cache.pool_mask:
-        raise ValueError("the subset must be contained in the cached pool")
-    index = 0
-    for position, member in enumerate(cache.members):
-        if subset & (1 << member):
-            index |= 1 << position
-    return index
+def subpool_tensor(p, r, cache=None):
+    """El tensor condicional por forma cerrada.
 
+    ``Q[s][k] = P(conteo(s) = k | conteo(pool) = r)`` para todo subconjunto
+    ``s``, aplicando la identidad del encabezado del módulo.
 
-def absolute_mask(cache, index):
-    """Absolute bitmask of a local subset ``index`` inside ``cache``."""
-
-    index = _as_integer(index, "local index")
-    if not 0 <= index < (1 << len(cache.members)):
-        raise ValueError("local index is outside the cached pool")
-    mask = 0
-    for position, member in enumerate(cache.members):
-        if index & (1 << position):
-            mask |= 1 << member
-    return mask
-
-
-def restrict_cache(cache, sub_mask):
-    """View of ``cache`` for a sub-pool, borrowing the parent's pmfs.
-
-    Every block of the sub-pool is a block of the parent, so this performs no
-    convolution at all; the returned cache reports ``convolutions == 0``.
+    Pasa ``cache`` si ya la tienes (de este pool o de un pool que lo
+    contenga): entonces esta función no hace ni una convolución.
     """
 
-    sub = _as_integer(sub_mask, "sub-pool mask")
-    if sub <= 0:
-        raise ValueError("the sub-pool must be non-empty")
-    if sub & ~cache.pool_mask:
-        raise ValueError("the sub-pool must be contained in the cached pool")
+    priors = _validated_priors(p)
+    m = len(priors)
+    r = _validated_count(r, m)
+    if cache is None:
+        cache = subset_pmf_cache(priors)
 
-    positions = {member: index for index, member in enumerate(cache.members)}
-    members = tuple(member for member in cache.members if sub & (1 << member))
-    parent_bits = [1 << positions[member] for member in members]
+    full = (1 << m) - 1
+    total_ways = float(cache[full][r])
+    if total_ways <= 1e-300:
+        raise ValueError(
+            f"observar {r} positivos tiene probabilidad nula bajo este prior"
+        )
 
-    size = 1 << len(members)
-    pmfs = [None] * size
-    for subset in range(size):
+    tensor = {}
+    for subset in range(1 << m):
+        inside = cache[subset]              # pmf del subconjunto
+        outside = cache[full ^ subset]      # pmf de su complemento en el pool
+
+        # Para que el subconjunto tenga k positivos, el complemento debe
+        # cargar los r−k restantes.  Fuera del rango donde eso es posible la
+        # probabilidad es cero por la identidad misma, no por recorte.
+        column = np.zeros(len(inside))
+        for k in range(len(inside)):
+            rest = r - k
+            if 0 <= rest < len(outside):
+                column[k] = inside[k] * outside[rest] / total_ways
+        tensor[subset] = column
+    return tensor
+
+
+def subpool_tensor_brute(p, r):
+    """El mismo tensor, enumerando los ``2**m`` mundos.  El oráculo.
+
+    Lento a propósito y sin una sola idea adentro: recorre cada asignación
+    posible de quién es positivo, se queda con las que tienen exactamente
+    ``r`` positivos en el pool, y acumula su probabilidad en la casilla que
+    le toca a cada subconjunto.
+
+    Existe para no creerle a la forma cerrada por fe.  Dos implementaciones
+    independientes que coinciden al decimal 12 es lo que convierte una
+    fórmula en un hecho.
+    """
+
+    priors = _validated_priors(p)
+    m = len(priors)
+    r = _validated_count(r, m)
+
+    tensor = {s: np.zeros(s.bit_count() + 1) for s in range(1 << m)}
+    total_mass = 0.0
+
+    for world in range(1 << m):
+        if world.bit_count() != r:          # incompatible con lo observado
+            continue
+        probability = 1.0
+        for person in range(m):
+            probability *= (
+                priors[person] if world & (1 << person)
+                else 1.0 - priors[person]
+            )
+        if probability == 0.0:
+            continue
+        total_mass += probability
+        for subset in range(1 << m):
+            tensor[subset][(world & subset).bit_count()] += probability
+
+    if total_mass <= 1e-300:
+        raise ValueError(
+            f"observar {r} positivos tiene probabilidad nula bajo este prior"
+        )
+    for subset in tensor:
+        tensor[subset] /= total_mass
+    return tensor
+
+
+# --------------------------------------------------------------------------
+# La división: qué pasa cuando una prueba parte el pool
+# --------------------------------------------------------------------------
+
+class Atom:
+    """Uno de los dos bloques que deja una prueba dentro del pool.
+
+    ``members`` son los índices *del pool padre* que quedaron en este átomo,
+    ``priors`` sus probabilidades a priori, ``count`` el conteo que le tocó, y
+    ``tensor`` su propia tabla condicional, ya indexada por máscaras locales
+    del átomo (el bit ``j`` es ``members[j]``).
+    """
+
+    __slots__ = ("members", "priors", "count", "tensor")
+
+    def __init__(self, members, priors, count, tensor):
+        self.members = members
+        self.priors = priors
+        self.count = count
+        self.tensor = tensor
+
+    def __repr__(self):
+        return f"Atom(members={self.members}, count={self.count})"
+
+
+def _restricted_cache(cache, members):
+    """La caché de un sub-bloque, prestada del padre.  Cero convoluciones.
+
+    Cada subconjunto del hijo es un subconjunto del padre: basta traducir la
+    máscara local del hijo (bit ``j`` = ``members[j]``) a la del padre y
+    devolver la misma pmf que ya estaba calculada.
+    """
+
+    child_size = len(members)
+    parent_bits = [1 << person for person in members]
+
+    restricted = [None] * (1 << child_size)
+    for child_subset in range(1 << child_size):
         parent_subset = 0
-        remaining = subset
+        remaining = child_subset
         while remaining:
-            lowest = remaining & -remaining
-            parent_subset |= parent_bits[lowest.bit_length() - 1]
-            remaining ^= lowest
-        pmfs[subset] = cache.pmfs[parent_subset]
-    return PoolSubsetCache(sub, members, tuple(pmfs), 0)
+            lowest_bit = remaining & -remaining
+            parent_subset |= parent_bits[lowest_bit.bit_length() - 1]
+            remaining ^= lowest_bit
+        restricted[child_subset] = cache[parent_subset]
+    return tuple(restricted)
 
 
-def conditional_subset_table(cache, count):
-    """``P(R(S)=r | R(pool)=count)`` for every subset ``S`` of the pool.
+def split_after_test(p, r, tested, tested_count, cache=None):
+    """Los dos átomos que deja probar ``tested`` dentro del pool.
 
-    Returns a ``(2^g, g+1)`` array whose row ``k`` is the distribution of the
-    block with local index ``k``; entries beyond that block's size stay zero.
-    Every row sums to one, and rows for blocks that cannot reach ``count``
-    together with their complement are exactly zero-filled by the identity
-    rather than by clipping.
+    El pool traía el conteo ``r``; se prueba el subconjunto ``tested`` (una
+    máscara local, subconjunto propio y no vacío) y sale ``tested_count``.
+    Quedan dos bloques disjuntos: el probado, con su conteo, y el residuo,
+    con ``r − tested_count`` por la resta de conteos.
+
+    Devuelve ``(átomo probado, átomo residual)``, cada uno con su tensor ya
+    armado desde la caché del padre --- sin una sola convolución nueva.
+
+    Que cada átomo se condicione **solo en su propio conteo**, ignorando el
+    del hermano, no es un descuido: es la factorización entre átomos.  Los
+    dos bloques son disjuntos y el prior es producto, así que lo que pasa en
+    uno no informa sobre el otro.
     """
 
-    total = len(cache.members)
-    full = (1 << total) - 1
-    count = _as_integer(count, "count")
-    if not 0 <= count <= total:
-        raise ValueError("count is outside the pool size")
+    priors = _validated_priors(p)
+    m = len(priors)
+    r = _validated_count(r, m, "el conteo del pool")
 
-    denominator = float(cache.pmfs[full][count])
-    if denominator <= 1e-300:
-        raise ValueError("the conditioned count has zero probability")
-
-    table = np.zeros((1 << total, total + 1), dtype=float)
-    for subset in range(1 << total):
-        inside = cache.pmfs[subset]
-        outside = cache.pmfs[full ^ subset]
-        counts = np.arange(len(inside))
-        rest = count - counts
-        usable = (rest >= 0) & (rest < len(outside))
-        if not usable.any():
-            raise ValueError("a block has no mass compatible with the count")
-        table[subset, counts[usable]] = (
-            inside[usable] * outside[rest[usable]] / denominator
+    if isinstance(tested, bool) or not isinstance(tested, Integral):
+        raise ValueError("el subconjunto probado debe ser una máscara entera")
+    tested = int(tested)
+    full = (1 << m) - 1
+    if tested <= 0:
+        raise ValueError("el subconjunto probado no puede ser vacío")
+    if tested & ~full:
+        raise ValueError("el subconjunto probado se sale del pool")
+    if tested == full:
+        raise ValueError(
+            "probar el pool entero no lo parte; no hay división que hacer"
         )
-    return table
 
-
-def split_subset_tables(cache, tested_mask, tested_count, pool_count):
-    """Tables of the two atoms created by testing ``tested_mask`` in the pool.
-
-    ``tested_mask`` is a strict non-empty subset of the cached pool, observed
-    with exact count ``tested_count``; ``pool_count`` is the count already
-    observed for the pool itself.  The atoms are the tested block and the
-    residual ``pool \\ tested``, whose count is ``pool_count - tested_count``
-    by the residual-count subtraction.
-
-    Both tables are built from the parent cache, so no Poisson-binomial work
-    is repeated.  Conditioning each atom on its own count only --- ignoring
-    the sibling's --- is exactly the factorization across atoms: the two
-    blocks are disjoint and the prior is a product measure.
-    """
-
-    tested = _as_integer(tested_mask, "tested mask")
-    if tested <= 0 or tested & ~cache.pool_mask:
-        raise ValueError("the tested pool must be a non-empty subset")
-    if tested == cache.pool_mask:
-        raise ValueError("the tested pool must be a strict subset")
-
-    tested_count = _as_integer(tested_count, "tested count")
-    pool_count = _as_integer(pool_count, "pool count")
-    residual = cache.pool_mask & ~tested
-    residual_count = pool_count - tested_count
-    if not 0 <= tested_count <= tested.bit_count():
-        raise ValueError("tested count is outside the tested pool size")
+    residual = full ^ tested
+    tested_count = _validated_count(
+        tested_count, tested.bit_count(), "el conteo del subconjunto probado"
+    )
+    residual_count = r - tested_count
     if not 0 <= residual_count <= residual.bit_count():
         raise ValueError(
-            "the residual count implied by the split is not attainable"
+            f"un conteo de {tested_count} en el subconjunto es incompatible "
+            f"con {r} en el pool: al residuo le tocarían {residual_count}"
         )
 
-    tested_cache = restrict_cache(cache, tested)
-    residual_cache = restrict_cache(cache, residual)
-    return (
-        AtomTable(
-            tested_cache,
-            tested_count,
-            conditional_subset_table(tested_cache, tested_count),
-        ),
-        AtomTable(
-            residual_cache,
-            residual_count,
-            conditional_subset_table(residual_cache, residual_count),
-        ),
-    )
+    if cache is None:
+        cache = subset_pmf_cache(priors)
 
-
-def table_row(cache, table, subset_mask):
-    """Distribution row of an absolute ``subset_mask``, trimmed to its size."""
-
-    index = local_index(cache, subset_mask)
-    return table[index, : _as_integer(subset_mask, "subset mask").bit_count() + 1]
+    atoms = []
+    for mask, count in ((tested, tested_count), (residual, residual_count)):
+        members = [person for person in range(m) if mask & (1 << person)]
+        child_priors = priors[members]
+        child_cache = _restricted_cache(cache, members)
+        atoms.append(Atom(
+            members=members,
+            priors=child_priors,
+            count=count,
+            tensor=subpool_tensor(child_priors, count, cache=child_cache),
+        ))
+    return tuple(atoms)
