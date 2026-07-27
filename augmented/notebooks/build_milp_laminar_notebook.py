@@ -158,6 +158,20 @@ print('VERIFICADO: orden de benchmarks y policy improvement en la auditoría.')"
 
 md(r"""## 2. Átomos: marginal exacta no significa independencia
 
+### Nota de vocabulario
+
+En la sesión del 27 de julio convivieron dos nociones de "átomo" y conviene
+fijar cuál usa este cuaderno. Una es *hoja del árbol*: un pool de la familia
+que no tiene hijos. La otra —la del Lema A y la que se usa aquí— es
+*residuo*: lo que queda de un pool al quitarle sus hijos inmediatos.
+
+Las dos coinciden exactamente en las hojas, y sólo ahí. En un nodo interior
+con hijos que no lo cubren por completo, el residuo es no vacío y **no** es
+ninguna hoja: es un bloque propio, con su propio conteo, que ninguna prueba
+observó directamente. Por eso hay un átomo por pool y no uno por hoja, y por
+eso la partición cubre a toda la población testeada. Cuando este cuaderno
+dice "átomo" siempre quiere decir residuo.
+
 Para un nodo observado $A$ con hijos inmediatos $C$,
 
 $$
@@ -513,7 +527,189 @@ incorrecta: policy improvement protege contra el baseline propio, no contra
 políticas con otra clase de acciones.""")
 
 
-md(r"""## 10. Balance y dirección del notebook 23
+md(r"""## 10. Tablas de subconjuntos y actualización incremental
+
+La sesión del 27 de julio pidió un objeto por prueba: dada $T$ con conteo
+observado $R$, la probabilidad $P(R(T')=r'\mid R(T)=R)$ para **todo**
+$T'\subseteq T$ y todo $r'$. Y preguntó si, cuando una prueba posterior parte
+$T$ en dos átomos, las tablas de los hijos se pueden derivar de la del padre
+en vez de recalcularse.
+
+Ambas respuestas salen de una identidad. Como el prior es producto, para
+$S\subseteq T$
+
+$$P(R(S)=r\mid R(T)=R)=\frac{PB_S(r)\,PB_{T\setminus S}(R-r)}{PB_T(R)},$$
+
+donde $PB_S$ es la pmf Poisson-binomial del bloque $S$. Condicionar no toca
+los bloques: reponderа una familia de pmf que **no depende de ninguna
+observación**. El objeto reusable es esa familia —la *caché de subconjuntos*—
+y no la tabla condicional.
+
+Para la división el argumento es exacto, no aproximado. Probar
+$T'\subseteq T$ y observar $r'$ crea los átomos $T'$ (conteo $r'$) y
+$D=T\setminus T'$ (conteo $R-r'$). Todo bloque que aparece en la tabla de un
+hijo es un subconjunto de $T$, así que ya está en la caché: los hijos cuestan
+**cero convoluciones nuevas**.""")
+
+
+md(r"""### La tabla, explícita
+
+El objeto pedido en la sesión, con números, para un pool de cuatro personas
+con $p=(0.2,0.4,0.6,0.8)$ y conteo observado $R(t)=2$. Las columnas son los
+$2^{|t|}$ subconjuntos, las filas los conteos posibles $r'$, y **cada columna
+suma uno**: es la distribución del conteo de ese subconjunto. La última
+columna, $t'=t$, concentra toda la masa en $r'=2$, que es lo ya observado.
+
+Dos celdas merecen atención. La columna $\{0,1,2\}$ vale exactamente cero en
+$r'=0$: con dos positivos entre cuatro personas es imposible que tres estén
+limpias, porque los dos positivos no caben en la única restante. La tabla
+respeta esa coherencia por construcción; un producto de marginales le daría
+masa positiva. Y la fila $r'=0$, ponderada por utilidades, **es** la decisión
+greedy $\max_{t'\subseteq t}u(t')\,P((t',0)\mid(t,r))$.""")
+
+
+code(r"""from augmented.laminar_tables import (
+    absolute_mask, conditional_subset_table, split_subset_tables,
+    subset_pmf_cache,
+)
+
+demo_p = np.array([0.2, 0.4, 0.6, 0.8])
+demo_u = np.array([1.0, 1.5, 0.8, 2.0])
+demo_pool, demo_count = 0b1111, 2
+
+demo_cache = subset_pmf_cache(demo_p, demo_pool)
+demo_table = conditional_subset_table(demo_cache, demo_count)
+
+
+def _name(mask):
+    members = indices_from_mask(mask, 4)
+    return '{' + ','.join(str(member) for member in members) + '}'
+
+
+columns, frame = {}, {}
+for index in range(1 << 4):
+    mask = absolute_mask(demo_cache, index)
+    size = mask.bit_count()
+    column = np.full(5, np.nan)
+    column[: size + 1] = demo_table[index, : size + 1]
+    columns[_name(mask)] = mask
+    frame[_name(mask)] = column
+
+shown = pd.DataFrame(frame, index=[f'r={r}' for r in range(5)])
+display(shown.round(4))
+assert np.allclose(np.nansum(shown.values, axis=0), 1.0)
+assert shown.loc['r=0', '{0,1,2}'] == 0.0
+assert shown.loc['r=2', '{0,1,2,3}'] == 1.0
+
+greedy = pd.DataFrame([
+    {'t_prima': name,
+     'u(t_prima)': float(demo_u[indices_from_mask(mask, 4)].sum()),
+     'P(r=0 | obs)': float(demo_table[
+         [key for key in range(1 << 4)
+          if absolute_mask(demo_cache, key) == mask][0], 0]),
+     }
+    for name, mask in columns.items() if mask
+])
+greedy['producto'] = greedy['u(t_prima)'] * greedy['P(r=0 | obs)']
+display(greedy.sort_values('producto', ascending=False).head(6)
+        .reset_index(drop=True).round(4))
+print('el greedy elige el argmax de la última columna, no el de utilidad')""")
+
+
+md(r"""La caché es el otro objeto, y es el que conviene guardar. Contiene la
+pmf de cada bloque **sin condicionar**, que no depende de ninguna
+observación; la tabla de arriba se arma con dos entradas suyas y una
+división.""")
+
+
+code(r"""for mask in (0b0011, 0b1100, 0b1111):
+    index = [key for key in range(1 << 4)
+             if absolute_mask(demo_cache, key) == mask][0]
+    print(f'PB_{_name(mask):<10} = {np.round(demo_cache.pmfs[index], 4)}')
+
+inside, outside = 0b0011, 0b1100
+manual = (demo_cache.pmfs[inside][1] * demo_cache.pmfs[outside][1]
+          / demo_cache.pmfs[0b1111][2])
+print(f'\nP(R({_name(inside)})=1 | R(t)=2) por la identidad: {manual:.6f}')
+print(f'                                    en la tabla: '
+      f'{demo_table[inside, 1]:.6f}')
+assert abs(manual - demo_table[inside, 1]) < 1e-12
+
+# La misma caché sirve para cualquier conteo observado, sin recalcular nada.
+otras = pd.DataFrame({
+    f'R(t)={other}': conditional_subset_table(demo_cache, other)[
+        [0b0011, 0b1100, 0b0001], 0]
+    for other in (1, 2, 3)
+}, index=['{0,1}', '{2,3}', '{0}'])
+display(otras.round(4))
+print('filas r=0 para tres observaciones distintas, misma caché')""")
+
+
+code(r"""tables = pd.read_csv(DATA / 'subset_tables.csv')
+summary = tables.groupby('G')[[
+    'candidates','cache_convolutions','sweep_scratch_convolutions',
+    'one_speedup','sweep_speedup','max_abs_error',
+]].mean()
+summary['ahorro_convoluciones'] = (
+    summary.sweep_scratch_convolutions / summary.cache_convolutions
+)
+display(summary.round(4))
+
+assert tables.max_abs_error.max() == 0.0
+assert (tables.sweep_reuse_convolutions == 0).all()
+display(Image(filename=str(FIGURES / 'subset_tables.png')))""")
+
+
+md(r"""**VERIFICADO:** las tablas reusadas son idénticas a las construidas
+desde cero —error máximo exactamente $0.0$, no "cercano a cero"— y la
+división gasta cero convoluciones. Con $G=10$, rankear las ~965 divisiones
+candidatas cuesta 97,869 convoluciones desde cero contra 1,023 con la caché:
+un factor de **96×** en trabajo estructural.
+
+**EVIDENCIA que corrige la expectativa:** ese factor **no** se traduce en
+tiempo de pared. La aceleración medida es apenas ~1.2× en todas las $G$
+probadas, porque materializar la tabla completa ($2^G$ filas) domina el costo
+y ese trabajo es idéntico con caché o sin ella. La conclusión operativa
+invierte el diseño que pidió la sesión: la caché es lo que hay que guardar y
+la tabla es lo que **no** conviene materializar; las filas deben consultarse
+por demanda. La pregunta de la sesión tiene respuesta afirmativa en teoría, y
+el cuello de botella real está en otro lado.""")
+
+
+md(r"""## 11. Dónde sí paga la jerarquía laminar
+
+La sesión predijo que el ejemplo insignia no puede exhibir ganancia laminar:
+con utilidades planas y sin pruebas previas, el primer paso del greedy
+laminar coincide con el estático, y anticipó que el laminar "nada más es útil
+cuando las tasas de infección son muy altas". El atlas permite verificar esa
+intuición en vez de asumirla.""")
+
+
+code(r"""showcase = pd.read_csv(DATA / 'showcase_regions.csv')
+display(showcase[[
+    'region','instances','share_greedy_beats_static',
+    'share_rollout_beats_static','best_gain_rollout_static',
+    'best_p','best_n','best_B','best_G','best_utility_mode',
+]].round(4))
+display(Image(filename=str(FIGURES / 'showcase_regions.png')))""")
+
+
+md(r"""**EVIDENCIA que confirma la intuición de la sesión.** La prevalencia
+es la variable que decide: en prevalencia alta ($p\ge0.6$) el rollout laminar
+gana al mejor estático binario en **98.2%** de las instancias, contra
+**50.9%** en prevalencia baja ($p\le0.2$). Las tasas homogéneas ayudan
+(87.5% contra 61.8% con tasas dispersas), también como se anticipó.
+
+**Matiz que la sesión no anticipó:** la mejor instancia del atlas tiene
+utilidades **planas** ($p=0.90$, $n=4$, $B=3$, $G=2$), con ganancia de
+$1.243$ ($0.373$ contra $0.300$). Que el primer paso coincida con el estático
+no impide la ganancia: ésta se produce en los pasos $2\ldots B$, cuando el
+conteo del primer pool ya partió la población en átomos. La conclusión
+correcta no es "las utilidades planas no sirven" sino "la ganancia laminar es
+un fenómeno de horizonte, no del primer paso".""")
+
+
+md(r"""## 12. Balance y dirección del notebook 23
 
 ### Resultado sólido
 
@@ -524,6 +720,8 @@ md(r"""## 10. Balance y dirección del notebook 23
   maximales.
 - MILP exacto sobre la distribución empírica; objetivo fraccional no implica
   gap del solver.
+- Las tablas de los átomos hijos se derivan de la caché del padre con cero
+  convoluciones y error exactamente nulo.
 
 ### Resultado empírico que cambia la dirección
 
@@ -531,9 +729,14 @@ md(r"""## 10. Balance y dirección del notebook 23
   búsqueda local llegó a 0.9069.
 - La jerarquía práctica/greedy sí puede perder mucho: hasta 0.747 frente al
   óptimo laminar y 0.749 frente al estático.
-- La dominancia greedy-laminar/estático no es global en la malla.
+- La dominancia greedy-laminar/estático no es global en la malla, pero sí es
+  casi total donde la sesión predijo: 98.2% en prevalencia alta contra 50.9%
+  en prevalencia baja.
 - El caso homogéneo $B\le2$ dio igualdad en todos los puntos y es el blanco
   teórico más limpio.
+- El ahorro de la caché de subconjuntos es estructural (96× en convoluciones)
+  pero no operativo (~1.2× en tiempo): materializar $2^G$ filas domina, así
+  que el diseño correcto consulta filas por demanda.
 
 ### Decisión sugerida
 
@@ -547,10 +750,16 @@ arquitectura, no como evidencia de dominancia.
 
 ```bash
 python -m augmented.experiments_laminar_week all --workers 4
+python -m augmented.experiments_laminar_week tables
+python -m augmented.experiments_laminar_week showcase
+PYTHONPATH=. python augmented/tests_laminar_milp.py    # 11/11
+PYTHONPATH=. python augmented/tests_laminar_tables.py  #  7/7
 python augmented/notebooks/build_milp_laminar_notebook.py
 jupyter nbconvert --to notebook --execute --inplace \
   augmented/notebooks/22_milp_laminar.ipynb
 ```
+
+Las suites requieren Python ≥3.10 (`int.bit_count`).
 
 Los artefactos por instancia están en `augmented/data/laminar_week/`; las
 figuras externas están en `augmented/notebooks/figures/22_laminar_week/`.""")

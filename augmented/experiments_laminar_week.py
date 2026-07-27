@@ -34,6 +34,11 @@ from augmented.laminar_inference import (
     laminar_forest_marginals,
     laminar_pool_pmf,
 )
+from augmented.laminar_tables import (
+    conditional_subset_table,
+    split_subset_tables,
+    subset_pmf_cache,
+)
 from augmented.laminar_pipeline import (
     ExactBlockRollout,
     ParticleMyopicPolicy,
@@ -410,6 +415,221 @@ def run_homogeneous_b2(workers=4):
     return rows
 
 
+def run_subset_tables(reps=12):
+    """Cost of rebuilding subset tables from scratch against reusing a cache.
+
+    The session asked whether the tables of the two atoms created by a test
+    can be derived from the parent's instead of recomputed.  They can: every
+    block of a child is a block of the parent, so the split spends no new
+    convolution.  This stage measures what that saves and, at every point,
+    checks that the reused tables are identical to freshly built ones.
+    """
+
+    _ensure_dirs()
+    rng = np.random.default_rng(270726)
+    rows = []
+    for G in (4, 6, 8, 10, 12):
+        for replicate in range(reps):
+            p = rng.uniform(0.05, 0.95, size=G)
+            pool = (1 << G) - 1
+            pool_count = max(1, min(G - 1, int(round(p.sum()))))
+
+            started = time.perf_counter()
+            cache = subset_pmf_cache(p, pool)
+            cache_seconds = time.perf_counter() - started
+
+            # One split: the parent cache saves only the children's own
+            # subset builds, which are exponentially smaller than the parent.
+            tested = (1 << max(1, G // 2)) - 1
+            residual = pool & ~tested
+            tested_count = min(tested.bit_count(), max(0, pool_count // 2))
+            if not 0 <= pool_count - tested_count <= residual.bit_count():
+                continue
+
+            started = time.perf_counter()
+            tested_atom, residual_atom = split_subset_tables(
+                cache, tested, tested_count, pool_count
+            )
+            one_reuse_seconds = time.perf_counter() - started
+
+            started = time.perf_counter()
+            fresh_tested = conditional_subset_table(
+                subset_pmf_cache(p, tested), tested_count
+            )
+            fresh_residual = conditional_subset_table(
+                subset_pmf_cache(p, residual), pool_count - tested_count
+            )
+            one_scratch_seconds = time.perf_counter() - started
+            max_error = max(
+                float(np.abs(tested_atom.table - fresh_tested).max()),
+                float(np.abs(residual_atom.table - fresh_residual).max()),
+            )
+
+            # Every candidate split: this is the loop a rollout actually runs
+            # when it ranks the sub-pools it could test next.
+            candidates = [
+                subset for subset in range(1, pool)
+                if 0 <= pool_count - min(
+                    subset.bit_count(), max(0, pool_count // 2)
+                ) <= (pool & ~subset).bit_count()
+            ]
+            if G > 10:
+                candidates = candidates[:512]
+
+            started = time.perf_counter()
+            for subset in candidates:
+                split_subset_tables(
+                    cache, subset,
+                    min(subset.bit_count(), max(0, pool_count // 2)),
+                    pool_count,
+                )
+            sweep_reuse_seconds = time.perf_counter() - started
+
+            started = time.perf_counter()
+            sweep_scratch_convolutions = 0
+            for subset in candidates:
+                inside_count = min(subset.bit_count(), max(0, pool_count // 2))
+                complement = pool & ~subset
+                inside_cache = subset_pmf_cache(p, subset)
+                outside_cache = subset_pmf_cache(p, complement)
+                conditional_subset_table(inside_cache, inside_count)
+                conditional_subset_table(
+                    outside_cache, pool_count - inside_count
+                )
+                sweep_scratch_convolutions += (
+                    inside_cache.convolutions + outside_cache.convolutions
+                )
+            sweep_scratch_seconds = time.perf_counter() - started
+
+            rows.append({
+                "G": G,
+                "replicate": replicate,
+                "pool_count": pool_count,
+                "candidates": len(candidates),
+                "cache_convolutions": cache.convolutions,
+                "cache_seconds": cache_seconds,
+                "one_scratch_seconds": one_scratch_seconds,
+                "one_reuse_seconds": one_reuse_seconds,
+                "one_speedup": one_scratch_seconds / one_reuse_seconds,
+                "sweep_scratch_convolutions": sweep_scratch_convolutions,
+                "sweep_reuse_convolutions": 0,
+                "sweep_scratch_seconds": sweep_scratch_seconds,
+                "sweep_reuse_seconds": sweep_reuse_seconds,
+                "sweep_speedup": (
+                    sweep_scratch_seconds
+                    / (sweep_reuse_seconds + cache_seconds)
+                ),
+                "max_abs_error": max_error,
+            })
+
+    if max(row["max_abs_error"] for row in rows) > 1e-12:
+        raise AssertionError("reused tables must equal freshly built ones")
+    _write_rows(DATA_DIR / "subset_tables.csv", rows)
+
+    frame = pd.DataFrame(rows)
+    summary = frame.groupby("G")[
+        ["one_speedup", "sweep_speedup", "sweep_scratch_seconds",
+         "sweep_reuse_seconds", "cache_seconds"]
+    ].mean()
+    fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.1))
+    axes[0].plot(summary.index, summary.sweep_scratch_seconds * 1e3,
+                 "o-", label="reconstruir por candidato")
+    axes[0].plot(summary.index,
+                 (summary.sweep_reuse_seconds + summary.cache_seconds) * 1e3,
+                 "s--", label="una caché + reuso")
+    axes[0].set_yscale("log")
+    axes[0].set_xlabel("G")
+    axes[0].set_ylabel("milisegundos por barrido")
+    axes[0].set_title("Costo de rankear todas las divisiones candidatas")
+    axes[0].legend(frameon=False, fontsize=8)
+    axes[0].grid(alpha=0.25)
+
+    axes[1].plot(summary.index, summary.sweep_speedup, "o-",
+                 color="#059669", label="barrido de candidatos")
+    axes[1].plot(summary.index, summary.one_speedup, "s--",
+                 color="#6b7280", label="una sola división")
+    axes[1].axhline(1.0, color="#9ca3af", linestyle=":", linewidth=1)
+    axes[1].set_yscale("log")
+    axes[1].set_xlabel("G")
+    axes[1].set_ylabel("factor de aceleración")
+    axes[1].set_title("Dónde paga la caché")
+    axes[1].legend(frameon=False, fontsize=8)
+    axes[1].grid(alpha=0.25)
+    fig.tight_layout()
+    fig.savefig(FIGURE_DIR / "subset_tables.png", dpi=170)
+    plt.close(fig)
+    return rows
+
+
+def run_showcase():
+    """The atlas instance where the laminar hierarchy pays the most.
+
+    The session predicted that the flagship example cannot show a laminar
+    gain: with flat utilities and no prior test, the first laminar step
+    coincides with the static one.  This stage looks in the atlas for the
+    regime where the gain is largest instead of assuming it.
+    """
+
+    _ensure_dirs()
+    atlas = pd.read_csv(DATA_DIR / "atlas_instances.csv")
+    atlas = atlas.assign(
+        gain_greedy_static=atlas.V_greedy_laminar / atlas.V_static_binary,
+        gain_rollout_static=atlas.V_rollout_laminar / atlas.V_static_binary,
+    )
+
+    rows = []
+    for label, frame in (
+        ("global", atlas),
+        ("utilidades planas", atlas[atlas.utility_mode == "flat"]),
+        ("utilidades dispersas", atlas[atlas.utility_mode != "flat"]),
+        ("tasas homogéneas", atlas[atlas.rate_mode == "homogeneous"]),
+        ("tasas dispersas", atlas[atlas.rate_mode != "homogeneous"]),
+        ("prevalencia alta", atlas[atlas.base_p >= 0.6]),
+        ("prevalencia baja", atlas[atlas.base_p <= 0.2]),
+    ):
+        if frame.empty:
+            continue
+        best = frame.loc[frame.gain_rollout_static.idxmax()]
+        rows.append({
+            "region": label,
+            "instances": int(len(frame)),
+            "share_greedy_beats_static": float(
+                (frame.gain_greedy_static >= 1.0 - 1e-9).mean()
+            ),
+            "share_rollout_beats_static": float(
+                (frame.gain_rollout_static >= 1.0 - 1e-9).mean()
+            ),
+            "best_gain_rollout_static": float(best.gain_rollout_static),
+            "best_instance": int(best.instance),
+            "best_p": float(best.base_p),
+            "best_n": int(best.n),
+            "best_B": int(best.B),
+            "best_G": int(best.G),
+            "best_rate_mode": str(best.rate_mode),
+            "best_utility_mode": str(best.utility_mode),
+            "best_V_rollout": float(best.V_rollout_laminar),
+            "best_V_static": float(best.V_static_binary),
+            "best_ratio_laminar_opt": float(best.ratio_laminar_opt),
+        })
+    _write_rows(DATA_DIR / "showcase_regions.csv", rows)
+
+    grid = atlas.groupby(["base_p", "utility_mode"]).gain_rollout_static.mean()
+    grid = grid.unstack("utility_mode")
+    fig, ax = plt.subplots(figsize=(8.4, 4.4))
+    for column in grid.columns:
+        ax.plot(grid.index, grid[column], "o-", label=str(column), markersize=4)
+    ax.axhline(1.0, color="#6b7280", linestyle=":", linewidth=1)
+    ax.set_xlabel("prevalencia base")
+    ax.set_ylabel(r"$V^{rollout}_{\mathcal{L}} / V^{static}_{bin}$")
+    ax.set_title("Dónde paga la jerarquía laminar")
+    ax.legend(frameon=False, fontsize=8, title="utilidades")
+    ax.grid(alpha=0.25)
+    fig.tight_layout()
+    fig.savefig(FIGURE_DIR / "showcase_regions.png", dpi=170)
+    plt.close(fig)
+    return rows
+
+
 def run_independence(reps=80):
     _ensure_dirs()
     rng = np.random.default_rng(2401)
@@ -703,7 +923,7 @@ def main(argv=None):
     parser.add_argument(
         "stage",
         choices=("all", "atlas", "adversarial", "homogeneous",
-                 "independence", "milp", "pipeline"),
+                 "independence", "milp", "pipeline", "tables", "showcase"),
     )
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--atlas-reps", type=int, default=3)
@@ -718,6 +938,8 @@ def main(argv=None):
         ("independence", run_independence),
         ("milp", lambda: run_milp_sweep(args.milp_reps, args.workers)),
         ("pipeline", lambda: run_pipeline(args.pipeline_eval)),
+        ("tables", run_subset_tables),
+        ("showcase", run_showcase),
     )
     for name, function in stages:
         if args.stage in ("all", name):
