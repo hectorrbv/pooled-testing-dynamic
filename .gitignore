@@ -43,6 +43,18 @@ augmented/paper/plan_estudio.md
 # Notas personales de sesiones (no subir)
 *_personales.*
 
+# Artefactos de transcripcion (sesiones con Francisco): audio, modelos whisper
+# y transcripciones crudas. Viven fuera del repo; estas reglas son defensivas.
+ggml-*.bin
+transcription_work/
+transcripciones/
+audios/
+pasted-text.txt
+TRANSCRIPTION_README.md
+*.m4a
+*.srt
+*.vtt
+
 # Figuras extraidas y dumps de scratch de notebooks (las figuras viven en los .ipynb)
 augmented/notebooks/comp_fig_*.png
 augmented/notebooks/maestro_fig_*.png
