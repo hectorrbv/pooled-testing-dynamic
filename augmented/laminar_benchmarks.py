@@ -320,8 +320,52 @@ class ExactPolicyEvaluator:
         return float(best)
 
 
+    def static_greedy_value(self):
+        """Non-adaptive design built greedily, one pool at a time.
+
+        Same objective and same action space as ``static_value``, but instead
+        of enumerating every design it adds, at each of the ``B`` rounds, the
+        pool that most increases the welfare of the design so far.  Nothing is
+        observed in between: the design is still fixed before any test runs.
+
+        This is the benchmark Francisco's "el costo mas caro de laminar greedy
+        dinamico es cuando es greedy estatico" refers to.  ``static_value`` is
+        a strictly stronger rival, so comparing against it answers a different
+        (harder) question.
+        """
+
+        if self.B == 0:
+            return 0.0
+
+        design = []
+        value = 0.0
+        for _ in range(min(self.B, len(self.pools))):
+            best_pool, best_value = None, value
+            for pool in self.pools:
+                if pool in design:
+                    continue
+                candidate = 0.0
+                for world in range(self.world_count):
+                    cleared = 0
+                    for chosen in (*design, pool):
+                        if chosen & world == 0:
+                            cleared |= chosen
+                    candidate += self.weights[world] * self.utility[cleared]
+                if candidate > best_value:
+                    best_pool, best_value = pool, candidate
+            if best_pool is None:      # ningun pool agrega valor
+                break
+            design.append(best_pool)
+            value = best_value
+        return float(value)
+
+
 def dynamic_augmented_value(p, u, B, G):
     return ExactPolicyEvaluator(p, u, B, G).optimal_value()
+
+
+def static_greedy_value(p, u, B, G):
+    return ExactPolicyEvaluator(p, u, B, G).static_greedy_value()
 
 
 def laminar_augmented_value(p, u, B, G):
