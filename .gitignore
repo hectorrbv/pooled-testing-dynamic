@@ -36,8 +36,12 @@ augmented/**/*.tex
 augmented/**/*.aux
 augmented/**/*.out
 
-# Carpeta docs/ fuera del repo (se conserva local, no se sube)
-docs/
+# Carpeta docs/ fuera del repo (se conserva local, no se sube),
+# EXCEPTO docs/plans/: los planes de investigacion si se versionan
+# (los cuatro planes previos ya estaban rastreados; esta excepcion
+# alinea la regla con esa practica)
+docs/*
+!docs/plans/
 augmented/paper/plan_estudio.md
 
 # Notas personales de sesiones (no subir)

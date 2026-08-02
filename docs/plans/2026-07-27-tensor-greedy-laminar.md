@@ -1,5 +1,12 @@
 # Plan de 3 días: tensor condicional, falsificador de anidamiento y greedy laminar
 
+> **[SUPERSEDED 2026-08-01]** Retirado como plan operativo por
+> [`2026-08-01-plan-maestro-politicas-laminares-planificacion.md`](2026-08-01-plan-maestro-politicas-laminares-planificacion.md).
+> Se conserva como historial y trazabilidad; sus pendientes migraron con
+> identificador (T\*/A\*/B\*) a los milestones del plan maestro (§11).
+> Nota: el tensor de las tareas 1–2 se implementó en `augmented/laminar_tables.py`,
+> no en `laminar_inference.py` como aquí se especifica.
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement
 > this plan task-by-task.
 

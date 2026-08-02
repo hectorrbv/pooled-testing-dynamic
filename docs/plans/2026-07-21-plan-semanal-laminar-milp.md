@@ -1,5 +1,10 @@
 # Plan semanal: del notebook 22 al atlas de razones (21–27 de julio de 2026)
 
+> **[SUPERSEDED 2026-08-01]** Retirado como plan operativo por
+> [`2026-08-01-plan-maestro-politicas-laminares-planificacion.md`](2026-08-01-plan-maestro-politicas-laminares-planificacion.md).
+> Se conserva como historial y trazabilidad; sus pendientes migraron con
+> identificador (P21-\*) a los milestones del plan maestro (§10).
+
 Plan para dos personas durante una semana. Sustituye al sprint de dos días del
 mismo día. No hay especialistas: ambas personas alternan teoría, código y
 redacción a lo largo de la semana (A: teoría–código–teoría–código–redacción;
