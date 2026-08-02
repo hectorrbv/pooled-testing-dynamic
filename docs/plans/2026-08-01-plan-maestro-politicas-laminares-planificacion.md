@@ -401,7 +401,7 @@ Bienestar (media, diferencia, razón, mediana, mín/máx, SE); recuperación del
 
 **Etiquetas obligatorias:** [DEMOSTRADO] / [VERIFICADO n≤X] / [DERIVACIÓN CONDICIONAL] / [CONJETURA RESPALDADA] / [PREGUNTA] — nunca mezcladas; sin test ni prueba, degradación explícita.
 
-**Los gates G0–G10 (once etiquetas y doce checkpoints efectivos, al dividir G4 en G4a y G4b):** **G0** modelo aprobado, sin convenciones conviviendo · **G1** tensor: dos vías a $10^{-12}$, ejemplos a ciegas, claims mapeados · **G2** Lema A: prueba completa, test por hipótesis, revisión cruzada · **G3** objetivo: fórmula cerrada, casos base, complejidad, no circular, **sin doble conteo $r$/$U(C)$** · **G4a/G4b** §16 · **G5** rollout: dos evaluadores a $10^{-10}$ · **G6** falsificación: banco completo, contraejemplos guardados, candidato seleccionado o descartado · **G7** garantía: teorema, prueba o certificado, sin lenguaje aspiracional · **G8** atlas: candidato congelado, outputs canónicos · **G9** escala: entendido en pequeño, estimadores auditados, intervalos · **G10** Francisco: cifras trazables, claims etiquetados, preguntas concretas.
+**Los gates G0–G10 (once etiquetas y doce checkpoints efectivos, al dividir G4 en G4a y G4b):** **G0** modelo aprobado, sin convenciones conviviendo · **G1** tensor: dos vías a $10^{-12}$, ejemplos a ciegas, claims mapeados · **G2** Lema A: prueba completa, test por hipótesis, revisión cruzada · **G3** objetivo: fórmula cerrada, casos base, complejidad, no circular, **sin doble conteo $r$/$U(C)$** · **G4a/G4b** §16 · **G5** rollout: dos evaluadores a $10^{-10}$ · **G6** falsificación: banco completo, contraejemplos guardados, candidato seleccionado o descartado · **G7** garantía: teorema, prueba o certificado, sin lenguaje aspiracional · **G8** atlas: candidato congelado, outputs canónicos · **G9** escala: entendido en pequeño, estimadores auditados, intervalos · **G10** Francisco: cifras trazables, claims etiquetados, preguntas concretas; el cierre incluye el despacho post-sesión de §34-bis.
 
 **Reglas permanentes:** dos vías independientes; mapeo 1:1 enunciado↔test; revisión cruzada como gate; claims empíricos solo post-limpieza de cableado (C9); "lema" es pieza interna hasta el barrido de literatura; toda cifra citable sale del §9.
 
@@ -465,7 +465,7 @@ Implementar S2 como placeholder; extender el atlas antes de G4b; entrenar RL; es
 
 ## 32. Registro de decisiones
 
-Formato de entradas futuras: | Fecha | Decisión | Evidencia | Alternativas | Consecuencia | Revisar cuando |. La tabla semilla usa el formato compacto:
+Formato de entradas futuras: | Fecha | Decisión | Evidencia | Alternativas | Consecuencia | Revisar cuando |. Las filas originadas en sesión con Francisco marcan la Evidencia con origen "sesión AAAA-MM-DD" (§34-bis). La tabla semilla usa el formato compacto:
 
 | Fecha | Decisión | Razón |
 |---|---|---|
@@ -500,6 +500,22 @@ Formato de entradas futuras: | Fecha | Decisión | Evidencia | Alternativas | Co
 **Mostrar:** modelo; separación con ancla; tensor con hallazgo de costo; Lema A (estado exacto por partes); tres pérdidas; atlas; 0.9069; gap del greedy; acid test tal como salga; surrogate vs. rollout; resultado teórico o contraejemplo. **No como headline:** inventario del repo, bugs históricos, RL, notebooks, demo industrial, submodularidad como hecho.
 
 **Preguntas:** (1) ¿aproximar $V^{*,\mathcal L}$ o $V^*$ a través de la clase? (2) ¿qué relajación expresa mejor "valor futuro": sanos identificables o utilidad acreditable con presupuesto residual? (3) ¿priorizar la frontera $B{=}2/B{=}3$? (4) ¿qué garantía final valora más — aproximación, régimen, policy improvement, certificado — y la celda intermedia: ¿teorema o limitación?; en particular, ¿qué prioridad da a cerrar la vía submodular (la reducción de §20) frente a policy improvement o regret acotado?
+
+---
+
+## 34-bis. Ciclo de sesión con Francisco
+
+**Protocolo (fijo).** Antes de cada sesión: el paquete y las preguntas de §34, congelados en el guion (A-M20). Después de cada sesión: acta en `docs/notes/AAAA-MM-DD-sesion-francisco.md` (transcript o resumen con citas fechadas; disciplina de atribución de la cabecera) y despacho en la tabla siguiente. Cada directriz se clasifica y se resuelve **solo** en estructuras existentes; esta sección nunca contiene objetivos propios.
+
+**Tabla de despacho (buffer rotatorio — vive aquí solo hasta despacharse):**
+
+| Directriz (cita/paráfrasis fechada) | Clasificación | Destino |
+|---|---|---|
+| — | confirma espina / ajusta prioridad / línea nueva / responde pregunta (N) de §34 | milestone (§26) · gate (§25) · fila §32 (origen "sesión") · entrada §0-bis |
+
+**Compromisos fechados externos vigentes:** reformulación de la Conjetura C (P21-A8).
+
+**Reglas de choque:** ninguna directriz reordena gates ni redefine el modelo (§5) sin fila en §32; si contradice la espina, se procesa como R10; las preguntas de §34 respondidas se marcan y se reemplazan por las siguientes. Tras el despacho: la tabla se vacía (la historia queda en §32 y en git) y §1 se reescribe con la asignación de la semana entrante.
 
 ---
 
