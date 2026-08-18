@@ -10,6 +10,12 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
+import pytest
+
+# La clase RL (gymnasium) es opcional: sin ella la coleccion debe saltar el
+# modulo, no romper la suite base (plan maestro §22).
+pytest.importorskip("gymnasium", reason="clase RL opcional: pip install -r requirements-rl.txt")
+
 from augmented.rl_env import DaptsBucketEnv
 
 
