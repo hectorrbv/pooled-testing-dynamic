@@ -43,15 +43,17 @@ Las etapas cierran por gate, no por fecha (§28). La capa operativa (§1) asigna
 
 **Reparto.** A empuja la cadena teórica (A2 → Lema A → formalización del objetivo → celda dinámico-binaria → frontera). B empuja la cadena de instrumentos (reproducibilidad → tests ancla → interfaz de scorers → oráculo → falsificador → candidatas → atlas). El soporte IA empuja literatura, arbitra borradores y arma harness — subordinado a la validación de A y B. Las tres cadenas son paralelas; se sincronizan en los gates.
 
-**Semana del 3-ago (asignación de esfuerzo, no fechas de teoremas):**
+**Semana del 18-ago (asignación de esfuerzo, no fechas de teoremas; provisional — se revisa tras el despacho de la sesión del 2026-08-18):**
+
+*Estado heredado:* cadena B cerrada hasta B-M8 (G1 y G5 aprobados; falsificador operando; notebook 25 con el valor realizable exacto §7 y la degeneración del costo-greedy §8). Cadena A: A-M11 derivado, presentado y validado en sesión (2026-08-11); A-M5–A-M9 (Lema A) pendientes.
 
 | Día | A | B | Soporte IA |
 |---|---|---|---|
-| 1 | A-M0–A-M3: modelo + ejercicios ancla + retomar A2 | B-M0–B-M4: auditoría de APIs, tests ancla (**G1 a ciegas**), reproducibilidad | literatura (C-M1) |
-| 2 | A-M5–A-M7: núcleo algebraico del Lema A | B-M5–B-M6: interfaz de scorers (cableada con $S_0$) + oráculo de rollout (**G5**) | — |
-| 3 | A-M10–A-M12: $S_0$ formal, obstrucciones de S2, diseño de $\varphi_{\mathrm{virgin}}$ y $\varphi$ | B-M7–B-M8: harness del acid test + falsificador | árbitro de A-M12 |
-| 4 | A-M13: **G4a — acid test analítico, en papel** | Si G4a aprueba → B-M9: candidatas $S_3$; si no → iterar diseño con A | harness de garantía |
-| 5 | A-M15: celda dinámico-binaria (primer intento) + guion de sesión | B-M10: **G4b — acid test computacional** + rankings vs. oráculo + revisión cruzada | lupa del paquete |
+| 1 | A-M12: diseño de $\varphi$ incorporando el valor realizable bajo presupuesto (interpolación $S_0 \to V$) y la variante valor/costo (§14) | Extensión B-M6: contador de pruebas-hasta-terminar en el oráculo; documentar la degeneración del costo-greedy con $q<1/2$ | literatura (C-M1) |
+| 2 | Pregunta (9): ¿forma cerrada de $C(T)$ con $u\equiv1$? | Esqueleto de candidatas B-M9 sin cablear (respeta §31) | árbitro de A-M12 |
+| 3 | A-M13: **G4a — acid test analítico, en papel** | Si G4a aprueba → B-M9: candidatas (extraíble aproximada, valor/costo); si no → iterar diseño con A | harness de garantía |
+| 4 | A-M5–A-M7: núcleo algebraico del Lema A (retomar) | B-M10: **G4b — acid test computacional** + rankings vs. oráculo | lupa |
+| 5 | A-M20: guion de sesión + revisión cruzada | Revisión cruzada | lupa del paquete |
 
 La fusión sigue viva: la columna del surrogate en el atlas es a la vez acid test en malla y campo del falsificador; la Conjetura C (P21-A8, fechada con Francisco) se reformula **a la vista de** esa columna. Atlas y garantía solo después de G4b. El calendario cede ante los gates, nunca al revés.
 
