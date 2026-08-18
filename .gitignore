@@ -97,3 +97,8 @@ Vault-GroupCounting/
 # graphify: grafo de conocimiento auto-generado (vault + HTML + JSON). Regenerable
 # con /graphify; no se versiona.
 graphify-out/
+
+# Preview compilable de la seccion de anatomia (fuente si, artefactos no)
+augmented/paper/preview_anatomia_del_gap.aux
+augmented/paper/preview_anatomia_del_gap.log
+augmented/paper/preview_anatomia_del_gap.out

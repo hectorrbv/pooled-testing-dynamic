@@ -1,0 +1,66 @@
+% Envoltura para compilar la seccion de la anatomia del gap por separado.
+% Mismo preambulo que unified_dynamic_augmented_group_counting.tex.
+% Los enunciados de las secciones que la seccion referencia aparecen aqui
+% ABREVIADOS, solo para que las referencias cruzadas resuelvan en el preview.
+% Al integrar, borrar el bloque de stubs y hacer \input del archivo de la seccion.
+
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{microtype}
+\hypersetup{hidelinks, pdftitle={The Anatomy of the Dynamic Gap}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+
+\title{\textbf{The Anatomy of the Dynamic Gap}\\
+\large Preview de la seccion; el resto del paper aparece solo como referencia}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ----------------------------------------------------------------- stubs
+\section*{Contexto referenciado (no forma parte de la seccion)}
+
+\phantomsection\label{sec:separation}
+\noindent\textbf{Separacion.} La seccion de separacion establece que en una
+poblacion homogenea de alta prevalencia el mejor diseno estatico obtiene $Buq$
+mientras que una estrategia dinamica con conteos obtiene al menos
+$u[1-(1-q)^{kG}]$ bajo el mismo objetivo.
+
+\phantomsection\label{sec:laminar-pools}
+\noindent\textbf{Historias laminares.} Los pools probados parten la poblacion
+testeada en atomos residuales disjuntos, uno por pool.
+
+\begin{lemma}[Los atomos residuales parten el soporte testeado]
+\label{lem:atomic-partition}
+En una familia laminar los atomos residuales son disjuntos dos a dos y su union
+es la union de los pools.
+\end{lemma}
+
+\begin{lemma}[Conteos de pool y de atomo se determinan mutuamente]
+\label{lem:count-equivalence}
+Los dos sistemas de restricciones recortan el mismo conjunto de mundos, y las
+sumas por subarbol invierten la resta que define los conteos residuales.
+\end{lemma}
+
+\begin{proposition}[Mejora de politica]
+\label{prop:policy-improvement}
+El rollout replanificado sobre una biblioteca laminar domina al greedy en todo
+estado alcanzable.
+\end{proposition}
+
+\clearpage
+% ----------------------------------------------------------------- la seccion
+\input{seccion_anatomia_del_gap}
+
+\end{document}
