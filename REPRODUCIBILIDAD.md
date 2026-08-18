@@ -14,10 +14,10 @@ pytest
 
 Resultado esperado: **suite verde, sin fallo de colección, con las clases
 opcionales saltadas y la razón visible en el reporte**. Verificado en un venv
-limpio: 181 pasan, 22 se saltan, cero fallos.
+limpio: 213 pasan, 22 se saltan, cero fallos.
 
 Con todas las clases instaladas (`pip install -r requirements-all.txt`) y las
-licencias comerciales vigentes: 208 pasan, cero se saltan.
+licencias comerciales vigentes: 240 pasan, cero se saltan.
 
 ## Clases de dependencia
 
