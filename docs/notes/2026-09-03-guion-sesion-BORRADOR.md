@@ -1,6 +1,6 @@
-# [BORRADOR — A edita y congela el lunes] Guion de sesión 2026-09-01
+# [BORRADOR — A edita y congela el miércoles] Guion de sesión 2026-09-03, 11:00 CDMX
 
-**Protocolo §34-bis:** paquete y preguntas congelados antes de la sesión (A-M20). Este borrador lo preparó el soporte IA (2026-08-30); A lo edita, recorta y congela el lunes. Todo número citado aquí está verificado; etiquetas §25 donde aplica.
+**Protocolo §34-bis:** paquete y preguntas congelados antes de la sesión (A-M20). Este borrador lo preparó el soporte IA (2026-08-30); A lo edita, recorta y congela el miércoles 2-sep (la sesión quedó para el jueves 3-sep, 11:00 CDMX). Todo número citado aquí está verificado; etiquetas §25 donde aplica.
 
 ## Frase de apertura
 

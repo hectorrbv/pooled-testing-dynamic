@@ -1,5 +1,7 @@
 # Plan de la semana 31-ago → 4-sep — objetivo: super-paper (SODA)
 
+> **Actualización 2026-08-31:** la sesión con Francisco quedó para el **jueves 3-sep, 11:00 CDMX** (no el martes). Corrimiento: el guion se congela el **miércoles 2-sep** (borrador ya renombrado a `2026-09-03-guion-sesion-BORRADOR.md`); mar–mié absorben la nota A-M24 y el arranque del solver; los rótulos de día de la tabla se leen con ese desfase y el despacho post-sesión (§34-bis) reescribe el resto.
+
 **Regla de la semana:** seguimos la dirección de Francisco (checar el companion, implementar Bellman, escribir) **empujando a nivel de primer congreso**. Presupuesto realista: **3–4 h/día por persona**. Sesión con Francisco: **martes 1-sep**. Autocontenido: Héctor puede leer esto sin el chat.
 
 **Lectura previa (15–20 min):** acta `docs/notes/2026-08-25-sesion-francisco.md` (D2, D3) · §5 y §16 nuevos del plan maestro · checklist `docs/notes/2026-08-30-inventario-companion.md`.
