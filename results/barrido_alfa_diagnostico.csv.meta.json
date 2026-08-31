@@ -1,0 +1,38 @@
+{
+  "artifact": "barrido_alfa_diagnostico.csv",
+  "columns": [
+    "n",
+    "B",
+    "G",
+    "q",
+    "score",
+    "valor",
+    "v_star",
+    "v_star_laminar",
+    "ratio_vs_optimo"
+  ],
+  "generated_utc": "2026-08-24T19:20:24+00:00",
+  "generator": "augmented/notebooks/build_costo_local_y_no_reentrada_notebook.py",
+  "git": {
+    "commit": "7438ac0ea48cfd46e4dfdfed91e8308431623b18",
+    "dirty": true
+  },
+  "params": {
+    "alcance": "T solo",
+    "estatuto": "diagnostico 23.6; no seleccion de candidata",
+    "malla": "n 4-6, B 1-3, G 2-3, q {0.15,0.30,0.45,0.70}",
+    "metodo": "exacto por enumeracion (sin Monte Carlo)",
+    "prior": "homogeneo",
+    "u": 1
+  },
+  "rows": 360,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.1",
+    "pandas": "2.3.3",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.16.3"
+  }
+}

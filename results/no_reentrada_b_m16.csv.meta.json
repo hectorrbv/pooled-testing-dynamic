@@ -1,0 +1,40 @@
+{
+  "artifact": "no_reentrada_b_m16.csv",
+  "columns": [
+    "opcion",
+    "score_exacto",
+    "score_fraccion",
+    "rango_por_score",
+    "cobrada_esperada_t1",
+    "cobrada_esperada_t2",
+    "cobrada_esperada_t3",
+    "cobrada_esperada_t4",
+    "cobrada_esperada_t5",
+    "cobrada_esperada_t6"
+  ],
+  "generated_utc": "2026-08-24T19:20:07+00:00",
+  "generator": "augmented/notebooks/build_costo_local_y_no_reentrada_notebook.py",
+  "git": {
+    "commit": "7438ac0ea48cfd46e4dfdfed91e8308431623b18",
+    "dirty": true
+  },
+  "params": {
+    "historia": "AB conteo 1",
+    "horizonte": 6,
+    "n": 4,
+    "n_sim": 2000,
+    "politica": "argmax del score de presupuesto magico, menu laminar",
+    "q_sano": "3/10",
+    "utilidad": 1
+  },
+  "rows": 3,
+  "seed": 20260821,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.1",
+    "pandas": "2.3.3",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.16.3"
+  }
+}
