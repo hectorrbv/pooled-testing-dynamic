@@ -70,24 +70,38 @@ class SolverLaminar:
 
     # --- acciones --------------------------------------------------------
     def _acciones(self, U, atomos):
+        """Menu legal: pools virgenes y refinamientos, todos con |S| <= G."""
         acc = []
         U = sorted(U)
         for k in range(1, min(self.G, len(U)) + 1):
             for S in combinations(U, k):
                 acc.append(('open', S))
         for (A, r) in atomos:
-            if r == 0:                      # solo existe bajo strict
-                acc.append(('ref', (A, r), A))   # probar el atomo completo
-                continue
-            for k in range(1, len(A)):
+            if r == 0:                      # deducido limpio: solo existe bajo strict
+                tope = min(self.G, len(A))       # incluye el atomo completo si cabe
+            else:
+                tope = min(self.G, len(A) - 1)   # subconjunto propio, tope G
+            for k in range(1, tope + 1):
                 for S in combinations(A, k):
                     acc.append(('ref', (A, r), S))
         return acc
 
+    @staticmethod
+    def _canoniza(U, atomos):
+        U = frozenset(U)
+        atomos = tuple(sorted((tuple(sorted(A)), r) for A, r in atomos))
+        ocupados = set()
+        for A, r in atomos:
+            if not (0 <= r <= len(A)):
+                raise ValueError(f'conteo invalido {r} para el atomo {A}')
+            if set(A) & (ocupados | U):
+                raise ValueError(f'el atomo {A} pisa a U o a otro atomo')
+            ocupados |= set(A)
+        return U, atomos
+
     # --- recursion 5.5 ----------------------------------------------------
     def V(self, U, atomos, b):
-        U = frozenset(U)
-        atomos = tuple(sorted(atomos))
+        U, atomos = self._canoniza(U, atomos)
         clave = (U, atomos, b)
         if clave in self.memo:
             return self.memo[clave]
@@ -135,13 +149,17 @@ class SolverLaminar:
         return total
 
     def valor_forzando_primera(self, U, atomos, b, accion):
-        """Evalua una primera accion fija con continuacion optima."""
-        return self._q_accion(frozenset(U), tuple(sorted(atomos)), b, accion)
+        """Evalua una primera accion fija (y legal) con continuacion optima."""
+        U, atomos = self._canoniza(U, atomos)
+        if b < 1 or accion not in self._acciones(U, atomos):
+            raise ValueError(f'accion ilegal en este estado: {accion}')
+        return self._q_accion(U, atomos, b, accion)
 
     def politica(self, U, atomos, b):
         """Primera accion optima (tras llamar V)."""
+        U, atomos = self._canoniza(U, atomos)
         self.V(U, atomos, b)
-        return self.argmax[(frozenset(U), tuple(sorted(atomos)), b)]
+        return self.argmax[(U, atomos, b)]
 
 
 def _valida_y_demo():
@@ -204,6 +222,7 @@ def _valida_y_demo():
     print(f'dual posterior-zero: optimo {v_z} = {float(v_z):.4f} '
           f'(par primero {v_par_z} = {float(v_par_z):.4f}; '
           f'primera accion optima: {sol_z.politica(U0, (), B)})')
+    assert v_z == Fraction(387, 500) and v_par_z == v_z
     assert v_z >= v_s and v_par_z > v_par
 
     # Reentrada del contraejemplo (atomo {a,b} con 1 infectado, 1 prueba):
@@ -217,11 +236,31 @@ def _valida_y_demo():
     print('OK ratificacion G0: reentrada 0.5 (strict) -> 1.0 (posterior_zero)')
 
     # Extra: B=3, mismos parametros, ambos flags (para la demo del martes).
-    for conv, sol in (('strict', SolverLaminar(p, u, G, 'strict')),
-                      ('posterior_zero', SolverLaminar(p, u, G, 'posterior_zero'))):
-        v3 = sol.V(U0, (), 3)
-        print(f'B=3 {conv:14s}: {v3} = {float(v3):.4f} '
+    v3 = {}
+    for conv in ('strict', 'posterior_zero'):
+        sol = SolverLaminar(p, u, G, conv)
+        v3[conv] = sol.V(U0, (), 3)
+        print(f'B=3 {conv:14s}: {v3[conv]} = {float(v3[conv]):.4f} '
               f'(primera accion: {sol.politica(U0, (), 3)})')
+    # Consistencia con el notebook 24: q(3q^2-3q+4) en q=0.3.
+    assert v3['strict'] == Fraction(1011, 1000)
+
+    # Regresiones del review adversarial (2026-08-31):
+    # (a) el tope G aplica tambien a refinamientos — atomo de 4 con G=1.
+    p2 = {i: Fraction(1, 2) for i in range(4)}
+    at4 = (((0, 1, 2, 3), 1),)
+    assert SolverLaminar(p2, u, 1, 'strict').V((), at4, 1) == Fraction(3, 4)
+    assert SolverLaminar(p2, u, 1, 'posterior_zero').V((), at4, 1) == Fraction(3, 2)
+    # (b) bajo strict, el atomo deducido de conteo 0 ofrece subconjuntos <= G.
+    assert SolverLaminar(p2, u, 1, 'strict').V((), (((0, 1), 0),), 1) == 1
+    # (c) las acciones ilegales se rechazan en la API publica.
+    try:
+        sol_s.valor_forzando_primera(U0, (), B, ('open', (0, 1, 2)))
+        raise RuntimeError('debio rechazar la accion ilegal')
+    except ValueError:
+        pass
+    print('OK regresiones: tope G en refinamientos, menu strict r=0 por '
+          'subconjuntos, y rechazo de acciones ilegales')
 
 
 def _peso(zvec, A, p):
