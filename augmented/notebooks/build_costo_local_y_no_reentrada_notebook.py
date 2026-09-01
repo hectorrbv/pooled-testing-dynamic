@@ -23,24 +23,24 @@ def code(s): C.append(nbf.v4.new_code_cell(s.strip()))
 
 # ============================================================ PORTADA
 md(r"""
-# Costo local, no-reentrada y el barrido de α
+# Costo local, no-reentrada, barrido de α y la brecha de convención
 
-**Cómo leerlo.** Ocho secciones que despachan los encargos de la sesión del 18
-de agosto: la degeneración que se corrige (§1), la medición nueva de C(T) con
-greedy local posterior a la prueba (§2, B-M6), la re-corrida de la preocupación
-q = 0.7 (§3), el contraejemplo de no-reentrada con su artefacto exacto (§4,
-B-M16), los datos del flag de alcance sobre ese estado (§5), y el barrido
-diagnóstico de la familia V/C^α: sus reglas ancladas al contraejemplo (§6), la
-corrida sobre la malla exacta (§7) y el flag dentro de la corrida (§8).
+**Cómo leerlo.** Dos partes que no se mezclan. La **parte I** (§1–§8) son los
+resultados cerrados de la semana del 18 de agosto: costo local (B-M6),
+contraejemplo de no-reentrada (B-M16), flag de alcance y barrido V/C^α — todos
+bajo la convención **estricta** vigente cuando se construyeron. La **parte II**
+(§9–§12) es lo que cambió con la ratificación de G0 (posterior-zero,
+31-ago) y el solver exacto B-M17 como testigo: la segunda vía, la brecha de
+convención que cambia la política, el empate exacto en B = 3, y el candidato
+C3 de la misión de búsqueda, con su estatuto.
 
-**Estatuto del barrido.** Diagnóstico, no selección de candidata: la sesión
-fijó que el colapso valor/costo es un problema tipo knapsack sin respuesta
-canónica. Ningún α se congela aquí; la adopción pasa por G4a/G4b.
+**Estatuto.** El barrido de α y el candidato C3 son diagnósticos, no selección
+de candidata: la adopción pasa por G4a/G4b. Los resultados de la parte I
+siguen siendo correctos como **variante estricta** (columna del harness,
+pregunta 21 de §34).
 
-**Procedencia.** Cada número se regenera en su celda; los artefactos de §4 y §7
-se escriben a `results/` con sidecar. El barrido no usa Monte Carlo: cada
-política es determinista dada la historia y su valor es una suma exacta sobre
-los 2^n estados. Nada escrito a mano.
+**Procedencia.** Cada número se regenera en su celda o se lee de un artefacto
+versionado con sidecar; sin Monte Carlo. Nada escrito a mano.
 
 **Los tres regímenes, con sus nombres completos.** Se distinguen siempre:
 **estático** (las pruebas se fijan de antemano), **dinámico binario**
@@ -75,6 +75,18 @@ RES = RAIZ / 'results'
 print('repo:', RAIZ.name)
 """)
 
+
+# ============================================================ PARTE I
+md(r"""
+---
+# PARTE I — Resultados cerrados (variante estricta)
+
+Todo lo de esta parte tiene artefacto con procedencia y quedó verificado bajo
+la regla vigente al construirse: **deducir no acredita** (hard clearing
+estricto). Con la ratificación de G0 esa regla pasó a ser la variante
+etiquetada del harness; los números que cambian bajo posterior-zero se
+re-derivan en la parte II.
+""")
 
 # ---------------------------------------------------------- 1
 md(r"""
@@ -1034,6 +1046,310 @@ acción (alcance amplio) o al valor del estado (T solo más un término aparte)?
 """)
 
 
+# ============================================================ PARTE II
+md(r"""
+---
+# PARTE II — La brecha de convención y el solver exacto
+
+La sesión del 25 de agosto trajo el companion y dos cambios: la convención
+normativa pasó a **posterior-zero** (la deducción acredita; G0, ratificado el
+31-ago) y el encargo B-M17: implementar la ecuación de Bellman exacta. Esta
+parte usa ese solver como testigo. Nota de traducción: el solver habla la
+convención del companion (la prueba reporta el conteo de **infectados**); los
+enunciados de abajo siguen hablando de sanos, como el resto del notebook.
+""")
+
+# ---------------------------------------------------------- 9
+md(r"""
+## 9. El solver exacto, cotejado por segunda vía
+
+El solver (recursión 5.5 del companion: estado = vírgenes + átomos residuales
++ presupuesto, memoizado, en fracciones) se validó contra los tests de
+aceptación que A derivó a mano, y contra un resultado viejo: el óptimo del
+caso de sesión del notebook 24.
+""")
+
+md(r"""
+**Afirmación.** En la instancia del contraejemplo (n = 4, q = 0.3, G = 2), el
+solver reproduce exacto la spec de A bajo la variante estricta — óptimo 3/5
+con B = 2, sin agrupar — y con B = 3 devuelve q(3q² − 3q + 4) = 1.011, el
+óptimo del caso de sesión, por una vía independiente.
+""")
+
+code(r"""
+from augmented.bm17_toy_solver import SolverLaminar
+
+Q_SANO = Fraction(3, 10)
+p_inf = {i: 1 - Q_SANO for i in range(4)}
+u_uno = {i: Fraction(1) for i in range(4)}
+U4 = frozenset(range(4))
+
+valores = {}
+for conv in ('strict', 'posterior_zero'):
+    for B_ in (2, 3):
+        valores[(conv, B_)] = SolverLaminar(p_inf, u_uno, 2, conv).V(U4, (), B_)
+
+# Spec de A (tests de aceptacion, 2026-08-20): optimo estricto 3/5, sin agrupar.
+assert valores[('strict', 2)] == Fraction(3, 5)
+sol_s = SolverLaminar(p_inf, u_uno, 2, 'strict')
+assert len(sol_s.politica(U4, (), 2)[1]) == 1
+# Consistencia con el notebook 24: q(3q^2 - 3q + 4) en q = 0.3.
+q = Q_SANO
+assert valores[('strict', 3)] == q * (3*q**2 - 3*q + 4) == Fraction(1011, 1000)
+tabla = pd.DataFrame([{'convención': c, 'B': B_, 'óptimo laminar': float(v)}
+                      for (c, B_), v in valores.items()])
+print(tabla.to_string(index=False, float_format=lambda x: f'{x:.4f}'))
+print('\nOK: spec de A reproducida y consistencia exacta con el notebook 24')
+""")
+
+code(r"""
+fig, ax = plt.subplots(figsize=(6.6, 3.0))
+x = np.arange(2); ancho = 0.36
+v_s = [float(valores[('strict', B_)]) for B_ in (2, 3)]
+v_z = [float(valores[('posterior_zero', B_)]) for B_ in (2, 3)]
+ax.bar(x - ancho/2, v_s, ancho, color=GRIS, label='estricta (deducir no acredita)')
+ax.bar(x + ancho/2, v_z, ancho, color=AZUL, label='posterior-zero (G0)')
+ax.set_xticks(x); ax.set_xticklabels(['B = 2', 'B = 3'])
+ax.set_ylabel('óptimo laminar exacto')
+ax.legend(frameon=False, fontsize=9)
+ax.set_title('El óptimo de la instancia del contraejemplo bajo las dos convenciones')
+plt.tight_layout(); plt.show()
+""")
+
+md(r"""
+**Lectura.** El solver coincide dígito por dígito con las dos referencias
+independientes que existían (la enumeración a mano de A y el caso del
+notebook 24). Con eso queda habilitado como juez para todo lo que sigue.
+""")
+
+md(r"""
+**Para discutir.** La validación de dos vías contra el enumerador pathwise
+(n ≤ 5) está agendada; ¿algún otro ancla viejo vale la pena cotejar?
+""")
+
+# ---------------------------------------------------------- 10
+md(r"""
+## 10. La brecha de convención cambia la política
+
+La cuenta de la ratificación de G0, ahora por máquina. En el estado del
+contraejemplo, la reentrada con {a} vale 0.5 bajo estricta (la rama donde
+deduces a la sana no cobra) y 1.0 bajo posterior-zero (las dos ramas cobran).
+Esa diferencia se propaga hasta la acción inicial.
+""")
+
+md(r"""
+**Afirmación.** Con B = 2 la convención no solo mueve el valor: cambia la
+primera acción óptima — estricta abre un singleton (3/5); posterior-zero abre
+el par (387/500 = 0.774), porque el par con conteo 1 más una prueba cobra 1
+seguro.
+""")
+
+code(r"""
+atomo_ab = (((0, 1), 1),)
+reent = {}
+for conv in ('strict', 'posterior_zero'):
+    sol = SolverLaminar(p_inf, u_uno, 2, conv)
+    reent[conv] = sol.valor_forzando_primera(
+        frozenset((2, 3)), atomo_ab, 1, ('ref', ((0, 1), 1), (0,)))
+assert reent['strict'] == Fraction(1, 2) and reent['posterior_zero'] == 1
+print(f"reentrada con {{a}}: estricta {reent['strict']}, "
+      f"posterior-zero {reent['posterior_zero']}")
+
+primeras = {}
+for conv in ('strict', 'posterior_zero'):
+    sol = SolverLaminar(p_inf, u_uno, 2, conv)
+    primeras[conv] = {
+        'singleton': sol.valor_forzando_primera(U4, (), 2, ('open', (0,))),
+        'par': sol.valor_forzando_primera(U4, (), 2, ('open', (0, 1)))}
+assert primeras['strict']['singleton'] == Fraction(3, 5) \
+    and primeras['strict']['singleton'] > primeras['strict']['par']
+assert primeras['posterior_zero']['par'] == Fraction(387, 500) \
+    and primeras['posterior_zero']['par'] > primeras['posterior_zero']['singleton']
+print('\nvalor de cada primera accion (B = 2):')
+for conv, d in primeras.items():
+    print(f"  {conv:14s}: singleton {float(d['singleton']):.3f}, "
+          f"par {float(d['par']):.3f}")
+print('\nOK: el argmax cambia de singleton (estricta) a par (posterior-zero)')
+""")
+
+code(r"""
+fig, ax = plt.subplots(figsize=(6.6, 3.0))
+x = np.arange(2); ancho = 0.36
+sing = [float(primeras[c]['singleton']) for c in ('strict', 'posterior_zero')]
+par = [float(primeras[c]['par']) for c in ('strict', 'posterior_zero')]
+ax.bar(x - ancho/2, sing, ancho, color=GRIS, label='primera acción: singleton')
+ax.bar(x + ancho/2, par, ancho, color=AZUL, label='primera acción: abrir el par')
+ax.set_xticks(x); ax.set_xticklabels(['estricta', 'posterior-zero'])
+ax.set_ylabel('valor con continuación óptima (B = 2)')
+ax.legend(frameon=False, fontsize=9)
+ax.set_title('La primera acción óptima se invierte al cambiar la convención')
+plt.tight_layout(); plt.show()
+""")
+
+md(r"""
+**Lectura.** La deducción gratuita vuelve rentable el agrupamiento donde antes
+no lo era: es la evidencia computacional de la Proposición de brecha de
+convención (los números duales de B-M18). Nada de la parte I queda invalidado
+— queda etiquetado como la variante estricta.
+""")
+
+md(r"""
+**Para discutir.** ¿La Proposición se enuncia sobre esta instancia mínima o
+sobre la familia (la brecha como función de q y B)?
+""")
+
+# ---------------------------------------------------------- 11
+md(r"""
+## 11. El empate exacto en B = 3: la brecha no es monótona
+
+Si la ventaja de agrupar viniera de la convención sola, crecería con el
+presupuesto. No: el motor es la maniobra "par con conteo 1 + una prueba
+= cobro seguro", que con B = 2 exige empezar por el par. Con B = 3 sobra
+presupuesto para hacerla después de cualquier inicio.
+""")
+
+md(r"""
+**Afirmación.** Bajo posterior-zero con B = 3, el singleton y el par empatan
+exactos como primera acción (537/500 por ambos caminos): la ventaja estricta
+del par en B = 2 (+0.174) se disuelve cuando el presupuesto deja de ser
+escaso.
+""")
+
+code(r"""
+ventaja = {}
+for B_ in (2, 3):
+    sol = SolverLaminar(p_inf, u_uno, 2, 'posterior_zero')
+    v_par = sol.valor_forzando_primera(U4, (), B_, ('open', (0, 1)))
+    v_sing = sol.valor_forzando_primera(U4, (), B_, ('open', (0,)))
+    ventaja[B_] = (v_par, v_sing, v_par - v_sing)
+    print(f'B = {B_}: par {v_par} ({float(v_par):.4f}), '
+          f'singleton {v_sing} ({float(v_sing):.4f}), '
+          f'ventaja del par {float(v_par - v_sing):+.4f}')
+assert ventaja[2][2] > 0
+assert ventaja[3][0] == ventaja[3][1] == Fraction(537, 500)
+print('\nOK: ventaja estricta en B = 2 y empate EXACTO en B = 3 (fracciones)')
+""")
+
+code(r"""
+fig, ax = plt.subplots(figsize=(6.2, 3.0))
+bs = [2, 3]
+ax.bar(bs, [float(ventaja[b][2]) for b in bs], 0.5, color=AZUL)
+ax.axhline(0, color=TINTA, lw=1)
+ax.set_xticks(bs); ax.set_xticklabels(['B = 2', 'B = 3'])
+ax.set_ylabel('ventaja de abrir el par primero')
+ax.set_title('La ventaja del par bajo posterior-zero se disuelve al crecer B')
+plt.tight_layout(); plt.show()
+""")
+
+md(r"""
+**Lectura.** La brecha de convención es un fenómeno de **presupuesto escaso**:
+la deducción vale oro cuando no alcanza para la prueba acreditadora y se
+diluye cuando sobra. El enunciado de la Proposición debe condicionar en esa
+escasez.
+""")
+
+md(r"""
+**Para discutir.** ¿Cuál es la forma correcta de la condición de escasez —
+B contra el costo de la maniobra, o algo más fino?
+""")
+
+# ---------------------------------------------------------- 12
+md(r"""
+## 12. La misión V̂: un score de fórmula cerrada al 99.9% del óptimo
+
+**Estatuto: descubierto por búsqueda automática, diagnóstico (§25, candidata
+E de §14.8), pendiente de G4a/G4b.** La misión del harness autoresearch buscó
+una fórmula score(acción) cuya política golosa se acercara al óptimo exacto,
+con el solver de §9 como juez. El candidato final (C3) tiene tres sumandos
+legibles: cobro inmediato con el crédito del complemento deducido (el M_h del
+companion bajo G0), promesa ponderada por factibilidad presupuestal (la tijera
+suave), y el costo de oportunidad de los vírgenes no consumidos.
+""")
+
+md(r"""
+**Afirmación.** C3 alcanza media 0.9993 y peor caso 0.9647 contra el óptimo
+exacto en las 48 instancias de entrenamiento, y 1.0 exacto en las 4 de
+held-out (n = 6) — cerrando la disyuntiva de las semillas, que tenían buena
+media o buen peor caso pero no ambos.
+""")
+
+code(r"""
+from augmented.evolucion_scores import evalua, TRAIN, HELDOUT, SEMILLAS
+
+C3 = '''
+def score(ctx):
+    u_S = ctx['u_S']
+    tam = ctx['tam']
+    imm = ctx['p_limpio'] * u_S
+    if ctx['tipo'] == 'ref':
+        at, r = ctx['atomo_tam'], ctx['atomo_r']
+        resto = at - tam
+        if resto > 0 and 0 < r <= tam:
+            imm += (math.comb(tam, r) / math.comb(at, r)) * (u_S / tam) * resto
+    promesa = ctx['v_magico'] - ctx['p_limpio'] * u_S
+    total = imm
+    if promesa > 0:
+        c_extra = math.ceil(math.log2(tam)) if tam > 1 else 1
+        total += min(1.0, (ctx['b'] - 1) / c_extra) * promesa
+    virg = ctx['virgenes'] - (tam if ctx['tipo'] == 'open' else 0)
+    if virg > 0 and ctx['b'] > 1:
+        total += min(ctx['b'] - 1, virg) * (ctx['e_sanos'] / tam) * (u_S / tam)
+    return total
+'''
+
+filas = []
+for nombre, codigo in list(SEMILLAS.items()) + [('C3 (keep candidato)', C3)]:
+    mt, pt, _ = evalua(codigo, TRAIN)
+    mh, ph, _ = evalua(codigo, HELDOUT)
+    filas.append({'candidato': nombre, 'media train': mt, 'peor train': pt,
+                  'media held-out': mh, 'peor held-out': ph})
+mision = pd.DataFrame(filas)
+print(mision.to_string(index=False, float_format=lambda x: f'{x:.4f}'))
+
+# Autoverificacion contra el scoreboard versionado de la mision.
+board = pd.read_csv(RAIZ / 'results' / 'vhat_mission_scoreboard.tsv', sep='\t')
+c3_board = board[board.description.str.contains('KEEP-CANDIDATO FINAL')].iloc[0]
+c3_vivo = mision.iloc[-1]
+assert abs(c3_vivo['media train'] - c3_board.media_train) < 1e-6
+assert abs(c3_vivo['peor train'] - c3_board.peor_train) < 1e-6
+assert c3_vivo['media held-out'] == 1.0 and c3_vivo['peor held-out'] == 1.0
+print('\nOK: C3 re-evaluado en vivo coincide con el scoreboard versionado')
+""")
+
+code(r"""
+fig, ax = plt.subplots(figsize=(6.8, 3.4))
+puntos = {}
+for _, f in mision.iterrows():
+    xy = (round(f['media train'], 6), round(f['peor train'], 6))
+    puntos.setdefault(xy, []).append(f.candidato.split(' ')[0])
+for (mx, px), nombres in puntos.items():
+    es_c3 = any('C3' in n for n in nombres)
+    ax.scatter(mx, px, s=90 if es_c3 else 55,
+               color=AZUL if es_c3 else GRIS, zorder=3 if es_c3 else 2)
+    ax.annotate(' / '.join(nombres), (mx, px),
+                textcoords='offset points', xytext=(6, 4), fontsize=8)
+ax.axvline(0.8780, color=AMBAR, ls='--', lw=1)
+ax.axhline(0.6877, color=AMBAR, ls='--', lw=1)
+ax.set_xlabel('ratio medio contra el óptimo exacto')
+ax.set_ylabel('peor ratio')
+ax.set_title('La misión V̂: cada candidato en el plano media contra peor caso')
+plt.tight_layout(); plt.show()
+""")
+
+md(r"""
+**Lectura.** Las semillas viven en la disyuntiva (o media o peor caso, nunca
+ambos, delimitada por las líneas de la barra); C3 sale de ella con una fórmula
+de un paso, interpretable, cuyo ingrediente decisivo fue el costo de
+oportunidad de los vírgenes. La advertencia sigue en pie: benchmark homogéneo
+con u = 1 y G ≤ 3, y dos términos asumen esa homogeneidad.
+""")
+
+md(r"""
+**Para discutir.** La gran pregunta de la sesión pasada — ¿qué sustituto
+computable captura suficiente información futura? — tiene ahora una respuesta
+empírica de tres términos. ¿Cuál de los tres merece intento de teorema?
+""")
+
 # ---------------------------------------------------------- cierre
 md(r"""
 ---
@@ -1053,9 +1369,14 @@ md(r"""
 | Estatuto de diagnóstico (no selección) | ningún α se congela; umbral α* ≈ 0.756 documentado; pregunta (14) abierta | §6–§7 |
 | Flag de alcance como dimensión del barrido | corre en las dos posiciones dentro de la corrida; cambia el valor en ambas direcciones | §8 |
 | Artefacto del barrido | `results/barrido_alfa_diagnostico.csv` + sidecar | §7 |
+| B-M17: solver exacto, cotejado por segunda vía | spec de A + consistencia con el notebook 24, exactas | §9 |
+| Números duales de la brecha de convención (B-M18 mínimo) | reentrada 0.5 → 1.0; el argmax cambia de singleton a par | §10 |
+| No-monotonía de la brecha en B | ventaja +0.174 en B = 2, empate exacto en B = 3 | §11 |
+| Misión V̂: candidato C3 | media 0.9993 / peor 0.9647, held-out perfecto; diagnóstico §25, pendiente G4a/G4b | §12 |
 
-Cap declarado del barrido: prior homogéneo y utilidad plana; los priors
-bimodales y la utilidad heterogénea de la matriz 23.1 entran tras G4b.
+Cap declarado del barrido y de la misión: prior homogéneo y utilidad plana;
+los priors bimodales y la utilidad heterogénea de la matriz 23.1 entran tras
+G4b.
 """)
 
 nb['cells'] = C
