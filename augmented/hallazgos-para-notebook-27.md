@@ -39,9 +39,11 @@ agrupamiento donde antes no lo era.
 
 Con B = 3 (estricta) el solver da 1011/1000 = 1.011 = q(3q² − 3q + 4): el
 óptimo del caso de sesión, reproducido por un artefacto independiente. Bajo
-posterior-zero sube a 537/500 = 1.074 y la primera acción óptima es un
-**singleton** — la política óptima no es monótona en la convención al variar
-B; eso merece su propia celda.
+posterior-zero sube a 537/500 = 1.074, y ahí el par y el singleton **empatan
+exactos** como primera acción (verificado forzando ambas): la ventaja
+estricta de agrupar que existe en B = 2 (+0.174) se disuelve cuando el
+presupuesto deja de ser escaso. La ventaja no es monótona en B; eso merece su
+propia celda.
 
 ## 4. Hallazgo de diseño: la forma atom-normal depende de la convención
 
