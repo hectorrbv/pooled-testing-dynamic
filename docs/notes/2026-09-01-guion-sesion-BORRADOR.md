@@ -34,6 +34,11 @@
 - Hallazgo de lectura: la ventaja de densidad exige $G>1+\lceil\log_2 G\rceil$ ⟹ $G\ge4$ — nuestras mallas chicas ($G\in\{2,3\}$) no pueden exhibir el mecanismo; lo incorporamos a las matrices.
 - Pregunta relámpago si sobra minuto: ¿el "ejemplo del presupuesto-infinito" que anunciaste ya tiene forma?
 
+**Adenda pre-sesión (1-sep, tras el push nocturno de B; cada número con dos vías):**
+- La brecha de convención **cambia la política óptima, no solo el valor** (instancia B-M16: $n{=}4$, $q{=}0.3$, $B{=}2$, $G{=}2$): óptimo estricto $3/5 = 0.60$ y **nunca agrupa**; óptimo posterior-zero $387/500 = 0.774$ y **abre el par**. Vías: solver exacto de B (31-ago) + re-derivación a mano independiente (soporte IA, 1-sep). Es la primera evidencia computacional de la Proposición declarada abajo.
+- Con $B{=}3$: estricta $1011/1000 = 1.011$ (coincide con la forma cerrada del notebook 24); posterior-zero $537/500 = 1.074$ con **empate exacto par–singleton como primera acción**: la ventaja de agrupar no es monótona en $B$.
+- Las tres cuentas de G0 fueron re-derivadas de forma independiente por B (`docs/notes/2026-08-31-ratificacion-G0-cuentas-B.md`): la ratificación llegó con verificación de dos vías, estilo G1.
+
 ## Logística
 
 - Confirmar la hora estable del semestre (mar/jue das clase).
