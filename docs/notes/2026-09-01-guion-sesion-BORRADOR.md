@@ -1,16 +1,16 @@
-# [BORRADOR — A edita y congela hoy, lunes 31-ago] Guion de sesión 2026-09-01, 11:00 CDMX
+# [CONGELADO 2026-09-01, pre-sesión] Guion de sesión 2026-09-01, 11:00 CDMX
 
-**Protocolo §34-bis:** paquete y preguntas congelados antes de la sesión (A-M20). Este borrador lo preparó el soporte IA (2026-08-30); A lo edita, recorta y congela el lunes 31-ago — la sesión es el **martes 1-sep, 11:00 CDMX**. Si G0 no queda ratificado por B esta noche, ajustar el punto 1 del paquete a "aprobado por A; ratificación de B en curso". Todo número citado aquí está verificado; etiquetas §25 donde aplica.
+**Protocolo §34-bis:** paquete y preguntas congelados antes de la sesión (A-M20). Borrador del soporte IA (2026-08-30), congelado el 2026-09-01 con los hechos confirmados: **G0 ratificado por B el 31-ago** y **el prototipo Bellman corre**. Reparto acordado: A lleva paquete, preguntas y declaración; **B presenta el punto 3 (B-M17 + demo)**. Todo número citado aquí está verificado; etiquetas §25 donde aplica.
 
 ## Frase de apertura
 
-> "Aplicamos el despacho completo de la sesión pasada: adoptamos posterior-zero como nos dijiste — ya está en el modelo, con la variante estricta etiquetada para comparación —, tenemos el companion inventariado resultado por resultado como checklist de verificación, y Bellman ya está en diseño [/ corriendo en juguete]. Traemos cinco preguntas de decisión y una declaración de trabajo."
+> "Aplicamos el despacho completo de la sesión pasada: adoptamos posterior-zero como nos dijiste — ya está en el modelo, con la variante estricta etiquetada para comparación —, tenemos el companion inventariado resultado por resultado como checklist de verificación, y Bellman ya está diseñado y corriendo en juguete. Traemos cinco preguntas de decisión y una declaración de trabajo."
 
 ## Paquete (mostrar, en este orden)
 
-1. **G0 ejecutado** — "soft clearing es mejor" → §5 reescrito (posterior-zero normativo; estricta como variante nombrada). Ratificado por ambos el lunes. Cascada re-derivada: ancla del acid test $k{=}3$, $1-0.95^{48}\approx 0.9147u$ (antes $0.806u$); en el contraejemplo de no-reentrada la reentrada pasa de 0.5 a **1.0**.
+1. **G0 ejecutado** — "soft clearing es mejor" → §5 reescrito (posterior-zero normativo; estricta como variante nombrada). Ratificado por ambos (A 30-ago, B 31-ago) — G0 cerrado. Cascada re-derivada: ancla del acid test $k{=}3$, $1-0.95^{48}\approx 0.9147u$ (antes $0.806u$); en el contraejemplo de no-reentrada la reentrada pasa de 0.5 a **1.0**.
 2. **Inventario del companion** (`docs/notes/2026-08-30-inventario-companion.md`): las ~18 piezas con estatus; verificado ya: aritmética de Prop 6.2, Ejemplo 7.5, testigo de Prop 8.5 bajo ambas convenciones ($q<1/2$). Prioridad de lectura §8–§10, como pediste; tú tomas §8+, nosotros vamos detrás con lupa.
-3. **B-M17 (Bellman)**: nota de diseño siguiendo Prop 6.1 Steps 1–6, con flag de convención (posterior-zero / estricta) [+ demo del prototipo $n\le4$, si corrió].
+3. **B-M17 (Bellman)** — *lo presenta B*: nota de diseño siguiendo Prop 6.1 Steps 1–6, con flag de convención (posterior-zero / estricta) + **demo del prototipo ($n\le4$), que ya corre**.
 4. **Confluencia**: tu §3 y nuestro tensor/Lema A son el mismo objeto por rutas independientes (ec. 3.5 ≡ nuestra forma cerrada; la caché por convolución ya está implementada y testeada en `laminar_tables.py`) — B-M17 la reutiliza tal cual.
 5. **En curso esta semana**: escritura del documento formal bajo posterior-zero (mié–jue), outline del paper (vie), y la pieza de abajo.
 
@@ -30,7 +30,7 @@
 
 ## Extras (mantra — solo si hay tiempo, nunca como claims)
 
-- Demo del toy Bellman (si corre) sobre la instancia del contraejemplo.
+- Demo del toy Bellman sobre la instancia del contraejemplo (confirmado que corre; si el punto 3 va corto de tiempo, la demo vive aquí).
 - Hallazgo de lectura: la ventaja de densidad exige $G>1+\lceil\log_2 G\rceil$ ⟹ $G\ge4$ — nuestras mallas chicas ($G\in\{2,3\}$) no pueden exhibir el mecanismo; lo incorporamos a las matrices.
 - Pregunta relámpago si sobra minuto: ¿el "ejemplo del presupuesto-infinito" que anunciaste ya tiene forma?
 
