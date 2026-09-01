@@ -170,6 +170,16 @@ mitad deduce al sano pero aún debe acreditarlo (2 subpruebas). Con conteos 0 y
 """)
 
 md(r"""
+**Definición.** C(T) = número esperado de subpruebas que el greedy restringido
+a T necesita, **después** de la prueba de T, para dejar a cada miembro
+acreditado o resuelto, promediando sobre los conteos posibles de T; el total
+con la prueba de T incluida es 1 + C(T). Es la tercera coordenada junto a las
+dos ya definidas: S0(T) = P(pool limpio) × u(T) puntúa el cobro inmediato,
+V(T) (presupuesto mágico) = suma de P(sano) × u puntúa la promesa, y C(T) mide
+cuántas pruebas cuesta convertir esa promesa en certificados.
+""")
+
+md(r"""
 **Afirmación.** Medido así, el costo deja de ser plano: depende de q y de m, y
 discrimina precisamente en el régimen q < 0.5 donde la medición global devolvía
 siempre m.
