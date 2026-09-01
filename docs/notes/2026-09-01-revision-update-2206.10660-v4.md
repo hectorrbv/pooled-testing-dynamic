@@ -19,33 +19,47 @@ citar cualquier enunciado en el paper propio.**
 | Poblaciones con tipos | — | **E.2: clusters de (u, q) idénticos** — greedy casi-óptimo repitiendo el test casi-óptimo; MILP con clusters |
 | Empírico | descripción del piloto | MILP validado contra fuerza bruta; greedy ≥ **99.37%** en datos del piloto (B hasta 34, G ∈ {5,10}); sintético n = 200 con q ~ U[0.5,1] y u normal; RCT con análisis formal (ANCOVA + **equivalencia TOST** en d = 0.5 para satisfacción/desempeño/productividad/aprendizaje; estrés no establecido, p = 0.079) |
 
-## 2. Ideas del v4 que sirven aquí — preguntas para Francisco
+## 2. Ideas del v4 que sirven aquí — tres preguntas para Francisco
 
-1. **Subset-domination (Thm 6).** Su greedy con oráculo aproximado pierde la
-   garantía exponencialmente en B; la restauran evaluando los 2^G
-   subconjuntos del test devuelto. *Pregunta: ¿ese post-proceso se transfiere
-   al greedy dinámico del companion (§8) para tolerar oráculos aproximados de
-   pool virgen — el obstáculo de raíces endógenas de 10.3?*
-2. **MICP/FPTAS como oráculo de raíz.** La Conj. 10.7 permite explícitamente
-   un oráculo del objetivo local. *Pregunta: ¿el MICP del test único estático
-   sirve como ese oráculo para elegir pools raíz en poblaciones grandes y
-   heterogéneas, casando las dos cajas de herramientas?*
-3. **1/(e+1) estático vs 1/G dinámico.** Su greedy estático tiene constante
-   independiente del tamaño de pool; nuestro inmediato dinámico es 1/G
-   ajustado. *Pregunta: ¿qué rompe el análisis telescópico de su Prop 4 en el
-   canal de conteo — es el mismo mecanismo (option value sin cobro inmediato)
-   de la Cor 8.4?* Señalaría exactamente dónde debe vivir el teorema nuestro.
-4. **Factor 2 de solapes ↔ factor G laminar.** Analogía de programa: su
-   pregunta "¿cuánto cuesta la restricción operativa?" con respuesta
-   constante; la nuestra (10.6) sigue abierta con piso 1/G. *Pregunta: ¿el
-   argumento del factor 2 (duplicar al sano en dos tests) tiene contraparte
-   laminar-aumentada, o el conteo rompe la simetría?*
-5. **Clusters (E.2) ↔ tipos (Prop 6.2 del companion).** Mismo movimiento en
-   estático y en dinámico. *Pregunta: ¿heredamos el formato exacto de
-   clusters del piloto (los 6 grupos demográficos × utilidades encuestadas)
-   como benchmark canónico del solver por tipos?*
-6. **Metodología TOST** para claims empíricos de equivalencia — anotada para
-   cuando el proyecto llegue a datos; sin acción hoy.
+(Versión simplificada tras revisión cruzada 2026-09-01; las cinco técnicas
+originales quedan absorbidas o descartadas abajo. Cada pregunta: qué se
+pregunta, por qué importa, y qué desbloquea la respuesta.)
+
+**P1 — La de dirección.** *"Con lo que ya tenemos — el solver exacto chico,
+el contraejemplo y las heurísticas — ¿cuál es la siguiente evidencia que de
+verdad cambiaría lo que creemos sobre una garantía constante: encontrar una
+familia de instancias mala, demostrar una desigualdad nueva, o medir un
+benchmark grande por tipos?"*
+Por qué importa: evita implementar mejoras sin saber qué resultado mueve el
+proyecto. Qué desbloquea: la meta de las próximas 4–6 semanas y el criterio
+para priorizar teoría vs contraejemplos vs cómputo.
+
+**P2 — La de la barrera.** *"Tu greedy estático nuevo garantiza una constante
+(1/(e+1)) sin importar el tamaño de pool; nuestro greedy dinámico solo
+garantiza 1/G. ¿En qué paso concreto se rompe tu prueba cuando la prueba
+revela un conteo y deja decidir después? ¿Ese es EL obstáculo para pasar de
+1/G a constante?"*
+(La jerga en cinco palabras: "valor de opción" = beneficio de decidir
+después.) Por qué importa: localiza el hueco matemático real en vez de
+perseguir analogías. Qué desbloquea: B puede instrumentar el solver para
+buscar las instancias que exhiben exactamente ese fallo.
+
+**P3 — La del oráculo y el benchmark realista.** *"Para atacar esa barrera
+con cómputo: ¿el score local debe valorar también las decisiones futuras —
+no solo el mejor test estático — y lo validamos primero sobre la población
+del piloto (los 6 grupos demográficos con sus utilidades encuestadas) como
+benchmark canónico del solver por tipos?"*
+Por qué importa: conecta la Conjetura 10.7 con una implementación evaluable
+y con datos reales. Qué desbloquea: la especificación del oráculo (el MICP
+estático queda como baseline de comparación, no como respuesta) y el
+benchmark que define el trabajo de B con tipos.
+
+**Descartadas, con razón:** la analogía factor-2-solapes ↔ factor-G-laminar
+(bonita, pero son restricciones distintas y no produce decisión ni
+experimento); y el MICP como pregunta independiente (optimiza un test sin
+valorar la información futura — vive dentro de P3 como baseline). El truco de
+subset-domination queda dentro de P3 (tolerancia a oráculos aproximados).
+La metodología TOST se anota para cuando haya datos propios; sin acción hoy.
 
 ## 3. Perfiles de infección reales del piloto, y nuestra cobertura
 
