@@ -241,12 +241,17 @@ def evoluciona(generaciones, m_por_gen=4, k_poblacion=4):
     for gen in range(1, generaciones + 1):
         prompt = PROMPT_BASE.format(
             poblacion=_formatea_poblacion(poblacion[:k_poblacion]), m=m_por_gen)
-        with client.messages.stream(
-            model='claude-opus-5', max_tokens=16000,
-            messages=[{'role': 'user', 'content': prompt}],
-        ) as stream:
-            texto = ''.join(b.text for b in stream.get_final_message().content
-                            if b.type == 'text')
+        try:
+            with client.messages.stream(
+                model='claude-opus-5', max_tokens=16000,
+                messages=[{'role': 'user', 'content': prompt}],
+            ) as stream:
+                texto = ''.join(b.text for b in stream.get_final_message().content
+                                if b.type == 'text')
+        except Exception as e:
+            # el API fallo (creditos, red, lo que sea): lo logrado NO se pierde
+            print(f'API fallo en gen {gen}: {e}; guardando lo acumulado')
+            break
         candidatos = re.findall(r'```python\n(.*?)```', texto, re.DOTALL)
         for j, codigo in enumerate(candidatos):
             fit = evalua(codigo, TRAIN)
@@ -264,6 +269,7 @@ def evoluciona(generaciones, m_por_gen=4, k_poblacion=4):
                           'peor': poblacion[0][2][1]})
         print(f'gen {gen}: mejor = {poblacion[0][0]} '
               f'(media {poblacion[0][2][0]:.4f})')
+        _guarda(poblacion, historial)     # incremental: cada generacion persiste
     _guarda(poblacion, historial)
     return poblacion
 
