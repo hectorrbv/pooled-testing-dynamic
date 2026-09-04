@@ -17,6 +17,17 @@ con el sup incluyendo la politica nula (abandono gratis). lambda es el precio
 sombra de una prueba; con lambda grande la exploracion muere y la politica
 degenera a greedy inmediato (ver el barrido del __main__).
 
+Horizonte rodante: el indice se trunca a `horizonte` pruebas (3 por defecto) aunque
+queden mas. No es entonces el I_lambda de horizonte-restante-completo de la
+ec. 8.13, sino su version de horizonte rodante (MPC): cada decision se planea
+con una ventana corta y se replanea tras observar. Se declara asi a proposito
+—- planear con b completo cuesta como resolver el problema —- y se anota como
+desviacion del enunciado.
+
+Parametros inmutables: lam, horizonte, no_paralisis y G son de solo lectura
+porque las memorias cachean sobre la instancia; mutarlos daria valores
+obsoletos en silencio. Para otro lambda, construir otra politica.
+
 Estatuto (§25): DIAGNOSTICO. Sin garantia probada; la calibracion de lambda es
 la pregunta abierta 10.5 del companion. Convencion posterior-zero; r cuenta
 infectados.
@@ -30,9 +41,23 @@ from augmented.bm17_toy_solver import SolverLaminar, z_tabla
 
 
 class PoliticaLagrangiana:
-    def __init__(self, p, u, G, lam=0.01, tope=3, no_paralisis=True):
-        self.p, self.u, self.G = dict(p), dict(u), G
-        self.lam, self.tope, self.no_paralisis = lam, tope, no_paralisis
+    def __init__(self, p, u, G, lam=0.01, horizonte=3, no_paralisis=True):
+        self._p, self._u, self._G = dict(p), dict(u), G
+        self._lam, self._horizonte = lam, horizonte
+        self._no_paralisis = no_paralisis
+
+    # solo lectura: las memorias cachean sobre la instancia (ver docstring)
+    p = property(lambda self: self._p)
+    u = property(lambda self: self._u)
+    G = property(lambda self: self._G)
+    lam = property(lambda self: self._lam)
+    horizonte = property(lambda self: self._horizonte)
+    no_paralisis = property(lambda self: self._no_paralisis)
+
+    def _subconjuntos_legales(self, A):
+        """Subconjuntos propios no vacios de A que respetan |S| <= G."""
+        for k in range(1, min(self.G, len(A) - 1) + 1):
+            yield from combinations(A, k)
 
     # ---------------------------------------------------------- mecanica
     def _z(self, S):
@@ -83,13 +108,12 @@ class PoliticaLagrangiana:
             return 0.0
         mejor = 0.0
         for (A, r) in atomos:
-            for k in range(1, len(A)):
-                for S in combinations(A, k):
-                    val = -self.lam
-                    for prob, rew, _, ats in self._ramas(frozenset(), atomos,
-                                                         ('ref', (A, r), S)):
-                        val += prob * (rew + self._I_atomos(ats, tope - 1))
-                    mejor = max(mejor, val)
+            for S in self._subconjuntos_legales(A):
+                val = -self.lam
+                for prob, rew, _, ats in self._ramas(frozenset(), atomos,
+                                                     ('ref', (A, r), S)):
+                    val += prob * (rew + self._I_atomos(ats, tope - 1))
+                mejor = max(mejor, val)
         return mejor
 
     @lru_cache(maxsize=None)
@@ -103,8 +127,15 @@ class PoliticaLagrangiana:
         return max(0.0, val)
 
     # ---------------------------------------------------------- decision
+    def _cobro_inmediato(self, U, atomos, accion):
+        """M_h de una accion: utilidad que acredita en esta misma prueba."""
+        esperado = 0.0
+        for prob, rew, _, _ in self._ramas(U, atomos, accion):
+            esperado += prob * rew
+        return esperado
+
     def decide(self, U, atomos, b):
-        tope = min(b, self.tope)
+        tope = min(b, self.horizonte)
         mejor, mejor_I = None, 1e-12
         for k in range(1, min(self.G, len(U)) + 1):
             for S in combinations(sorted(U), k):
@@ -115,27 +146,32 @@ class PoliticaLagrangiana:
             v = self._I_atomos(((A, r),), tope)
             if v > mejor_I:
                 sub, sub_v = None, -1e9
-                for k in range(1, len(A)):
-                    for S in combinations(A, k):
-                        val = -self.lam
-                        for prob, rew, _, ats in self._ramas(
-                                frozenset(), ((A, r),), ('ref', (A, r), S)):
-                            val += prob * (rew + self._I_atomos(ats, tope - 1))
-                        if val > sub_v:
-                            sub, sub_v = S, val
+                for S in self._subconjuntos_legales(A):
+                    val = -self.lam
+                    for prob, rew, _, ats in self._ramas(
+                            frozenset(), ((A, r),), ('ref', (A, r), S)):
+                        val += prob * (rew + self._I_atomos(ats, tope - 1))
+                    if val > sub_v:
+                        sub, sub_v = S, val
                 if sub:
                     mejor, mejor_I = ('ref', (A, r), sub), v
         if mejor is not None:
             return mejor
         if not self.no_paralisis:
             return None
-        # nada supera el precio: no se abandona la partida, se cobra lo mejor
+        # nada supera el precio: no se abandona la partida — se toma el mejor
+        # cobro inmediato del menu COMPLETO (virgenes y refinamientos)
         alt, alt_v = None, -1.0
         for k in range(1, min(self.G, len(U)) + 1):
             for S in combinations(sorted(U), k):
-                s0 = float(self._z(S)[0]) * sum(self.u[i] for i in S)
-                if s0 > alt_v:
-                    alt, alt_v = ('open', S), s0
+                m = self._cobro_inmediato(U, atomos, ('open', S))
+                if m > alt_v:
+                    alt, alt_v = ('open', S), m
+        for (A, r) in atomos:
+            for S in self._subconjuntos_legales(A):
+                m = self._cobro_inmediato(U, atomos, ('ref', (A, r), S))
+                if m > alt_v:
+                    alt, alt_v = ('ref', (A, r), S), m
         return alt
 
     @lru_cache(maxsize=None)
@@ -172,7 +208,7 @@ INSTANCIAS = {
 
 
 if __name__ == '__main__':
-    print('pi_L (lambda = 0.01, tope 3, con no-paralisis) contra la bateria\n')
+    print('pi_L (lambda = 0.01, horizonte 3, con no-paralisis) contra la bateria\n')
     print(f'{"instancia":26s} {"optimo":>8s} {"pi_L":>8s} {"ratio":>7s} '
           f'{"mejor golosa":>13s}')
     ratios = {}
@@ -190,6 +226,27 @@ if __name__ == '__main__':
     assert ratios['rare-health G=4'] > 0.99
     print('\nOK: pi_L iguala o supera a la mejor de la bateria en las cuatro; '
           'gana +0.31 justo donde las cuatro caen a 0.6576')
+
+    # --- regresiones del review adversarial (2026-09-01) -----------------
+    # (a) el tope G aplica tambien a refinamientos de un atomo grande
+    pol = PoliticaLagrangiana({i: 0.5 for i in range(4)},
+                              {i: 1 for i in range(4)}, G=1, lam=0.0)
+    acc = pol.decide(frozenset(), (((0, 1, 2, 3), 1),), 1)
+    assert acc is not None and len(acc[2]) <= 1, acc
+    assert abs(pol.valor(frozenset(), (((0, 1, 2, 3), 1),), 1) - 1.5) < 1e-9
+    # (b) los parametros son de solo lectura (la memoria cachea sobre self)
+    try:
+        pol.lam = 0.5
+        raise RuntimeError('lam deberia ser de solo lectura')
+    except AttributeError:
+        pass
+    # (c) no-paralisis considera refinamientos, no solo pools virgenes
+    pol = PoliticaLagrangiana({0: 0.5, 1: 0.5}, {0: 1, 1: 1}, G=2, lam=1.1)
+    acc = pol.decide(frozenset(), (((0, 1), 1),), 1)
+    assert acc is not None and acc[0] == 'ref', acc
+    assert abs(pol.valor(frozenset(), (((0, 1), 1),), 1) - 1.0) < 1e-9
+    print('OK regresiones: tope G en refinamientos, parametros inmutables, '
+          'y no-paralisis sobre el menu completo')
 
     print('\nSensibilidad a lambda (el precio de una prueba):')
     for nombre in ('contraejemplo universal', 'rare-health G=4'):
