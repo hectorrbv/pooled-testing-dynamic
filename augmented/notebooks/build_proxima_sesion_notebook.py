@@ -43,25 +43,16 @@ def code(src):
 # ===================================================================
 md(r"""# Próxima sesión — agenda de trabajo
 
-Este cuaderno prepara los seis frentes que quedaron abiertos tras la sesión del
-14 de julio, en el orden de prioridad que marcó Francisco. Los primeros cuatro
-son lo que pidió o avaló explícitamente; los dos últimos son tarea acordada, sin
-la misma urgencia. La sección 7 se añadió después: mide cuánto le queda al
-miope por cosechar frente a un lookahead de un paso (rollout) en instancias
-como las del paper de Nico (N=50).
+Seis frentes quedaron abiertos tras la sesión del 14 de julio, en el orden de
+prioridad acordado; la sección 7 se añadió después y mide cuánto le queda al
+miope frente a un lookahead de un paso (rollout) en instancias como las del
+paper (N=50). Nada está escrito a mano: cada valor se computa en su celda y,
+donde hay verdad de referencia, un `assert` lo audita.
 
-**Cómo leerlo.** Cada sección va de la intuición al número: primero el encuadre
-en palabras y un ejemplo con cifras concretas, luego el código que lo regenera y
-—donde hay verdad de referencia— un `assert` que lo audita, una figura, la
-lectura, y una pregunta para discutir. Nada está escrito a mano: cada valor se
-computa en su celda.
-
-**Tres regímenes, tres nombres.** A lo largo del cuaderno se distinguen el
-esquema **estático** (los pools se fijan de antemano), el **dinámico binario**
-(adaptativo, pero la prueba sólo dice 0 vs. ≥1) y el **dinámico aumentado**
-(adaptativo, y la prueba devuelve el conteo exacto). La tesis del proyecto es que
-la ganancia vive en el aumentado; las secciones separan lo demostrado, la
-evidencia computacional y las preguntas todavía abiertas.""")
+El cuaderno distingue tres regímenes: el esquema estático (los pools se fijan
+de antemano), el dinámico binario (adaptativo, pero la prueba sólo dice 0 vs.
+≥1) y el dinámico aumentado (adaptativo, con conteo exacto). La tesis del
+proyecto es que la ganancia vive en el aumentado.""")
 
 # ===================================================================
 # Setup
@@ -100,22 +91,20 @@ print('setup listo')""")
 # ===================================================================
 md(r"""## 1. Separación en el régimen de activación alta
 
-**Intuición.** Sea $Z_i=1$ el estado activo y $q=\Pr(Z_i=0)$ la probabilidad
-de estado libre. Cuando $q$ es pequeño, una consulta binaria grupal casi siempre
-devuelve “hay al menos un activo”; el conteo exacto conserva mucha más
-resolución. Hay dos afirmaciones distintas que no deben mezclarse: (i) una
-estrategia aumentada explícita supera al óptimo estático binario, y (ii) el
-óptimo dinámico binario coincide con el estático. El cuaderno demuestra (i) y
-sólo aporta evidencia finita para (ii), que sigue siendo una obligación de
-prueba.""")
+Sea $Z_i=1$ el estado activo y $q=\Pr(Z_i=0)$ la probabilidad de estado libre.
+Con $q$ pequeña, una consulta binaria grupal casi siempre devuelve “hay al
+menos un activo”; el conteo exacto conserva mucha más resolución. Conviene
+separar dos afirmaciones: (i) una estrategia aumentada explícita supera al
+óptimo estático binario, y (ii) el óptimo dinámico binario coincide con el
+estático. Esta sección demuestra (i) y sólo aporta evidencia finita para (ii),
+que sigue siendo una obligación de prueba.
 
-md(r"""**Resultado demostrado aquí.** Para $q\le 1/2$, el óptimo estático
-binario homogéneo usa consultas individuales y vale $Bq\,u$. Una estrategia
-dinámica aumentada puede explorar $k_G=(B-\log_2G)G$ agentes y localizar uno en
-estado libre, si existe, por lo que obtiene al menos
-$[1-(1-q)^{k_G}]u$. En el ejemplo ancla ($q=0.1$, $G=16$, $B=6$) esta cota es
-aproximadamente 61% mayor que $Bq\,u$. La igualdad entre los óptimos dinámico
-binario y estático no se deduce de esta cuenta.""")
+Para $q\le 1/2$, el óptimo estático binario homogéneo usa consultas
+individuales y vale $Bq\,u$. Una estrategia dinámica aumentada puede explorar
+$k_G=(B-\log_2G)G$ agentes y localizar uno en estado libre, si existe, así que
+obtiene al menos $[1-(1-q)^{k_G}]u$. En el ejemplo ancla ($q=0.1$, $G=16$,
+$B=6$) esta cota es aproximadamente 61% mayor que $Bq\,u$; la igualdad (ii) no
+se deduce de esta cuenta.""")
 
 code(r"""# --- las dos utilidades del ejemplo, en forma cerrada ---
 def util_estatico_binario(B, q):
@@ -211,38 +200,29 @@ ax.set_title('El dinámico binario coincide con el estático; sólo el conteo se
 ax.legend(frameon=False, fontsize=8)
 plt.tight_layout(); plt.show()""")
 
-md(r"""**Lectura.** En el barrido pequeño, el dinámico binario coincide con el
-estático y el conteo lo supera. Esto es evidencia computacional, no una prueba
-asintótica. En cambio, la estrategia explícita sí certifica una brecha: da ~61%
-en el ancla y una razón $\Theta(G)$ en la familia $B=2\log_2G$,
-$q=1/(G\log_2G)$.""")
-
-md(r"""**Para discutir.** En las notas la constante quedó anotada como
-$K_G = B_G$, pero contando con cuidado la cobertura es $k_G=(B-\log_2 G)\,G$
-—no simplemente $\Theta(B)$—. La brecha aumentada ya tiene una familia rigurosa;
-lo pendiente es una prueba independiente de que el óptimo dinámico binario vale
-$Bq\,u$ bajo hipótesis explícitas. La cola del ejemplo ancla no puede usarse para
-ese paso.""")
+md(r"""En el barrido pequeño el dinámico binario coincide con el estático y el
+conteo lo supera; es evidencia computacional, no una prueba asintótica. La
+brecha aumentada ya tiene familia rigurosa: ~61% en el ancla y razón
+$\Theta(G)$ en la familia $B=2\log_2G$, $q=1/(G\log_2G)$. Contando con cuidado
+la cobertura es $k_G=(B-\log_2 G)\,G$, no $\Theta(B)$; lo pendiente es una
+prueba independiente de que el óptimo dinámico binario vale $Bq\,u$, y la cola
+del ancla no sirve para ese paso.""")
 
 # ===================================================================
 # §2 — Rama laminar
 # ===================================================================
 md(r"""## 2. Caso base laminar: una cadena de pools anidados
 
-**Intuición.** El ejemplo de separación —grupos de 16 dentro de 32, y el binary
-search anida grupos más chicos adentro— forma una cadena laminar. Los conteos
-anidados se restan: si un pool de 6 tiene conteo 2 y su hijo de 3 tiene conteo 1,
-entonces el anillo “6 menos 3” tiene exactamente 1 activo. Cada anillo queda como
-un problema independiente de “exactamente $c$ activos entre $m$”. El prototipo
-de abajo recalcula una Poisson-binomial por marginal y cuesta $O(m^3)$ por
-anillo; sigue siendo polinomial, aunque aún puede optimizarse a $O(m^2)$.""")
-
-md(r"""**Afirmación verificada.** Para una sola cadena de pools estrictamente
-anidados, el posterior exacto factoriza por anillos y se computa en tiempo
-polinomial, sin enumerar los $2^n$ perfiles. Coincide con fuerza bruta donde ésta
-corre y escala a cientos de agentes. Esto todavía no implementa una familia
-laminar con ramificaciones ni resuelve la optimización dinámica sobre políticas;
-es el caso base de inferencia que debe generalizarse.""")
+El ejemplo de separación —grupos de 16 dentro de 32, con el binary search
+anidando grupos menores— forma una cadena laminar. Los conteos anidados se
+restan: si un pool de 6 tiene conteo 2 y su hijo de 3 tiene conteo 1, el
+anillo “6 menos 3” tiene exactamente 1 activo, y cada anillo queda como un
+problema independiente de “exactamente $c$ activos entre $m$”. Para una cadena
+estrictamente anidada el posterior exacto factoriza por anillos y se computa
+en $O(m^3)$ por anillo, sin enumerar los $2^n$ perfiles; coincide con fuerza
+bruta donde ésta corre y escala a cientos de agentes. Es el caso base de
+inferencia: falta la familia laminar con ramificaciones y la optimización
+dinámica sobre políticas.""")
 
 code(r"""# Inferencia laminar exacta por descomposición en anillos.
 def _pois_binom(probs):
@@ -354,33 +334,24 @@ ax.annotate(f'n=401 en {dt*1000:.0f} ms\n(fuerza bruta imposible)',
 ax.legend(frameon=False, fontsize=8, loc='lower right')
 plt.tight_layout(); plt.show()""")
 
-md(r"""**Lectura.** En esta cadena, la descomposición por anillos da el posterior
-exacto —error numérico esencialmente cero contra fuerza bruta— y termina en
-milisegundos a $n=401$. La conclusión auditada es deliberadamente estrecha:
-inferencia exacta y polinomial para cadenas anidadas.""")
-
-md(r"""**Para discutir.** Los siguientes pasos no están probados por esta celda:
-(1) extender la factorización a árboles laminares con varios hijos, (2) reducir
-el costo por anillo a $O(m^2)$ y (3) separar la inferencia posterior de la
-optimización dinámica de la política. Sólo después conviene explorar hipótesis
-de treewidth acotado.""")
+md(r"""La descomposición por anillos reproduce el posterior exacto —error
+numérico esencialmente cero contra fuerza bruta— y termina en milisegundos a
+$n=401$. Quedan pendientes la factorización en árboles laminares con varios
+hijos, el costo $O(m^2)$ por anillo y la optimización dinámica de la política;
+sólo después conviene explorar hipótesis de treewidth acotado.""")
 
 # ===================================================================
 # §3 — Ejemplo greedy vs. óptimo
 # ===================================================================
 md(r"""## 3. El hueco del greedy: acoplar por cobrar hoy
 
-**Intuición.** El greedy miope cobra la utilidad que puede limpiar *ahora*. Si
-dos sujetos valen mucho, juntarlos en un pool paga $\Pr(\text{ambos sanos})\cdot
-(u_1+u_2)$ de un golpe, y eso lo tienta. Pero limpiar a los dos juntos es menos
-probable que limpiar a cada uno por separado, y con presupuesto para dos pruebas
-el óptimo prefiere probarlos individualmente: dos tiros independientes valen más
-que uno acoplado.""")
-
-md(r"""**Afirmación.** Existe una instancia concreta (n=4, B=2, G=2) donde el
-greedy abre acoplando los dos sujetos de mayor utilidad, mientras el óptimo por
-DP los separa y prueba a cada uno. La diferencia es un hueco estricto de utilidad
-esperada, y es el ejemplo puntual que hay que redactar.""")
+El greedy miope cobra la utilidad que puede limpiar ahora: si dos sujetos
+valen mucho, juntarlos en un pool paga $\Pr(\text{ambos sanos})\cdot
+(u_1+u_2)$ de un golpe. Pero limpiar a los dos juntos es menos probable que
+limpiar a cada uno por separado, y con presupuesto para dos pruebas el óptimo
+los prueba individualmente. La instancia de abajo (n=4, B=2, G=2) exhibe el
+hueco: el greedy abre acoplando a los dos sujetos de mayor utilidad y el
+óptimo por DP los separa.""")
 
 code(r"""# instancia testigo (hallada por barrido determinista Random(0), fijada aquí)
 p = [0.47, 0.46, 0.53, 0.60]
@@ -475,35 +446,28 @@ for b, v in zip(bars, vals):
 ax.set_ylim(0, U_opt * 1.15)
 plt.tight_layout(); plt.show()""")
 
-md(r"""**Lectura.** El greedy paga la tentación de cobrar hoy: acopla a los dos
-sujetos valiosos para llevarse $u_0+u_1$ en una sola limpieza, pero limpiar a los
-dos a la vez es raro. El óptimo, con dos pruebas en el presupuesto, los separa y
-convierte un evento improbable en dos apuestas independientes más seguras.""")
-
-md(r"""**Para discutir.** Este testigo pequeño da un hueco de ~14% con $B=2$.
-No se ha demostrado que sea mínimo. ¿Lo presentamos sólo como testigo explícito
-o construimos una familia donde el acoplamiento del greedy pierda una fracción
-constante conforme crecen $n$ y el presupuesto?""")
+md(r"""El greedy paga la tentación de cobrar hoy: acopla a los dos sujetos
+valiosos para llevarse $u_0+u_1$ en una sola limpieza, un evento raro; el
+óptimo los separa en dos apuestas independientes y gana ~14% con $B=2$. No
+está demostrado que el testigo sea mínimo ni si existe una familia donde el
+acoplamiento pierda una fracción constante al crecer $n$ y el presupuesto.""")
 
 # ===================================================================
 # §4 — Caminos alternantes en Gibbs
 # ===================================================================
 md(r"""## 4. Caminos alternantes en Gibbs: cruzar niveles de conteo
 
-**Intuición.** Tres personas con prior 0.15, una prueba sobre $\{0,1\}$ que da un
-activo y otra sobre $\{1,2\}$ que da un activo. Quedan dos mundos: la persona 1
-infectada (total 1) o las personas 0 y 2 infectadas (total 2). Un *swap*
-—apagar uno, prender otro— conserva el total, así que no puede pasar de un mundo
-al otro: se queda atrapado en un nivel de conteo. Hace falta un movimiento que
-cambie el total respetando cada prueba: un camino alternante.""")
-
-md(r"""**Afirmación verificada para esta familia.** El posterior exacto del
-ejemplo es $[0.15, 0.85, 0.15]$.
-El muestreador restringido a swaps (que preservan el conteo) es no ergódico entre
-niveles y sesga el posterior. Con las semillas fijadas, los caminos alternantes
-cruzan ambos niveles y aproximan la referencia exacta. En cadenas impares de
-$n=17,19$, el swap queda clavado con error 0.85 y el alternante queda dentro de
-la tolerancia indicada. Esto no demuestra irreducibilidad para fibras generales.""")
+Tres personas con prior 0.15, una prueba sobre $\{0,1\}$ con un activo y otra
+sobre $\{1,2\}$ con un activo, dejan dos mundos: la persona 1 infectada
+(total 1) o las personas 0 y 2 infectadas (total 2). Un swap —apagar uno,
+prender otro— conserva el total y no puede pasar de un mundo al otro; hace
+falta un movimiento que cambie el total respetando cada prueba, el camino
+alternante. El posterior exacto del ejemplo es $[0.15, 0.85, 0.15]$: el
+muestreador restringido a swaps es no ergódico entre niveles y sesga el
+posterior, mientras que, con las semillas fijadas, los caminos alternantes
+cruzan ambos niveles y aproximan la referencia. En cadenas impares de
+$n=17,19$ el swap queda clavado con error 0.85. Nada de esto demuestra
+irreducibilidad para fibras generales.""")
 
 code(r"""# el ejemplo de tres personas: el posterior exacto y el argumento del atrapamiento
 p3 = [0.15, 0.15, 0.15]
@@ -568,41 +532,31 @@ ax2.set_title('Los swaps quedan atrapados en un nivel de conteo')
 ax2.legend(frameon=False, fontsize=8)
 plt.tight_layout(); plt.show()""")
 
-md(r"""**Lectura.** El swap conserva el total y por eso nunca ve el otro nivel:
-su posterior queda sesgado hasta 0.85, y el histograma lo muestra clavado en un
-solo total. En estos dos ejemplos, el camino alternante cruza niveles y aproxima
-la proporción exacta. La conclusión general sigue abierta: alcanzar ambos modos
-de una familia no prueba que el generador conecte toda fibra posible.""")
-
-md(r"""**Para discutir.** El código incorpora un factor de Hastings de espejo
-para la asimetría de la propuesta, pero falta justificar matemáticamente tanto
-ese cociente como la irreducibilidad. ¿El generador conecta *toda* la fibra de
-conteos (una base de Markov completa), o hay familias donde quedan componentes
-inalcanzables? Hasta resolverlo, el resultado es empírico y no un teorema de
-convergencia general.""")
+md(r"""El swap nunca ve el otro nivel —posterior sesgado hasta 0.85, histograma
+clavado en un solo total— y el alternante cruza y aproxima la proporción
+exacta. El código incorpora un factor de Hastings de espejo para la asimetría
+de la propuesta, pero falta justificar ese cociente y la irreducibilidad:
+mientras no se sepa si el generador conecta toda fibra de conteos o hay
+componentes inalcanzables, el resultado es empírico, no un teorema de
+convergencia.""")
 
 # ===================================================================
 # §5 — Cota superior por información perfecta con penalización
 # ===================================================================
 md(r"""## 5. Cota superior: información perfecta con penalización
 
-**Intuición.** Para acotar por arriba al óptimo se le da al planificador un
-superpoder: que conozca de
-antemano el estatus de algunas personas. Un clarividente puro ($U_{PI}$) acota,
-pero flojo. La idea de Brown–Smith–Sun es cobrarle ese superpoder contra el
-presupuesto: cada estatus revelado tiene un precio $\pi_t$ de media cero bajo la
-filtración natural, y la cota penalizada $U_{pen}$ queda más apretada sin dejar
-de ser válida. La implementación exacta actual enumera perfiles e historias, así
-que sirve como prototipo en $n$ pequeño; aún no es una cota penalizada
+Para acotar por arriba al óptimo se le da al planificador un superpoder:
+conocer de antemano el estatus de algunas personas. El clarividente puro
+($U_{PI}$) acota, pero flojo. La relajación con penalización (Brown–Smith–Sun)
+le cobra el superpoder: cada estatus revelado tiene un precio $\pi_t$ de media
+cero bajo la filtración natural, así que $\text{OPT}\le U_{pen}(c)$ para
+cualquier potencial y cualquier escala dual $c$. Como no se conoce de antemano
+la escala que más aprieta, se reporta
+$U_{pen}=\min\{U_{PI},U_{pen}(0.5),U_{pen}(1),U_{pen}(2)\}$ — el mínimo de
+cotas válidas es válido, e incluir la escala 0 garantiza
+$\text{OPT}\le U_{pen}\le U_{PI}$ por construcción. La implementación exacta
+enumera perfiles e historias: es un prototipo para $n$ pequeño, no una cota
 escalable.""")
-
-md(r"""**Afirmación precisa.** Cada escala dual produce una cota
-$\text{OPT}\le U_{pen}(c)$, pero una escala arbitraria no tiene por qué quedar
-debajo de $U_{PI}$. Para garantizar la cadena mostrada se define la envolvente
-$U_{env}=\min\{U_{PI},U_{pen}(0.5),U_{pen}(1),U_{pen}(2)\}$. Entonces, por
-construcción, $\text{OPT}\le U_{env}\le U_{PI}$. La celda sólo verifica una
-instancia pequeña; la validez general depende del argumento de relajación dual
-implementado en `certificates.py`.""")
 
 code(r"""p = [0.40, 0.55, 0.30, 0.50]; u = [1.0, 2.0, 3.0, 1.5]; G = 2
 Bs = [1, 2, 3, 4]
@@ -612,16 +566,16 @@ for B in Bs:
     pi = u_pi_exact(p, u, B, G)
     # Incluir escala 0 hace que el mínimo contenga explícitamente U_PI.
     pen = u_pen_exact(p, u, B, G, scales=(0.0, 0.5, 1.0, 2.0))
-    assert opt <= pen + 1e-6, f'U_env debe acotar a OPT (B={B})'
-    assert pen <= pi + 1e-6, f'U_env debe ser <= U_PI por construcción (B={B})'
+    assert opt <= pen + 1e-6, f'U_pen debe acotar a OPT (B={B})'
+    assert pen <= pi + 1e-6, f'U_pen debe ser <= U_PI por construcción (B={B})'
     opt_v.append(opt); pen_v.append(pen); pi_v.append(pi)
-print('B   OPT(DP)   U_env    U_PI')
+print('B   OPT(DP)   U_pen    U_PI')
 for B, o, pn, pi in zip(Bs, opt_v, pen_v, pi_v):
     print(f'{B}  {o:>7.3f} {pn:>8.3f} {pi:>7.3f}')""")
 
 code(r"""fig, ax = plt.subplots(figsize=(6.8, 4.0))
 ax.plot(Bs, pi_v, 'o-', color=AMBAR, label='U_PI (información perfecta)')
-ax.plot(Bs, pen_v, 's-', color=AZUL, label='U_env (mejor cota disponible)')
+ax.plot(Bs, pen_v, 's-', color=AZUL, label='U_pen (mínimo sobre escalas)')
 ax.plot(Bs, opt_v, '^-', color=GRIS, label='OPT (DP exacto)')
 ax.fill_between(Bs, opt_v, pen_v, color=AZUL, alpha=0.08)
 ax.set_xlabel('presupuesto B'); ax.set_ylabel('utilidad esperada')
@@ -629,36 +583,27 @@ ax.set_title('La envolvente dual aprieta la cota de información perfecta')
 ax.set_xticks(Bs); ax.legend(frameon=False, fontsize=8)
 plt.tight_layout(); plt.show()""")
 
-md(r"""**Lectura.** En esta instancia, $U_{env}$ queda entre el óptimo y la cota
-clarividente, y la mejora sobre $U_{PI}$ es visible con presupuesto chico. Al
-crecer $B$, las tres convergen a $U_{\max}$ porque la instancia se satura. Esto
-valida el prototipo en pequeño; no demuestra costo aceptable en instancias
-grandes.""")
-
-md(r"""**Para discutir.** El siguiente paso es elegir bien el potencial
-$\hat V$ de la penalización (nula, $U_{\max}$, greedy) para apretar más sin perder
-validez y, por separado, diseñar una aproximación escalable con garantías. La
-versión exacta actual enumera $2^n$ perfiles y un espacio exponencial de
-historias; no debe presentarse todavía como solución para $n$ grande.""")
+md(r"""$U_{pen}$ queda entre el óptimo y la cota clarividente, con mejora
+visible sobre $U_{PI}$ a presupuesto chico; al crecer $B$ las tres convergen a
+$U_{\max}$ porque la instancia se satura. Los siguientes pasos son elegir el
+potencial $\hat V$ de la penalización (nulo, $U_{\max}$, greedy) y diseñar una
+aproximación escalable con garantías: la versión exacta enumera $2^n$ perfiles
+y un espacio exponencial de historias.""")
 
 # ===================================================================
 # §6 — Medidas de información más ricas que β
 # ===================================================================
 md(r"""## 6. Más allá de β: reducción de entropía del posterior
 
-**Intuición.** El parámetro $\beta$ premia las pruebas que informan sobre personas
-sanas —un criterio pobre—. La idea de Francisco es premiar la *reducción de
-entropía* del posterior: una prueba que, por la combinatoria, no devuelve "todos
-sanos" ni "todos infectados" pero baja la incertidumbre de golpe. Suena a los
-criterios de los árboles de decisión. La expectativa, dicha de entrada, es que en
-instancias pequeñas no rinda.""")
-
-md(r"""**Afirmación verificada en una instancia.** En el caso de abajo, barrer
-$\beta$ con la métrica de entropía no cambia la política ni la utilidad y no
-alcanza al óptimo. La utilidad de cada política se evalúa exactamente enumerando
-los 16 perfiles latentes; por tanto, la comparación no depende de la aproximación
-recursiva por marginales. Una instancia no permite concluir que la entropía sea
-inútil en general.""")
+El parámetro $\beta$ premia las pruebas que informan sobre personas sanas, un
+criterio pobre. Una alternativa es premiar la reducción de entropía del
+posterior: pruebas que, por la combinatoria, no devuelven "todos sanos" ni
+"todos infectados" pero bajan la incertidumbre de golpe, al estilo de los
+árboles de decisión. En la instancia de abajo, barrer $\beta$ con la métrica
+de entropía no cambia la política ni la utilidad y no alcanza al óptimo; la
+utilidad se evalúa exactamente enumerando los 16 perfiles latentes, así que la
+comparación no depende de la aproximación por marginales. Una instancia no
+basta para descartar el criterio en general.""")
 
 code(r"""p = [0.35, 0.55, 0.45, 0.60]; u = [3.0, 1.0, 2.5, 1.5]; B, G = 2, 2
 U_opt = solve_optimal_dapts(p, u, B, G, cap=None)[0]
@@ -696,35 +641,28 @@ ax.set_title('La métrica de entropía no cambia esta instancia chica')
 ax.legend(frameon=False, fontsize=8)
 plt.tight_layout(); plt.show()""")
 
-md(r"""**Lectura.** En esta instancia, la entropía deja exactamente la misma
-utilidad y no cierra el hueco al óptimo. Es un resultado negativo puntual, no
-evidencia suficiente sobre el promedio de instancias pequeñas ni sobre el
-régimen grande.""")
-
-md(r"""**Para discutir.** Antes de descartar el criterio, hace falta un barrido
-con muchas instancias pequeñas —donde sí hay verdad de referencia— y después una
-evaluación grande con suficientes réplicas Monte Carlo. La implementación grande
-actual usa una lista corta de candidatos y muy pocas réplicas, así que no basta
-para una conclusión científica.""")
+md(r"""La entropía deja exactamente la misma utilidad y no cierra el hueco al
+óptimo: un resultado negativo puntual. Antes de descartarla harían falta un
+barrido de instancias pequeñas con verdad de referencia y una evaluación
+grande con réplicas suficientes; la implementación grande actual no da para
+una conclusión.""")
 
 # -------------------------------------------------------------------
 # §6b — dos métricas alternativas
 # -------------------------------------------------------------------
 md(r"""### 6b. Dos alternativas: dispersión unilateral y potencial $\hat V=U_{PI}$
 
-**Intuición.** La entropía tiene dos defectos: ignora las utilidades $u_i$ y
-premia certeza en ambas direcciones, cuando sólo el extremo sano paga. La
-primera alternativa corrige eso: premiar $E\big[\sum_i u_i\,(p_i-p_i')_+\big]$,
-el movimiento del posterior hacia el extremo cobrable, pesado por valor. La
-segunda cambia de moneda: elegir el pool que maximiza recompensa inmediata más
-$E[U_{PI}(\text{posterior})]$ —la cota de la sección 5 usada como potencial—,
-es decir, medir la información en unidades del objetivo.""")
-
-md(r"""**Afirmación verificada en la misma instancia.** La dispersión
-unilateral deja la política idéntica al greedy plano para todo $\beta$ del
-barrido, igual que la entropía. El potencial $\hat V=U_{PI}$ alcanza el óptimo
-por DP a precisión de máquina: abre con la prueba individual del sujeto de mayor
-valor en vez del pool acoplado. Es una instancia; no es un teorema.""")
+La entropía tiene dos defectos: ignora las utilidades $u_i$ y premia certeza
+en ambas direcciones, cuando sólo el extremo sano paga. La dispersión
+unilateral corrige ambos: premia $E\big[\sum_i u_i\,(p_i-p_i')_+\big]$, el
+movimiento del posterior hacia el extremo cobrable, pesado por valor. La otra
+alternativa cambia de moneda: elegir el pool que maximiza recompensa inmediata
+más $E[U_{PI}(\text{posterior})]$, la cota de la sección 5 usada como
+potencial. En la misma instancia, la dispersión deja la política idéntica al
+greedy plano para todo $\beta$, igual que la entropía; el potencial
+$\hat V=U_{PI}$ alcanza el óptimo por DP a precisión de máquina y abre con la
+prueba individual del sujeto de mayor valor en vez del pool acoplado. Es una
+instancia, no un teorema.""")
 
 code(r"""# las dos métricas, evaluadas exactamente sobre los 16 perfiles latentes
 from augmented.core import all_pools_from_mask, compute_active_mask, test_result
@@ -823,35 +761,30 @@ ax.set_title('Sólo la métrica en unidades del objetivo cierra el hueco')
 ax.legend(frameon=False, fontsize=8, loc='upper left')
 plt.tight_layout(); plt.show()""")
 
-md(r"""**Lectura.** Las dos métricas de información genérica —entropía y
-dispersión— dejan la política intacta: el bono no logra que el greedy renuncie
-al pool que cobra hoy. El potencial $\hat V=U_{PI}$ sí lo logra porque valora el
-estado que cada prueba deja, en la misma unidad que el objetivo. Su costo actual
-es de prototipo: cada candidato evalúa $U_{PI}$ enumerando $2^n$ perfiles.""")
-
-md(r"""**Para discutir.** El potencial conecta las secciones 5 y 6: la misma
-$\hat V$ que aprieta la cota penalizada sirve como política. ¿Priorizamos esa
-dirección —con una $U_{PI}$ aproximada y barata para escalar— o primero el
-barrido de instancias pequeñas para las tres métricas?""")
+md(r"""Las dos métricas de información genérica dejan la política intacta: el
+bono no logra que el greedy renuncie al pool que cobra hoy. El potencial
+$\hat V=U_{PI}$ sí, porque valora el estado que cada prueba deja en la misma
+unidad que el objetivo, y conecta las secciones 5 y 6: la misma $\hat V$ que
+aprieta la cota penalizada sirve como política. Su costo actual es de
+prototipo —cada candidato evalúa $U_{PI}$ enumerando $2^n$ perfiles—; escalar
+pide una $U_{PI}$ aproximada y barata.""")
 
 # ===================================================================
 # §7 — Rollout vs. miope en las instancias del paper
 # ===================================================================
 md(r"""## 7. Rollout vs. greedy miope en las instancias del paper (N=50)
 
-**Intuición.** El *rollout* elige cada prueba preguntando cuánto acabará
-cobrando en total: recorre los resultados posibles, actualiza el posterior y
-supone que el resto del presupuesto lo juega el miope. Juguete: A y B con
-P(sano) = 0.4, C segura, utilidades 1, dos pruebas del régimen dinámico
-binario. El miope cobra {C} hoy porque 1.0 > 0.8; el rollout monta a A sobre
-la certeza de C: si {A,C} sale limpia cobra doble, y si sale positiva el
-culpable sólo puede ser A —y todavía queda la segunda prueba para cobrar {C}.""")
-
-md(r"""**Afirmación verificada.** En el juguete, el rollout alcanza el óptimo
-exacto (1.56 vs. 1.40 del miope). En instancias como las del paper (N=50, B=5,
+El rollout elige cada prueba preguntando cuánto acabará cobrando en total:
+recorre los resultados posibles, actualiza el posterior y supone que el resto
+del presupuesto lo juega el miope. En el juguete —A y B con P(sano) = 0.4, C
+segura, utilidades 1, dos pruebas binarias— el miope cobra {C} hoy porque
+1.0 > 0.8; el rollout monta a A sobre la certeza de C: si {A,C} sale limpia
+cobra doble y, si sale positiva, el culpable sólo puede ser A y queda la
+segunda prueba para cobrar {C}. Con eso alcanza el óptimo exacto (1.56 vs.
+1.40 del miope). En instancias como las del paper (N=50, B=5,
 $u_i\in\{1,2,3\}$, priors uniformes, 1000 instancias pareadas por setting), el
-rollout mejora al miope en el régimen dinámico binario y el premio se encoge
-hasta el cero estadístico en el dinámico aumentado con G=5.""")
+rollout mejora al miope en el dinámico binario y el premio se encoge hasta el
+cero estadístico en el aumentado con G=5.""")
 
 code(r"""# juguete exacto: el rollout alcanza el óptimo que el miope deja ir
 from itertools import combinations, product as iproduct
@@ -923,24 +856,16 @@ ax.set_ylabel('ganancia del rollout sobre el miope (%)')
 ax.set_title('El premio del lookahead se encoge conforme la prueba informa más')
 plt.tight_layout(); plt.show()""")
 
-md(r"""**Lectura.** El premio del lookahead decrece con la información por
-prueba: es real en el dinámico binario y desaparece en el aumentado con G=5,
-donde cada conteo ya revela tanto que al miope casi no le queda nada por
-perder. Ahí el rollout *predice* ganar según su propio modelo de marginales,
-pero no se materializa: la garantía rollout ≥ miope supone esperanzas exactas
-y el error de la aproximación de independencia es mayor que el premio —la
-lección del PPO del paper en miniatura.
-
-Visto al revés, es un argumento a favor de la prueba aumentada: con conteo, el
-greedy trivial ya es casi óptimo, así que la complejidad algorítmica que el
-mundo binario exige para cerrar su hueco —lookahead, aprendizaje— se vuelve
-innecesaria. La prueba rica no sólo gana utilidad: simplifica el algoritmo.""")
-
-md(r"""**Para discutir.** La ganancia del dinámico binario (~1.5%) es del
-mismo orden que el hallazgo central del paper (+1.2% a +2.8% de dinámico sobre
-estático): ¿empujamos el rollout como resultado para ese mundo, y formalizamos
-su espejo —el conteo vuelve al miope casi óptimo— como una cara más de la
-anatomía del hueco?""")
+md(r"""El premio del lookahead decrece con la información por prueba: es real
+en el dinámico binario y desaparece en el aumentado con G=5, donde cada conteo
+revela tanto que al miope casi no le queda nada por perder. Ahí el rollout
+predice ganar según su propio modelo de marginales y no se materializa: la
+garantía rollout ≥ miope supone esperanzas exactas, y el error de la
+aproximación de independencia supera el premio. Visto al revés, con conteo el
+greedy trivial ya es casi óptimo: la prueba rica no sólo gana utilidad,
+simplifica el algoritmo. La ganancia binaria (~1.5%) es del orden del hallazgo
+central del paper (+1.2% a +2.8% de dinámico sobre estático), lo que sugiere
+presentar el rollout como resultado para ese mundo y formalizar su espejo.""")
 
 # ===================================================================
 nbf.write(nb, OUT)

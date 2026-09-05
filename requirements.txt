@@ -1,10 +1,19 @@
-# Core dependencies
+# Dependencias BASE del proyecto (plan maestro §22).
+#
+# Meta de reproducibilidad: checkout limpio + `pip install -r requirements.txt`
+# + `pytest` = suite base verde, sin fallo de coleccion y con las clases
+# opcionales saltadas con razon visible.
+#
+# Las clases opcionales viven en archivos aparte y NUNCA se necesitan para la
+# suite base:
+#   requirements-dev.txt      pytest (correr la suite)
+#   requirements-viz.txt      graphviz, seaborn (figuras y arboles)
+#   requirements-rl.txt       gymnasium (clase RL)
+#   requirements-solvers.txt  MOSEK, Gurobi (solvers comerciales, con licencia)
+#
+# Instalacion completa: pip install -r requirements-all.txt
+
 numpy>=1.21
+scipy>=1.9
 matplotlib>=3.5
 pandas>=1.4
-
-# Optional: enhanced visualizations
-seaborn>=0.12
-
-# Optional: decision tree rendering
-graphviz>=0.20

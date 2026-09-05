@@ -1,0 +1,5 @@
+# Instalacion completa: base + todas las clases opcionales.
+-r requirements-dev.txt
+-r requirements-viz.txt
+-r requirements-rl.txt
+-r requirements-solvers.txt
