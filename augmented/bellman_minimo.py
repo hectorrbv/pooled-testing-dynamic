@@ -1,7 +1,3 @@
-"""Recursion 5.5 del companion, version minima legible (posterior-zero).
-
-Version de trabajo con flag de convencion y fracciones: bm17_toy_solver.py.
-"""
 
 from functools import lru_cache
 from itertools import combinations

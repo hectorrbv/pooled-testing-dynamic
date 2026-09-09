@@ -12,10 +12,10 @@
     "cobrada_esperada_t5",
     "cobrada_esperada_t6"
   ],
-  "generated_utc": "2026-08-24T19:20:07+00:00",
+  "generated_utc": "2026-09-01T17:50:28+00:00",
   "generator": "augmented/notebooks/build_costo_local_y_no_reentrada_notebook.py",
   "git": {
-    "commit": "7438ac0ea48cfd46e4dfdfed91e8308431623b18",
+    "commit": "7b1e1321bc10ee45647b559962a8e8fba4e433e7",
     "dirty": true
   },
   "params": {
