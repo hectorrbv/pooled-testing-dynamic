@@ -28,10 +28,11 @@ def code(src):
 md(r"""
 # 23 — Los experimentos que quedan
 
-Diez experimentos corridos en su version chica, alineados con el plan maestro del
+Once experimentos corridos en su version chica, alineados con el plan maestro del
 1 de agosto. E1 a E5 atacan el diseno del objetivo; B1 a B3 son bloqueadores del
 paper; R1 y R2 son las dos tareas de rama B que llevaban sin correrse desde el
-plan del 27 de julio.
+plan del 27 de julio; R3 despacha el veredicto de la mision autoresearch ANIDA
+del 3 de agosto.
 
 Nomenclatura del plan, usada en todo el notebook. **S_0** es el scorer miope,
 P(R=0|H) por la utilidad no acreditada del pool. **Phi_2^cov** es el potencial de
@@ -1206,6 +1207,190 @@ R1 son las optimas y por E4 el rollout. Conviene medir las dos perillas otra vez
 sobre el rollout en vez del greedy?
 """)
 
+# ------------------------------------------------------------------- R3
+md(r"""
+## R3. El greedy nunca anida por eleccion, y el lema que lo explica
+
+Anidar por eleccion: reentrar a un pool ya observado TENIENDO territorio virgen
+disponible. Imaginense un par con conteo 1: probar a un miembro puntua u/2.
+¿Cuando es eso lo mejor sobre la mesa? Con todos iguales y G=2, nunca: el mejor
+virgen puntua max(q, 2q^2) >= 1/2. La mision autoresearch ANIDA (3-ago) llevo
+esa observacion a lema — y el lema resulto mas fino que la desigualdad de dos
+lineas. Aqui se regeneran sus cuatro piezas en chico.
+""")
+
+md(r"""
+**La afirmacion [VERIFICADO n<=6 aqui; n<=12 y lema cerrado en la mision].** Con
+p y u homogeneos, el greedy jamas anida por eleccion: cero testigos en el
+barrido. La desigualdad simple "anidada <= virgen" solo vale para G en {2,3};
+desde G=4 hay estados alcanzables donde la anidada supera a todo virgen, y el
+greedy se salva eligiendo una accion mixta (el pedazo anidado mas un virgen
+reclutado, razon q(k+1)/k). La propiedad es de la TRAYECTORIA del greedy, no de
+su score: en estados que otras politicas si alcanzan, la cola greedy anida por
+eleccion (basta heterogeneidad solo en u, o solo en p, para romperla en la
+propia trayectoria).
+""")
+
+code(r"""
+def testigos_anida_por_eleccion(ev):
+    '''Camina el arbol del greedy; testigo = argmax anidado con virgen aun disponible.'''
+    encontrados = []
+
+    def walk(step, worlds, cleared, probados, prob):
+        if step == ev.B or prob <= 1e-15:
+            return
+        t_star = accion_greedy(ev, step, worlds, cleared)
+        if t_star is None:
+            return
+        union = 0
+        for tp in probados:
+            union |= tp
+        hay_virgen = union != (1 << ev.n) - 1
+        anidada = any(t_star != tp and (t_star & tp) == t_star for tp in probados)
+        if anidada and hay_virgen:
+            mejor_virgen = max(ganancia(ev, worlds, cleared, t)
+                               for t in ev.pools if t & union == 0)
+            encontrados.append((probados, t_star,
+                                ganancia(ev, worlds, cleared, t_star), mejor_virgen))
+        for pr, ch, nc, _ in ev.branches(worlds, cleared, t_star):
+            walk(step + 1, ch, nc, probados + (t_star,), prob * pr)
+
+    walk(0, ev.all_worlds, 0, (), 1.0)
+    return encontrados
+
+
+# Homogeneo: barrido chico, cero testigos esperados.
+casos_hom = 0
+testigos_hom = []
+for n_ in (4, 5, 6):
+    for G_ in (2, 3, 4):
+        if G_ > n_:
+            continue
+        for p_base in np.round(np.arange(0.05, 0.96, 0.05), 2):
+            ev = ExactPolicyEvaluator(np.full(n_, float(p_base)), np.ones(n_), B=3, G=G_)
+            casos_hom += 1
+            testigos_hom += testigos_anida_por_eleccion(ev)
+assert not testigos_hom, testigos_hom[:1]
+
+# Controles heterogeneos: en p, y SOLO en u con p homogenea. Ambos deben anidar.
+ev_p = ExactPolicyEvaluator(np.array([0.3, 0.3, 0.8, 0.8, 0.8]), np.ones(5), B=3, G=2)
+t_p = testigos_anida_por_eleccion(ev_p)
+ev_u = ExactPolicyEvaluator(np.full(4, 0.4), np.array([1.0, 1.0, 0.5, 0.5]), B=2, G=2)
+t_u = testigos_anida_por_eleccion(ev_u)
+assert t_p and t_u
+
+print(f'homogeneo: {casos_hom} instancias (n=4..6, G=2..4, B=3, 19 valores de p), '
+      f'{len(testigos_hom)} testigos')
+print(f'heterogeneo en p  (q = 0.7,0.7,0.2,0.2,0.2): {len(t_p)} testigo(s); '
+      f'anidada {t_p[0][2]:.2f} contra mejor virgen {t_p[0][3]:.2f}')
+print(f'heterogeneo en u  (p = 0.4, u = 1,1,0.5,0.5): {len(t_u)} testigo(s); '
+      f'anidada {t_u[0][2]:.2f} contra mejor virgen {t_u[0][3]:.2f}')
+""")
+
+code(r"""
+def estado_tras(ev, pool, R):
+    '''Estado (mundos, acreditados) tras observar conteo R en pool desde la raiz.'''
+    for R_, _, w, c in hijos(ev, ev.all_worlds, 0, pool):
+        if R_ == R:
+            return w, c
+    raise ValueError((pool, R))
+
+
+def maximos_por_clase(ev, worlds, cleared, probados):
+    union = 0
+    for tp in probados:
+        union |= tp
+    tops = {'anidada': 0.0, 'virgen': 0.0, 'mixta': 0.0}
+    argmax_clase, mejor = None, -1.0
+    for t in ev.pools:
+        if t & union == 0:
+            clase = 'virgen'
+        elif any(t != tp and (t & tp) == t for tp in probados):
+            clase = 'anidada'
+        else:
+            clase = 'mixta'
+        s = ganancia(ev, worlds, cleared, t)
+        tops[clase] = max(tops[clase], s)
+        if s > mejor + 1e-12:
+            mejor, argmax_clase = s, clase
+    return tops, argmax_clase
+
+
+# La ruptura en G=4 (q = 4/5): la anidada supera al virgen y la mixta manda.
+ev4 = ExactPolicyEvaluator(np.full(5, 0.2), np.ones(5), B=3, G=4)
+raiz4 = accion_greedy(ev4, 0, ev4.all_worlds, 0)
+assert bin(raiz4).count('1') == 4          # el greedy abre el pool de 4 (4*q^4 manda)
+w4, c4 = estado_tras(ev4, raiz4, 1)
+tops4, arg4 = maximos_por_clase(ev4, w4, c4, (raiz4,))
+assert tops4['anidada'] > tops4['virgen'] + 1e-9   # la desigualdad simple se rompe
+assert arg4 == 'mixta'                             # y el reclutamiento mixto salva H1
+assert abs(tops4['anidada'] - 1.0) < 1e-9
+assert abs(tops4['virgen'] - 0.8) < 1e-9
+assert abs(tops4['mixta'] - 1.2) < 1e-9
+
+# H1': en un estado que el greedy NO alcanza, su cola si anida por eleccion.
+ev3 = ExactPolicyEvaluator(np.full(3, 0.6), np.ones(3), B=2, G=2)   # q = 2/5
+assert bin(accion_greedy(ev3, 0, ev3.all_worlds, 0)).count('1') == 1  # el abriria single
+w3, c3 = estado_tras(ev3, 0b011, 1)        # otra politica abrio el par {a,b}
+tops3, arg3 = maximos_por_clase(ev3, w3, c3, (0b011,))
+assert arg3 == 'anidada' and tops3['anidada'] > tops3['virgen'] + 1e-9
+
+print(f'G=4, q=4/5, tras conteo 1 en el pool de 4:  anidada {tops4["anidada"]:.2f}  '
+      f'virgen {tops4["virgen"]:.2f}  mixta {tops4["mixta"]:.2f}  -> argmax {arg4}')
+print(f'G=2, q=2/5, par ajeno con conteo 1:         anidada {tops3["anidada"]:.2f}  '
+      f'virgen {tops3["virgen"]:.2f}  -> argmax {arg3} (el greedy solo no llega aqui)')
+""")
+
+code(r"""
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.6, 4.0))
+
+clases = ['anidada', 'virgen', 'mixta']
+colores = {'anidada': AMBAR, 'virgen': GRIS, 'mixta': AZUL}
+ax1.bar(range(3), [tops4[c] for c in clases], color=[colores[c] for c in clases])
+ax1.set_xticks(range(3)); ax1.set_xticklabels(clases)
+for i, c in enumerate(clases):
+    ax1.annotate(f'{tops4[c]:.2f}', (i, tops4[c]), textcoords='offset points',
+                 xytext=(0, 3), ha='center', fontsize=9, color=TINTA)
+ax1.set_ylabel('mejor score de la clase')
+ax1.set_title('G=4, q=4/5, tras conteo 1 en el pool de 4:\n'
+              'la anidada supera al virgen y el reclutamiento mixto manda')
+
+gs = np.arange(2, 9)
+abre = (gs - 1) / gs                       # el greedy solo abre pools de tamano g aqui
+anida = (gs // 2) / (gs // 2 + 1)          # la cola greedy anida por eleccion hasta aqui
+ax2.plot(gs, abre, color=AZUL, marker='o', ms=4,
+         label='q minima con la que el greedy abre un pool de tamano g')
+ax2.plot(gs, anida, color=AMBAR, marker='s', ms=4,
+         label='q maxima con la que la cola greedy anida en ese pool')
+ax2.fill_between(gs, anida, abre, color=GRIS, alpha=0.15)
+ax2.set_xlabel('tamano g del pool observado')
+ax2.set_ylabel('probabilidad de estar sano q')
+ax2.set_ylim(0.3, 1.0)
+ax2.set_title('Las dos regiones solo se tocan en g=2:\n'
+              'el greedy nunca se encuentra sus propios estados anidables')
+ax2.legend(frameon=False, fontsize=8)
+fig.tight_layout()
+plt.show()
+""")
+
+md(r"""
+**Lectura.** El barrido homogeneo da cero testigos, reproduciendo en chico el
+lema de la mision (alla: n<=12, ambos desempates, aritmetica exacta y prueba
+cerrada). El mecanismo real tiene dos piezas: todo pool que el greedy abre
+cumple q >= (g-1)/g, y donde la anidada supera al virgen (posible desde G=4) el
+argmax es reclutar un virgen dentro del pool, no anidar. La cola greedy si
+anida, pero solo con q <= piso(g/2)/(piso(g/2)+1) — una region que el propio
+greedy nunca pisa. Eso explica mecanicamente a E4: la anticipacion siembra el
+estado (abre el par) y la cola miope cosecha sola.
+""")
+
+md(r"""
+**Para discutir.** El lema dice que la miopia homogenea no es no-saber-volver:
+es que volver nunca es el mejor pago inmediato mientras quede virgen. ¿Lo
+enunciamos en el paper como lema de la seccion de politicas, o se queda como
+apendice del falsificador?
+""")
+
 # ------------------------------------------------------------- cierre
 md(r"""
 ## Donde queda todo
@@ -1239,6 +1424,12 @@ greedy no hace nunca. R2 mide por separado las dos perillas que siempre se habia
 medido juntas, y el resultado obliga a replantear a quien se le cobra el tensor:
 si calcular bien vale poco es porque el greedy no anida, asi que la inferencia
 exacta se paga con las politicas que si anidan, no con el greedy.
+
+R3 cierra ese hilo con lema: el greedy doble-homogeneo jamas anida por eleccion
+(no es barrido, es prueba), la desigualdad simple que lo explicaria se rompe en
+G=4 y la salva el reclutamiento mixto, y la cola greedy si anida en estados que
+otras politicas le siembran — el mecanismo exacto por el que un paso de
+anticipacion basta en E4.
 """)
 
 nb["cells"] = cells
