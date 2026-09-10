@@ -1,5 +1,7 @@
 # Plan jue 10-sep → lun 14-sep — objetivo: el salto al paper (sesión con Francisco: martes 15-sep)
 
+> **Ajuste 2026-09-11:** el detalle operativo de vie–dom con manos cruzadas está en `docs/notes/2026-09-11-plan-vie-sab-dom.md`. Cambian dos cosas respecto a este plan: la pieza de A es la **Proposición de brecha de convención en tres partes** (dominación · simulación con sobrecosto · agudeza; el "dividendo de deducción" B=2 es solo el testigo de la parte 3), y el Mapa 3 de B pregunta si el plan cover-then-bisect **es el óptimo posterior-zero en el ancla**. Se añade una corrección de código: `acid_test.py:69-71` sigue con la k estricta (`−1`); bajo G0 el ancla es k=3 (0.9147), no k=2 (0.8063).
+
 **Autocontenido:** Héctor puede leerlo sin el chat. **Presupuesto:** 3–4 h/día por persona (válvula al final si A está en tránsito a Praga). **Fuentes de este plan:** revisión externa del 5-sep (`REVIEW-2026-09-05.md`, local de A; se sube a pedido); transcript de la sesión del 1-sep (`TRANSCRIPCION_FRANCISCO_1_SEPTEMBER.md`, 50:43, no versionado); los 15 commits de B del 1 al 9-sep (`69ad0a3..14770c3`, ya en local); `docs/notes/2026-08-31-plan-semana.md`.
 
 ---
