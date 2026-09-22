@@ -10,6 +10,8 @@ Mosek-specific optimality tests are skipped (marked SKIP).
 import sys, os, random, time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import pytest
+
 from augmented.core import (
     mask_from_indices, indices_from_mask, compute_active_mask,
 )
@@ -42,14 +44,42 @@ def _mosek_license_valid():
 MOSEK_AVAILABLE = _mosek_license_valid()
 
 
-class SkipTest(Exception):
-    """Raised to skip a test (e.g., missing license)."""
-    pass
+def _gurobi_license_valid():
+    """Check if Gurobi is importable and its license admits a tiny solve."""
+    try:
+        import gurobipy as gp
+        m = gp.Model("license_check")
+        m.setParam("OutputFlag", 0)
+        x = m.addVar(lb=0.0)
+        m.setObjective(x, gp.GRB.MINIMIZE)
+        m.optimize()
+        m.dispose()
+        return True
+    except Exception:
+        return False
 
+
+GUROBI_AVAILABLE = _gurobi_license_valid()
+
+
+# Los solvers comerciales caen a `_heuristic_best_pool` cuando faltan (con
+# RuntimeWarning, ver pool_solvers.py). Un test que valida al solver comercial y
+# corre sobre la heuristica no valida nada: pasa por accidente. El plan maestro
+# §22 lo prohibe explicitamente, asi que estos tests se SALTAN --- con razon
+# visible en el reporte --- en vez de degradarse en silencio.
+#
+# Antes esto se hacia con una excepcion casera `SkipTest`, que pytest no
+# reconoce: los tests no se saltaban, FALLABAN. Esa es la causa de los cinco
+# fallos MOSEK por licencia vencida que §22 registro el 1 de agosto.
 
 def _require_mosek():
     if not MOSEK_AVAILABLE:
-        raise SkipTest("Mosek license not available")
+        pytest.skip("licencia de Mosek no disponible; no se valida contra la heuristica")
+
+
+def _require_gurobi():
+    if not GUROBI_AVAILABLE:
+        pytest.skip("licencia de Gurobi no disponible; no se valida contra la heuristica")
 
 
 def _myopic_score(pool, p, u, n, cleared_mask):
@@ -89,6 +119,7 @@ def test_mosek_matches_enumeration_n5():
 
 def test_mosek_edge_all_cleared():
     """Returns 0 when all individuals are cleared."""
+    _require_mosek()
     p = [0.0, 0.0, 0.0]
     u = [5.0, 3.0, 4.0]
     n, G = 3, 2
@@ -98,6 +129,7 @@ def test_mosek_edge_all_cleared():
 
 def test_mosek_edge_n_leq_G():
     """When n_active ≤ G, returns full active mask (skip solver)."""
+    _require_mosek()
     p = [0.1, 0.2, 0.3]
     u = [5.0, 3.0, 4.0]
     n, G = 3, 5
@@ -108,6 +140,7 @@ def test_mosek_edge_n_leq_G():
 
 def test_mosek_with_some_cleared():
     """Solver only considers active (uncleared) individuals."""
+    _require_mosek()
     p = [0.1, 0.2, 0.3, 0.15, 0.25]
     u = [4.0, 6.0, 3.0, 5.0, 7.0]
     n, G = 5, 2
@@ -125,6 +158,7 @@ def test_mosek_with_some_cleared():
 
 def test_gurobi_matches_enumeration_n5():
     """Gurobi returns same-score pool as brute-force enumeration for n=5."""
+    _require_gurobi()
     p = [0.05, 0.10, 0.15, 0.20, 0.08]
     u = [4.0, 6.0, 3.0, 5.0, 7.0]
     G, n = 3, 5
@@ -143,6 +177,7 @@ def test_gurobi_matches_enumeration_n5():
 
 def test_gurobi_edge_all_cleared():
     """Returns 0 when all individuals are cleared."""
+    _require_gurobi()
     p = [0.0, 0.0, 0.0]
     u = [5.0, 3.0, 4.0]
     n, G = 3, 2
@@ -152,6 +187,7 @@ def test_gurobi_edge_all_cleared():
 
 def test_gurobi_edge_n_leq_G():
     """When n_active ≤ G, returns full active mask (skip solver)."""
+    _require_gurobi()
     p = [0.1, 0.2, 0.3]
     u = [5.0, 3.0, 4.0]
     n, G = 3, 5
@@ -166,6 +202,7 @@ def test_gurobi_edge_n_leq_G():
 
 def test_mosek_gurobi_agree_n5():
     """Mosek and Gurobi find pools with equal scores."""
+    _require_gurobi()
     _require_mosek()
     p = [0.05, 0.10, 0.15, 0.20, 0.08]
     u = [4.0, 6.0, 3.0, 5.0, 7.0]
@@ -185,6 +222,7 @@ def test_mosek_gurobi_agree_n5():
 
 def test_solvers_match_enumeration_random_instances():
     """Both solvers match enumeration across 10 random instances."""
+    _require_gurobi()
     _require_mosek()
     rng = random.Random(42)
     for trial in range(10):
@@ -212,6 +250,8 @@ def test_solvers_match_enumeration_random_instances():
 
 def test_solver_best_pool_dispatch():
     """solver_best_pool dispatches correctly to both backends."""
+    _require_mosek()
+    _require_gurobi()
     p = [0.1, 0.2, 0.3, 0.15]
     u = [4.0, 6.0, 3.0, 5.0]
     n, G = 4, 2
@@ -263,6 +303,7 @@ def test_greedy_mosek_matches_default_eu():
 
 def test_greedy_gurobi_matches_default_eu():
     """greedy_myopic_expected_utility with gurobi selector matches default."""
+    _require_gurobi()
     p = [0.05, 0.10, 0.15, 0.20, 0.08]
     u = [4.0, 6.0, 3.0, 5.0, 7.0]
     B, G = 2, 3
@@ -278,6 +319,7 @@ def test_greedy_gurobi_matches_default_eu():
 
 def test_greedy_simulate_mosek():
     """greedy_myopic_simulate with mosek selector produces valid results."""
+    _require_mosek()
     p = [0.1, 0.2, 0.3]
     u = [5.0, 3.0, 4.0]
     B, G = 2, 2
@@ -320,6 +362,8 @@ def test_hybrid_with_mosek_pool_selector():
 
 def test_compare_all_includes_solver_strategies():
     """compare_all returns solver-based strategy values for small n."""
+    _require_mosek()
+    _require_gurobi()
     from augmented.comparison import compare_all
 
     p = [0.1, 0.2, 0.3]
@@ -343,6 +387,7 @@ def test_compare_all_includes_solver_strategies():
 
 def test_mosek_scales_n30():
     """Mosek pool selection completes in <10s for n=30, G=5."""
+    _require_mosek()
     rng = random.Random(99)
     n, G = 30, 5
     p = [rng.uniform(0.05, 0.4) for _ in range(n)]
@@ -360,6 +405,7 @@ def test_mosek_scales_n30():
 
 def test_gurobi_scales_n30():
     """Gurobi pool selection completes in <10s for n=30, G=5."""
+    _require_gurobi()
     rng = random.Random(99)
     n, G = 30, 5
     p = [rng.uniform(0.05, 0.4) for _ in range(n)]
@@ -377,6 +423,7 @@ def test_gurobi_scales_n30():
 
 def test_mosek_scales_n50():
     """Mosek pool selection completes in <30s for n=50, G=5."""
+    _require_mosek()
     rng = random.Random(99)
     n, G = 50, 5
     p = [rng.uniform(0.05, 0.4) for _ in range(n)]
@@ -394,6 +441,7 @@ def test_mosek_scales_n50():
 
 def test_gurobi_scales_n50():
     """Gurobi pool selection completes in <30s for n=50, G=5."""
+    _require_gurobi()
     rng = random.Random(99)
     n, G = 50, 5
     p = [rng.uniform(0.05, 0.4) for _ in range(n)]
@@ -411,6 +459,7 @@ def test_gurobi_scales_n50():
 
 def test_greedy_eu_n30_mosek():
     """Full greedy expected utility completes for n=30 with Mosek."""
+    _require_mosek()
     rng = random.Random(99)
     n = 30
     B, G = 2, 5

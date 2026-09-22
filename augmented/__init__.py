@@ -19,6 +19,15 @@ from augmented.bayesian import (
     bayesian_update, bayesian_update_single_test,
     bayesian_update_by_counting, gibbs_update, estimate_p_from_history,
 )
+from augmented.laminar_inference import (
+    LaminarAtom, conditional_bernoulli_marginals,
+    laminar_atoms, laminar_forest_marginals, laminar_pool_pmf,
+)
+from augmented.scenario_milp import (
+    exact_prior_scenarios, score_pool_scenarios,
+    brute_best_pool_scenarios, milp_best_pool_scenarios,
+    condition_on_count,
+)
 from augmented.greedy import (
     greedy_myopic_simulate, greedy_myopic_expected_utility,
     greedy_lookahead_simulate,

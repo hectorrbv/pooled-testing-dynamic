@@ -1,0 +1,38 @@
+{
+  "artifact": "separacion_n10_q02.csv",
+  "columns": [
+    "n",
+    "q",
+    "B",
+    "individual_baseline",
+    "static_binary",
+    "static_augmented",
+    "dynamic_binary",
+    "dynamic_augmented_laminar",
+    "dynamic_augmented",
+    "tractable"
+  ],
+  "generated_utc": "2026-08-18T04:24:57+00:00",
+  "generator": "augmented.experiments_separacion_n10.main",
+  "git": {
+    "commit": "a0c66c85869ff43e124c8bac2255d3b8ce9f6561",
+    "dirty": true
+  },
+  "params": {
+    "bmax_laminar": 8,
+    "bmax_unrestricted": 3,
+    "certification_rule": "permissive",
+    "n": 10,
+    "q": 0.2
+  },
+  "rows": 8,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.1",
+    "pandas": "2.3.3",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.16.3"
+  }
+}

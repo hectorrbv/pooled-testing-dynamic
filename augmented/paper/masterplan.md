@@ -1,5 +1,11 @@
 # Plan para la sesión del jueves 9 de julio con Francisco
 
+> **[SUPERSEDED 2026-08-01]** Retirado como norte del proyecto por el
+> [plan maestro](../../docs/plans/2026-08-01-plan-maestro-politicas-laminares-planificacion.md).
+> Se conserva como historial. La línea de certificados que este documento
+> proponía como dirección propia queda subordinada (§30.1 del plan maestro:
+> ruta de respaldo de la garantía y vara de medición en escala).
+
 7 de julio de 2026. Este documento fija dos cosas: la dirección de investigación propia que se va a proponer, y el trabajo concreto de martes y miércoles para llegar a la sesión con resultados fuertes.
 
 Insumos: las tres direcciones de Francisco del 2 de julio (`Vault-GroupCounting/Resultados/Las tres direcciones.md`), el memo del norte (`norte-5-direcciones.md`), el análisis de capacidad del 6 de julio, y la corrección del sampler de Gibbs completada el 6 de julio.

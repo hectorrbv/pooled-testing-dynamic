@@ -1,0 +1,4 @@
+# Optional accelerator for the homogeneous Bellman maps.
+# The default Python solver and independent profile oracle do not need Numba.
+-r requirements.txt
+numba>=0.59

@@ -1,0 +1,51 @@
+{
+  "artifact": "mapa_homogeneo_3.csv",
+  "columns": [
+    "case",
+    "q_sano",
+    "n",
+    "G",
+    "B",
+    "k",
+    "convencion",
+    "clase",
+    "cota_cbs",
+    "cbs_stop",
+    "cbs_stop_fraction",
+    "baseline_singletons",
+    "status",
+    "optimo",
+    "tamanos_optimos",
+    "reason"
+  ],
+  "generated_utc": "2026-09-21T17:51:52+00:00",
+  "generator": "augmented.mapa_ancla.map3",
+  "git": {
+    "commit": "619cb6e409ee607612e381b285b600b29fd51327",
+    "dirty": true
+  },
+  "params": {
+    "backend": "compiled exact-state float64",
+    "cbs": "cover until first non-all-infected root; bisect; prefer left child with healthy members; stop at first certification",
+    "convention": "posterior_zero",
+    "n": "finite: anchor 48, frontier 24",
+    "source_sha256": {
+      "augmented/acid_test.py": "05f772530fa7025f31e612eba155d485468b1a16877f663b1be57962522e4d09",
+      "augmented/bellman_tipos.py": "3ad70fa8b0472b38710efcad0a62ad7637d6cad19622d7fa5bb13bc198dc4cc1",
+      "augmented/bellman_tipos_compilado.py": "87869a5835da4ff7575d2b6cf86872def5b09747d023a46dcb0f58721246484e",
+      "augmented/mapa_ancla.py": "d00d91203b4ce997fa99029998a200b8984c02cad7098b645a4b05aaa209e7de"
+    },
+    "state_limit": 2500000,
+    "timeout_seconds": 120
+  },
+  "rows": 3,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.3",
+    "pandas": "3.0.1",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.18.0"
+  }
+}
