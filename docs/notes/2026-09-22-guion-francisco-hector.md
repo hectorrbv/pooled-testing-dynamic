@@ -32,6 +32,33 @@ commit de cierre; los hashes identifican las fuentes efectivamente ejecutadas.
 Abre `augmented/notebooks/26_esencial.ipynb`, ya ejecutado. Recorrido:
 **§5 → §7 → §8 → §10**. §11 y notebook 27 son apoyo, no hay que recorrerlos enteros.
 
+### Pantallas y foco para hoy
+
+| Tiempo | Pantalla | Mensaje que debes dejar claro |
+|---|---|---|
+| 0:00–1:30 | 26 §5, tabla posterior-zero | Tener utilidad sana dentro del grupo no equivale a poder cobrarla. Incluso excluyendo repetir AB, V prefiere CD a A y se equivoca. |
+| 1:30–4:00 | 26 §7, instancia y rama AEF → E; tabla de valores de §8 | Las cuatro políticas concretas quedan alrededor del 66% del óptimo laminar. Explica una rama para mostrar la continuación que compra la primera prueba. |
+| 4:00–6:30 | 26 §8, fórmula y fila de π_L | El costo depende del resultado: una exploración puede terminar después de una prueba. π_L alcanza 96.41% del óptimo laminar en esa misma instancia. |
+| 6:30–8:30 | 26 §10, curva de λ | En otra instancia, de siete personas, la rejilla encuentra λ=1.238469 y ratio 0.930703. La calibración forma parte de la política. |
+| 8:30–10:00 | 26 §11, cierre | Solver contrastado con enumerador; evidencia de mapas; pregunta concreta sobre la especificación y la garantía que buscamos. |
+
+**Frase de apertura:** «Voy a mostrar qué falla en las reglas que probamos,
+cómo π_L recupera valor al considerar el gasto de pruebas según el resultado,
+y por qué la elección de λ afecta al 0.9307 que reportamos».
+
+Usa Bellman como referencia con una frase: «Calculamos el óptimo laminar por
+programación dinámica para medir la pérdida de las heurísticas». El árbol y
+la comparación de valores sostienen el argumento. Las derivaciones de Bellman,
+el barrido histórico de α y las convenciones estrictas quedan para preguntas.
+
+**Dos distinciones al hablar:** 0.70 es utilidad esperada por partida, mientras
+que 0.6576 es su razón frente al óptimo; 0.9641 y 0.9307 pertenecen a instancias
+distintas. Todos esos ratios del relato principal usan el óptimo laminar.
+
+**Material de apoyo:** notebook 27 §2–3 si surge la pregunta de cuánto cuesta
+imponer laminaridad; notebook 26 §11 para los mapas. El guion de 15–20 minutos
+del 21-sep fue sustituido para esta sesión por este recorrido de diez minutos.
+
 **0:00–1:30 · Qué estaba fallando (§5).**
 
 «Queremos elegir pruebas para acreditar utilidad sana con un presupuesto
@@ -45,6 +72,12 @@ cobra cero; probar A cobra uno bajo posterior-zero en cualquiera de sus
 resultados. Si A está infectado, B queda sano por deducción. Ese es el hecho
 que debes poder explicar a mano. No hace falta presentar toda la curva de α.
 
+**Si Francisco objeta que repetir una prueba debe excluirse:** «Sí, el solver
+actual ya lo excluye. Pero el defecto de V persiste: V(A)=0.5 y V(CD)=0.6,
+con C y D nuevos y q=0.3; el score elige CD. Con una prueba restante, A cobra 1
+y CD cobra solamente 2·0.3²=0.18 en esperanza». Esta comparación usa únicamente
+acciones informativas, posterior-zero y el mismo presupuesto.
+
 **1:30–4:00 · El contraejemplo que afectó a la batería (§7).**
 
 «Pasamos de reparar un score a probar varias reglas completas. En seis
@@ -55,6 +88,12 @@ Muestra la raíz AEF y una continuación. Tras R(AEF)=1, probar E cobra
 inmediatamente 4 en ambas ramas: E sana aporta 4; E infectada deja A y F
 sanos, que aportan 2+2. La prueba inicial compra una continuación útil.
 El número 4 es el cobro inmediato en ese estado, no todo el valor del árbol.
+
+Si pregunta por la batería: π_M elige el mejor cobro inmediato; π_C valora
+planes por utilidad/pruebas reservadas y mantiene el compromiso con el bloque;
+π_R usa densidad y reevalúa tras observar; C3 combina cobro inmediato,
+promesa ajustada al presupuesto y una reserva para personas aún sin probar.
+Son las cuatro implementaciones evaluadas, no todas las heurísticas posibles.
 
 **4:00–6:30 · Qué cambia con π_L (§8).**
 

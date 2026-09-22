@@ -1,5 +1,10 @@
 # Repaso y presentación: los contraejemplos primero
 
+**Prioridad para la sesión del 22-sep:** el recorrido vigente de diez minutos
+es contraejemplo → π_L → 0.9307, en el notebook 26. Véase
+[guion del 22-sep](2026-09-22-guion-francisco-hector.md). El recorrido de
+15–20 minutos y la sesión de estudio de abajo quedan como material ampliado.
+
 Preparado el 21-sep-2026. Se ejecutaron los notebooks 26 esencial y 27 de principio a fin. Las comparaciones nuevas usan posterior-zero en ambas clases. El notebook 25 modificado por el usuario se preservó.
 
 ## Objetivo de comprensión

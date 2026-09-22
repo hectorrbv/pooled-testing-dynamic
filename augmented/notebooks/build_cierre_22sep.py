@@ -41,13 +41,21 @@ nb.cells[0].source = '''# Contraejemplos → π_L → 0.9307
 Recorrido principal: **§5 → §7 → §8 → §10**. §11 contiene el cierre de tareas
 y los mapas para la discusión. §1 y el notebook 27 quedan como apoyo.
 
-q = P(sano), p = P(infectado), R = número de infectados. Desde §7 usamos
-posterior-zero; la tabla histórica de costos en §5 conserva la variante estricta.
+q = P(sano), p = P(infectado), R = número de infectados. El recorrido principal
+usa posterior-zero, incluida la primera tabla de §5. El apéndice histórico
+de costos que sigue a esa tabla conserva la variante estricta.
 
 Resultados revisados el 21-sep. Guion oral y pendientes precisos en
 `docs/notes/2026-09-22-guion-francisco-hector.md`.
 '''
 for c in nb.cells:
+    if c.cell_type == 'markdown' and c.source.startswith('## 5.'):
+        c.source = '''## 5. El contraejemplo: utilidad existente frente a utilidad cobrable
+
+Cuatro personas con priors independientes, q=0.3 y utilidad 1 cada una.
+AB ya fue probado y dio R=1; C y D siguen sin probar. Queda una sola prueba.
+El score antiguo V suma la utilidad sana esperada dentro del pool elegido.
+'''
     if c.cell_type == 'markdown' and c.source.startswith('## 8.'):
         c.source += r'''
 
@@ -66,6 +74,32 @@ Si ningún proyecto supera el precio, no-parálisis elige el mejor cobro inmedia
 
 md = nbf.v4.new_markdown_cell
 code = nbf.v4.new_code_cell
+current_comparison = md('''**Comparación vigente: posterior-zero y una prueba restante.**
+
+| Acción | Score antiguo V | Utilidad esperada que cobra esa prueba |
+|---|---:|---:|
+| Probar A | 0.5 | **1**: acredita A o B según el resultado |
+| Probar CD | **0.6** | 0.18: solo R(CD)=0 permite acreditar a ambos |
+| Repetir AB | 1 | 0: no cambia lo que sabemos |
+
+El solver actual excluye repetir AB. **Incluso al excluirlo, V prefiere CD
+a A, aunque A cobra más.** El problema persiste entre acciones informativas:
+contar utilidad sana existente no mide cuánto podemos cobrar con el presupuesto.
+
+**Frase oral:** «Queríamos valorar la exploración; este ejemplo mostró que
+el score también debe reconocer la utilidad que realmente puede extraerse».
+''')
+historical_label = md('''**Apoyo histórico de costos — fuera del recorrido de diez minutos.**
+
+La tabla y figura siguientes conservan la acreditación estricta y los costos
+históricos 1, 1.63 y 2.5. Bajo esa convención el cobro esperado de probar A es
+0.5. La comparación posterior-zero para presentar hoy es la tabla anterior.
+''')
+for c in [current_comparison, historical_label]:
+    c.metadata['cierre_22sep'] = True
+    c.metadata['slideshow'] = {'slide_type': 'slide' if c is current_comparison else 'skip'}
+position = next(i for i,c in enumerate(nb.cells) if c.cell_type=='markdown' and c.source.startswith('## 5.'))
+nb.cells[position+1:position+1] = [current_comparison, historical_label]
 cells = [md('''## 10. El 0.9307 y por qué λ es parte de la política
 
 La candidata tiene n=7, B=3, G=4: tres personas casi seguras, tres premios
