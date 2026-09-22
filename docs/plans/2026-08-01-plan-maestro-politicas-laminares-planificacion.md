@@ -183,11 +183,11 @@ con diferencias absolutas $\Delta$ reportadas siempre. Denominador cero ⟹ `NaN
 
 ## 9. Registro de claims corregidos y lenguaje permitido
 
-Registro vivo; números verificados contra CSV el 1-ago-2026. Toda cifra citable sale de aquí.
+Registro vivo; números verificados contra CSV el 1-ago-2026, salvo C1 recontado el 21-sep-2026. Toda cifra citable sale de aquí.
 
 | # | Claim viejo | Lenguaje permitido |
 |---|---|---|
-| C1 | "Greedy laminar domina al estático casi siempre" | Malla (2,592 instancias): greedy gana **67.0%** global; **96.0%** en prevalencia alta (**rollout: 98.2%**); **40.4%** en baja (`showcase_regions.csv`). Dominancia de régimen. |
+| C1 | "Greedy laminar domina al estático casi siempre" | Atlas histórico (2,592 instancias), recontado el 21-sep con tolerancia 1e-9 en la razón. **Gana / empata / pierde:** greedy global **10.9 / 56.1 / 33.0%**; prevalencia alta (`base_p >= 0.6`, n=1,008) **4.5 / 91.6 / 4.0%**; subregión `base_p >= 0.7` (n=720) **1.4 / 97.5 / 1.1%**; baja (`base_p <= 0.2`, n=576) **13.5 / 26.9 / 59.5%**. Rollout global **28.3 / 46.3 / 25.3%**, alta **37.6 / 60.6 / 1.8%**. El viejo 67.0% sumaba victorias y empates. Fuente: `augmented/data/laminar_week/showcase_regions.csv` y sidecar; es un recuento del atlas histórico, sin migrar su convención. |
 | C2 | "Producto de marginales exacto para descendientes compatibles" | Factorización **entre átomos**, no entre individuos; dentro, Bernoulli condicional. |
 | C3 | "La caché acelera ~98,000×" | Para $G{=}10$, la reutilización **evita una mediana de 97,274 convoluciones** (medianas $G{=}4/6/8/10/12$: 100 / 1,012 / 11,076 / 97,274 / 174,076, `subset_tables.csv`); tras la caché, cero nuevas. **No es un speedup** (sin razón finita con denominador cero): pared 1.3–1.8×, materialización y overhead dominan. Una razón de complejidad exigiría denominador no nulo (p. ej., costo amortizado tras $K$ consultas). |
 | C4 | "La separación aísla el valor del conteo" | Separación **conjunta**; la celda dinámico-binaria está pendiente (§18). El companion (Thm 7.1) afirma el cierre de la mitad $q\le 1/2$ de la celda [SIN VALIDAR → A-M23]; C4 no cambia hasta esa validación. |

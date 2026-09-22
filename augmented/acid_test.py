@@ -5,16 +5,16 @@ gana?** La familia es homogenea con q pequena, y ahi el plan bueno es cubrir con
 pools raiz de tamano G y despues bajar por busqueda binaria hasta acreditar a un
 sano. Un scorer que no valore ese plan no sirve, por elegante que sea su forma.
 
-**El ancla ejecutable** es (q, G, k, B) = (0.05, 16, 2, 7): el plan cover-binary-search
-cobra al menos 0.806u mientras el baseline de singletons cobra 0.35u. La forma
-general bajo strict hard clearing es
+**El ancla ejecutable G0** es (q, G, k, B) = (0.05, 16, 3, 7): el plan
+cover-binary-search cobra al menos 0.9147u frente a 0.35u de singletons.
+La reserva bajo posterior-zero es
 
-    k = max(0, B - ceil(log2 G) - 1)      pools raiz
+    k = max(0, B - ceil(log2 G))          pools raiz
     valor >= u * (1 - (1-q)^(kG))
 
-y el ``-1`` no es decoracion: bajo strict hard clearing una deduccion no acredita
-(§5.8), asi que hay que reservar una prueba final para convertir al sano
-localizado en utilidad cobrada. Ese es el test acreditador.
+La variante estricta sigue disponible mediante convencion='strict': reserva
+una prueba acreditadora adicional y recupera k=2, cota 0.8063 en el ancla.
+Las cotas no son el valor exacto de toda la politica ni el optimo de Bellman.
 
 **Los nueve checks de trayectoria (§16, G4b).** Cada uno es una afirmacion
 falsable sobre el scorer, no una impresion. Se corren contra cualquier candidata
@@ -24,7 +24,9 @@ que implemente el protocolo de `augmented.scorers`.
 de creencia explicitos, y eso limita n a lo que el evaluador exacto aguanta; se
 corren en la sub-familia tratable (G en {2,4}, k en {1,2}). La aritmetica del
 ancla es analitica y se verifica en toda la malla declarada, G en {2,4,8,16}
-incluido. Los dos alcances se reportan por separado y nunca se mezclan.
+incluido. Los checks locales de scorers conservan su evaluador HISTORICO
+ESTRICTO; esta migracion cambia la reserva analitica del ancla, no esos checks.
+Los dos alcances se reportan por separado y nunca se mezclan.
 
 Corre con:  python3 -m augmented.acid_test
 """
@@ -66,9 +68,13 @@ class AcidInstance:
         return f"(q={self.q}, G={self.G}, k={self.k}, B={self.B})"
 
 
-def k_from_budget(B: int, G: int) -> int:
-    """k = max(0, B - ceil(log2 G) - 1). El -1 es el test acreditador (§5.8)."""
-    return max(0, B - math.ceil(math.log2(G)) - 1)
+def k_from_budget(B: int, G: int, convencion: str = 'posterior_zero') -> int:
+    """G0 reserves only bisection; strict also reserves a physical clearing test."""
+    if G < 1 or B < 0:
+        raise ValueError('Require G >= 1 and B >= 0')
+    if convencion not in ('posterior_zero', 'strict'):
+        raise ValueError('Unknown clearing convention')
+    return max(0, B - math.ceil(math.log2(G)) - int(convencion == 'strict'))
 
 
 def cbs_lower_bound(inst: AcidInstance) -> float:
@@ -83,9 +89,9 @@ def singleton_baseline(inst: AcidInstance) -> float:
     return inst.B * inst.q * inst.u
 
 
-def anchor_instance() -> AcidInstance:
+def anchor_instance(convencion: str = 'posterior_zero') -> AcidInstance:
     """El ancla ejecutable declarada en §16."""
-    return AcidInstance(q=0.05, G=16, k=k_from_budget(7, 16), B=7)
+    return AcidInstance(q=0.05, G=16, k=k_from_budget(7, 16, convencion), B=7)
 
 
 # ---------------------------------------------------------------- resultados
@@ -351,27 +357,27 @@ class AnchorRow:
         return self.cbs / self.singleton if self.singleton > 0 else float("inf")
 
 
-def anchor_grid():
+def anchor_grid(convencion: str = 'posterior_zero'):
     """Aritmetica del ancla en toda la malla declarada, G en {2,4,8,16} incluido."""
     filas = []
     for q in (0.05, 0.15, 0.30, 0.45):
         for G in (2, 4, 8, 16):
             for k in (1, 2, 3):
-                B = k + math.ceil(math.log2(G)) + 1
+                B = k + math.ceil(math.log2(G)) + int(convencion == 'strict')
                 inst = AcidInstance(q=q, G=G, k=k, B=B)
-                if k_from_budget(B, G) != k:
+                if k_from_budget(B, G, convencion) != k:
                     continue
                 filas.append(AnchorRow(inst, cbs_lower_bound(inst), singleton_baseline(inst)))
     return filas
 
 
 def verify_anchor() -> tuple[bool, str]:
-    """Comprueba el ancla exacta declarada en §16: (0.05, 16, 2, 7) -> >=0.806 vs 0.35."""
+    """Check G0 anchor arithmetic: (0.05, 16, 3, 7), lower bound 0.9147."""
     inst = anchor_instance()
     cbs, base = cbs_lower_bound(inst), singleton_baseline(inst)
-    ok = (inst.k == 2 and inst.coverage == 32
-          and abs(base - 0.35) < 1e-12 and cbs >= 0.806)
-    return ok, (f"k={inst.k}, kG={inst.coverage}, cbs={cbs:.4f} (>=0.806), "
+    ok = (inst.k == 3 and inst.coverage == 48
+          and abs(base - 0.35) < 1e-12 and abs(cbs-(1-0.95**48)) < 1e-12)
+    return ok, (f"posterior_zero: k={inst.k}, kG={inst.coverage}, cota_cbs={cbs:.4f}, "
                 f"singleton={base:.4f} (=0.35), razon={cbs / base:.2f}x")
 
 

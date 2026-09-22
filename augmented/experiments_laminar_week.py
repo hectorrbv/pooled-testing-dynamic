@@ -592,6 +592,7 @@ def run_showcase():
         ("tasas homogéneas", atlas[atlas.rate_mode == "homogeneous"]),
         ("tasas dispersas", atlas[atlas.rate_mode != "homogeneous"]),
         ("prevalencia alta", atlas[atlas.base_p >= 0.6]),
+        ("prevalencia >= 0.7", atlas[atlas.base_p >= 0.7]),
         ("prevalencia baja", atlas[atlas.base_p <= 0.2]),
     ):
         if frame.empty:
@@ -601,10 +602,22 @@ def run_showcase():
             "region": label,
             "instances": int(len(frame)),
             "share_greedy_beats_static": float(
-                (frame.gain_greedy_static >= 1.0 - 1e-9).mean()
+                (frame.gain_greedy_static > 1.0 + 1e-9).mean()
+            ),
+            "share_greedy_ties_static": float(
+                ((frame.gain_greedy_static - 1.0).abs() <= 1e-9).mean()
+            ),
+            "share_greedy_loses_static": float(
+                (frame.gain_greedy_static < 1.0 - 1e-9).mean()
             ),
             "share_rollout_beats_static": float(
-                (frame.gain_rollout_static >= 1.0 - 1e-9).mean()
+                (frame.gain_rollout_static > 1.0 + 1e-9).mean()
+            ),
+            "share_rollout_ties_static": float(
+                ((frame.gain_rollout_static - 1.0).abs() <= 1e-9).mean()
+            ),
+            "share_rollout_loses_static": float(
+                (frame.gain_rollout_static < 1.0 - 1e-9).mean()
             ),
             "best_gain_rollout_static": float(best.gain_rollout_static),
             "best_instance": int(best.instance),
@@ -618,7 +631,15 @@ def run_showcase():
             "best_V_static": float(best.V_static_binary),
             "best_ratio_laminar_opt": float(best.ratio_laminar_opt),
         })
-    _write_rows(DATA_DIR / "showcase_regions.csv", rows)
+    from hashlib import sha256
+    from augmented.provenance import write_canonical_csv
+    write_canonical_csv(DATA_DIR / "showcase_regions.csv", rows,
+        generator='augmented.experiments_laminar_week.run_showcase', seed=None,
+        params={'input': 'augmented/data/laminar_week/atlas_instances.csv',
+                'input_sha256': sha256((DATA_DIR/'atlas_instances.csv').read_bytes()).hexdigest(),
+                'generator_sha256': sha256(Path(__file__).read_bytes()).hexdigest(),
+                'ratio_tolerance': 1e-9,
+                'scope': 'reaggregate the historical atlas; no policy rerun or clearing-convention migration'})
 
     grid = atlas.groupby(["base_p", "utility_mode"]).gain_rollout_static.mean()
     grid = grid.unstack("utility_mode")

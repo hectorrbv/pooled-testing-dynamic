@@ -103,8 +103,9 @@ class PoliticasDensidad:
         zA = z_tabla(sorted(A), self.p)
         den = float(zA[r])
         s0 = float(zS[0] * zR[r]) / den if r < len(zR) else 0.0
-        sr = (float(zS[len(S)] * zR[r - len(S)]) / den
-              if len(S) <= r and 0 <= r - len(S) < len(zR) else 0.0)
+        # The complement is healthy iff ALL r infections lie in S. Testing
+        # an entirely infected S is not sufficient when r > len(S).
+        sr = float(zS[r] * zR[0]) / den if r < len(zS) else 0.0
         return s0 * sum(float(self.u[i]) for i in S) \
             + sr * sum(float(self.u[i]) for i in resto)
 

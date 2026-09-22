@@ -28,58 +28,101 @@ from functools import lru_cache
 from math import comb
 
 
-def crear_solver(p_inf, G, u=1.0):
-    """V(virgenes, atomos, b) exacto para poblacion homogenea."""
+def crear_solver(p_inf, G, u=1.0, *, max_states=None, backend='python'):
+    """Exact homogeneous DP evaluated in floating point, with root argmax/ties.
+
+    V.action_values(n, atoms, b) exposes legal action values. V.optimal_actions
+    saves all numerical maximizers in V.argmax, so a singleton/group tie is not
+    silently classified as a strict preference. G0/posterior-zero only.
+
+    Exact reductions: cap virgin count at b*G; evaluate b=1 directly; merge
+    identical successor multisets; test only the smaller side of a split since
+    its complementary count is inferred for free. No beam search or pruning.
+    """
+    if backend == 'compiled':
+        from augmented.bellman_tipos_compilado import CompiledSolver
+        return CompiledSolver(p_inf,G,u)
+    if backend != 'python':
+        raise ValueError('Unknown backend')
+    if not 0 <= p_inf <= 1 or G < 1 or u < 0:
+        raise ValueError('Invalid homogeneous instance')
+    p_inf, u = float(p_inf), float(u)
     q = 1 - p_inf
+    openings = {}
+    fresh_best = [0.0]
+    refinements, immediate = {}, {}
+    argmax = {}
+    for k in range(1, G+1):
+        probs = [comb(k,r)*p_inf**r*q**(k-r) for r in range(k+1)]
+        branches = [(probs[0]+probs[-1], ())]
+        branches += [(probs[r], ((k,r),)) for r in range(1,k) if probs[r]]
+        openings[k] = k*u*probs[0], tuple(branches)
+        fresh_best.append(max(fresh_best[-1], k*u*probs[0]))
+    for m in range(2,G+1):
+        for r in range(1,m):
+            candidates=[]
+            for j in range(1,m//2+1):
+                aggregate={}; reward=0.0
+                for s in range(max(0,r-m+j),min(j,r)+1):
+                    pr=comb(j,s)*comb(m-j,r-s)/comb(m,r)
+                    reward += pr*u*((j if s==0 else 0)+(m-j if r-s==0 else 0))
+                    new=tuple(sorted((a,c) for a,c in ((j,s),(m-j,r-s)) if 0<c<a))
+                    aggregate[new]=aggregate.get(new,0.0)+pr
+                candidates.append((j,reward,tuple((pr,new) for new,pr in aggregate.items())))
+            refinements[m,r]=tuple(candidates)
+            immediate[m,r]=max(x[1] for x in candidates)
 
-    def Z(k, r):
-        """Binomial: prob de r infectados en k personas frescas."""
-        return comb(k, r) * p_inf ** r * q ** (k - r)
+    def state(v, atoms, b):
+        return min(v,b*G), tuple(sorted(atoms)), b
 
-    def hiper(m, r, j, s):
-        """Hipergeometrica: prob de s infectados entre los j probados de un
-        atomo de tamano m con r infectados (ec. 3.5 en el caso homogeneo)."""
-        if not (0 <= s <= j and 0 <= r - s <= m - j):
+    def value(v, atoms, b):
+        if b<=0:
             return 0.0
-        return comb(j, s) * comb(m - j, r - s) / comb(m, r)
+        v=min(v,b*G)
+        if b==1:
+            return max(fresh_best[min(G,v)], max((immediate[a] for a in atoms),default=0.0))
+        return cached(v,atoms,b)
 
-    def norm(atomos):
-        """Descarta los conteos extremos: cobrados o todos infectados."""
-        return tuple(sorted(a for a in atomos if 0 < a[1] < a[0]))
+    def action_values(v, atoms, b):
+        if b<=0:
+            return ()
+        values=[]
+        for k in range(1,min(G,v)+1):
+            reward,branches=openings[k]
+            val=reward+sum(pr*value(v-k,tuple(sorted(atoms+new)),b-1) for pr,new in branches)
+            values.append((('open',k),val))
+        for atom in dict.fromkeys(atoms):
+            rest=list(atoms);rest.remove(atom);rest=tuple(rest)
+            for j,reward,branches in refinements[atom]:
+                val=reward+sum(pr*value(v,tuple(sorted(rest+new)),b-1) for pr,new in branches)
+                values.append((('ref',atom,j),val))
+        return tuple(values)
 
     @lru_cache(maxsize=None)
-    def V(virgenes, atomos, b):
-        if b == 0:
-            return 0.0
-        mejor = 0.0
-        for k in range(1, min(G, virgenes) + 1):            # abrir pool virgen
-            val = 0.0
-            for r in range(k + 1):
-                pr = Z(k, r)
-                if pr == 0:
-                    continue
-                rew = k * u if r == 0 else 0.0
-                nuevos = ((k, r),) if 0 < r < k else ()
-                val += pr * (rew + V(virgenes - k, norm(atomos + nuevos), b - 1))
-            mejor = max(mejor, val)
-        for (m, r) in set(atomos):                          # refinar un atomo
-            resto = list(atomos)
-            resto.remove((m, r))
-            for j in range(1, min(G, m - 1) + 1):
-                val = 0.0
-                for s in range(j + 1):
-                    pr = hiper(m, r, j, s)
-                    if pr == 0:
-                        continue
-                    rew = (j * u if s == 0 else 0.0) + \
-                          ((m - j) * u if r - s == 0 else 0.0)
-                    nuevos = tuple(x for x in ((j, s), (m - j, r - s))
-                                   if 0 < x[1] < x[0])
-                    val += pr * (rew + V(virgenes,
-                                         norm(tuple(resto) + nuevos), b - 1))
-                mejor = max(mejor, val)
-        return mejor
+    def cached(v,atoms,b):
+        if max_states is not None and cached.cache_info().currsize>=max_states:
+            raise RuntimeError('Exact-state limit reached; no optimum certified')
+        return max((val for _,val in action_values(v,atoms,b)),default=0.0)
 
+    def V(virgenes,atomos,b):
+        if virgenes<0 or b<0 or any(not (0<r<m<=G) for m,r in atomos):
+            raise ValueError('Expected nonnegative counts and unresolved atoms of size <= G')
+        v,atoms,b=state(virgenes,atomos,b)
+        return value(v,atoms,b)
+
+    def optimal_actions(v,atoms,b,tol=1e-10):
+        v,atoms,b=state(v,atoms,b)
+        options=action_values(v,atoms,b)
+        best=max((val for _,val in options),default=0.0)
+        answer=tuple(a for a,val in options if abs(val-best)<=tol*max(1.,abs(best)))
+        argmax[v,atoms,b]=answer
+        return answer
+
+    V.action_values=lambda v,a,b: action_values(*state(v,a,b))
+    V.optimal_actions=optimal_actions
+    V.argmax=argmax
+    V.cache_info=cached.cache_info
+    V.cache_clear=cached.cache_clear
     return V
 
 

@@ -10,6 +10,7 @@
 #   requirements-viz.txt      graphviz, seaborn (figuras y arboles)
 #   requirements-rl.txt       gymnasium (clase RL)
 #   requirements-solvers.txt  MOSEK, Gurobi (solvers comerciales, con licencia)
+#   requirements-types.txt    Numba (mapas de Bellman homogeneo compilado)
 #
 # Instalacion completa: pip install -r requirements-all.txt
 

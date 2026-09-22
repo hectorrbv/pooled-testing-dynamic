@@ -3,3 +3,4 @@
 -r requirements-viz.txt
 -r requirements-rl.txt
 -r requirements-solvers.txt
+-r requirements-types.txt

@@ -1,0 +1,101 @@
+{
+  "fecha": "2026-09-21",
+  "alcance": "Comprobaciones de estudio, no suite completa; score inmediato corregido",
+  "ejemplo_b2": {
+    "q_sano": 0.3,
+    "B": 2,
+    "G": 2,
+    "n": 4,
+    "pz_a_mano": "387/500",
+    "strict_par_a_mano": "141/250",
+    "singleton": "3/5",
+    "posterior_zero": {
+      "par_primero_continuacion_optima": 0.774,
+      "optimo": 0.774
+    },
+    "strict": {
+      "par_primero_continuacion_optima": 0.564,
+      "optimo": 0.6
+    }
+  },
+  "formula_del_plan_fuera_del_regimen": {
+    "n": 4,
+    "q_sano": 0.9,
+    "posterior_zero": {
+      "par_primero_continuacion_optima": 3.24,
+      "optimo": 3.24
+    },
+    "strict": {
+      "par_primero_continuacion_optima": 3.24,
+      "optimo": 3.24
+    },
+    "pq": 0.09
+  },
+  "compresion_por_tipos": [
+    {
+      "n": 12,
+      "B": 3,
+      "G": 3,
+      "q_sano": 0.3,
+      "valor": 1.24938,
+      "estados": 77
+    },
+    {
+      "n": 120,
+      "B": 3,
+      "G": 3,
+      "q_sano": 0.3,
+      "valor": 1.24938,
+      "estados": 77
+    },
+    {
+      "n": 500,
+      "B": 3,
+      "G": 3,
+      "q_sano": 0.3,
+      "valor": 1.24938,
+      "estados": 77
+    }
+  ],
+  "contraejemplo_y_pi_L": {
+    "B": 3,
+    "G": 4,
+    "convencion": "posterior_zero",
+    "clase": "pathwise",
+    "optimo_fraccion": "681289/640000",
+    "optimo": 1.0645140625,
+    "primera_accion_optima": [
+      "open",
+      [
+        0,
+        4,
+        5
+      ]
+    ],
+    "lambda": 0.001,
+    "horizonte": 3,
+    "no_paralisis": true,
+    "pi_L_valor": 1.026265,
+    "pi_L_ratio": 0.9640689927475711
+  },
+  "regresion_score_inmediato": {
+    "estado": "atomo de 3 personas, 2 infectados, u=1, prior homogeneo",
+    "accion": "probar una persona",
+    "score_del_codigo": 0.3333333333333333,
+    "cobro_correcto_a_mano": "1/3",
+    "cobro_bellman_un_paso": 0.3333333333333333,
+    "score_antes_de_corregir": "5/3",
+    "estado_revision": "Corregido el 21-sep; cotejado por enumeración en tests_bellman_perfiles.py"
+  },
+  "ancla_cotas_realizables": {
+    "q_sano": 0.05,
+    "G": 16,
+    "B": 7,
+    "k_posterior_zero": 3,
+    "cota_posterior_zero": 0.9147424096656918,
+    "k_reserva_estricta_del_plan": 2,
+    "cota_reserva_estricta": 0.8062885155414992,
+    "singleton": 0.35000000000000003,
+    "nota": "Son cotas inferiores de construcciones, no valores optimos certificados."
+  }
+}

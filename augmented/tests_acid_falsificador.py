@@ -30,22 +30,28 @@ def test_el_ancla_de_la_seccion_16_cuadra():
     assert ok, detalle
 
 
-def test_k_desde_el_presupuesto_reserva_el_test_acreditador():
-    """k = B - ceil(log2 G) - 1; el -1 es la prueba que convierte deduccion en pago."""
-    assert k_from_budget(7, 16) == 2      # 7 - 4 - 1
-    assert k_from_budget(4, 4) == 1       # 4 - 2 - 1
+def test_k_g0_no_reserva_test_acreditador():
+    """Posterior-zero credits the inferred healthy person without an extra test."""
+    assert k_from_budget(7, 16) == 3      # 7 - 4
+    assert k_from_budget(4, 4) == 2       # 4 - 2
     assert k_from_budget(2, 4) == 0       # no alcanza ni para una ruta
     assert k_from_budget(1, 2) == 0
 
 
+def test_variante_estricta_conserva_reserva_historica():
+    assert k_from_budget(7, 16, 'strict') == 2
+    assert k_from_budget(4, 4, 'strict') == 1
+    assert cbs_lower_bound(anchor_instance('strict')) == pytest.approx(1-.95**32)
+
+
 def test_cota_cbs_es_la_probabilidad_de_hallar_al_menos_un_sano():
-    inst = AcidInstance(q=0.05, G=16, k=2, B=7)
-    assert cbs_lower_bound(inst) == pytest.approx(1 - 0.95 ** 32, abs=1e-12)
-    assert inst.coverage == 32
+    inst = AcidInstance(q=0.05, G=16, k=3, B=7)
+    assert cbs_lower_bound(inst) == pytest.approx(1 - 0.95 ** 48, abs=1e-12)
+    assert inst.coverage == 48
 
 
 def test_baseline_singleton_es_B_por_q():
-    assert singleton_baseline(AcidInstance(q=0.05, G=16, k=2, B=7)) == pytest.approx(0.35)
+    assert singleton_baseline(anchor_instance()) == pytest.approx(0.35)
 
 
 def test_sin_presupuesto_para_una_ruta_la_cota_es_cero():
@@ -59,9 +65,9 @@ def test_la_malla_analitica_cubre_G_hasta_16():
     assert any(f.ratio < 1.0 for f in filas), "y celdas donde el baseline gana; no es universal"
 
 
-def test_el_ancla_da_una_razon_de_2_3():
+def test_el_ancla_g0_da_una_razon_de_2_61():
     inst = anchor_instance()
-    assert cbs_lower_bound(inst) / singleton_baseline(inst) == pytest.approx(2.30, abs=0.01)
+    assert cbs_lower_bound(inst) / singleton_baseline(inst) == pytest.approx(2.61, abs=0.01)
 
 
 # ------------------------------------------------------------------ B-M7 checks
@@ -105,7 +111,7 @@ def test_check9_sobrevive_a_romper_empates():
 
 def test_instancia_demasiado_grande_falla_con_mensaje_util():
     with pytest.raises(ValueError, match="excede el limite"):
-        run_local_checks(S0, AcidInstance(q=0.05, G=16, k=2, B=7))
+        run_local_checks(S0, AcidInstance(q=0.05, G=16, k=3, B=7))
 
 
 # ------------------------------------------------------------------ B-M8 cruce
