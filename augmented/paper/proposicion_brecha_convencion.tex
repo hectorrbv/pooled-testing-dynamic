@@ -47,11 +47,11 @@ The value of a policy is its expected collected utility, $V_\bullet(\pi)=\mathbb
 \begin{enumerate}
 \item[\textbf{1.}] \textbf{Domination.} \lab{DEMOSTRADO} For every history $h$, $\Cstr(h)\subseteq\Cpz(h)$. Hence $V_\str(\pi)\le V_\pz(\pi)$ for every policy $\pi$, and $\OPT_\str(B)\le\OPT_\pz(B)$ for every $B$.
 
-\item[\textbf{2.}] \textbf{Simulation with overhead.} \lab{ENUNCIADO; prueba pendiente} Let $D(h)$ be the set accredited by deduction only, $D(h)=\Cpz(h)\setminus\Cstr(h)$, and let $\Delta(\pi)$ be the maximum over trajectories of $\pi$ of the number of tests needed to certify $D(h_{\rm final})$ under the strict rule (one test per deduced-clean residual piece of size at most $G$). Then every posterior-zero policy is replicated under strict clearing with $\Delta(\pi)$ additional tests, so
+\item[\textbf{2.}] \textbf{Simulation with overhead.} \lab{DEMOSTRADO --- revisión cruzada de B pendiente; cota VERIFICADA $n\le5$} Let $D(h)=\Cpz(h)\setminus\Cstr(h)$ be the set accredited by deduction only, and for a policy $\pi$ let $\Delta(\pi)$ be the maximum over its trajectories of the number of deduced-clean pieces at the end. Every posterior-zero policy with budget $B$ is replicated under strict clearing with $\Delta(\pi)\le B-1$ additional tests, one per piece, so
 \[
-\OPT_\pz(B)\;\le\;\OPT_\str\big(B+\Delta\big),\qquad \Delta=\max_{\pi}\Delta(\pi).
+\OPT_\pz(B)\;\le\;\OPT_\str\big(B+\Delta(\pi^*)\big)\;\le\;\OPT_\str(2B-1).
 \]
-Witness in the four-person game of Part 3(b): $\OPT_\pz(2)=0.774\le\OPT_\str(3)=1.011$. \lab{VERIFICADO}
+Witness in the four-person game of Part 3(b): $\OPT_\pz(2)=0.774\le\OPT_\str(3)=1.011$; the bound $\OPT_\pz(B)\le\OPT_\str(2B-1)$ holds on every instance of the verification grid ($n\le5$, $B\le3$, homogeneous and heterogeneous), with equality at $B=1$.
 
 \item[\textbf{3.}] \textbf{Sharpness.}
 \begin{enumerate}
@@ -84,8 +84,18 @@ In the two-test game of Part 3(b), strict clearing reproduces the threshold of P
 If $i\in T$ and $R(T)=0$ then no member of $T$ is infected, so every profile consistent with $h$ has $i$ healthy and $\Pr(i\text{ infected}\mid h)=0$: $\Cstr(h)\subseteq\Cpz(h)$. A policy generates the same histories with the same probabilities under both rules, because legality and transitions depend only on $h$; its value is the expected utility of the accredited set, which is pointwise larger under posterior-zero. Taking the maximum over policies gives $\OPT_\str(B)\le\OPT_\pz(B)$.
 \end{proof}
 
-\begin{proof}[Mechanism of Part 2 (proof pending)]
-Run the posterior-zero policy $\pi$ under the strict rule: every action legal under posterior-zero is legal under strict (the strict menu additionally contains tests on deduced-clean pieces), so histories and probabilities coincide. At the end of each trajectory, test each deduced-clean residual piece: such a test is legal, reads $0$ with certainty, and accredits the piece under the strict rule; pieces belonging to different atoms cannot be merged into one test (laminarity), which is why the overhead counts pieces. The budget is hard on every path, so the overhead is the \emph{maximum} over trajectories, not the expectation. On the trajectory ``pair reads 1, then $\{1\}$ reads 1'' the extra test is $\{2\}$; it costs one test and pays person~2. \textit{Pending: the exact bound on $\Delta$ (one extra test per refinement event gives $\Delta\le B-1$) and the formal write-up.}
+\begin{proof}[Proof of Part 2]
+Throughout, $0<p_i<1$ for every $i$, so a profile is consistent with $h$ exactly when it has positive posterior weight.
+
+\emph{(i) What deduction accredits.} In a laminar history the tested people are partitioned into residual cells, and the count of every cell is determined by $h$. If a cell $X$ has count $r$ with $0<r<|X|$, every arrangement of $r$ infected among its members is consistent, so every member has positive infection posterior; if $r=|X|$ nobody in it is healthy. Hence $\Cpz(h)$ is the union of the cells with count $0$, and $D(h)$ is the union of the \emph{deduced-clean pieces}: cells with count $0$ that were never themselves a tested pool reading $0$.
+
+\emph{(ii) Birth and size.} A fresh pool is disjoint from everything tested and its count is observed directly: if it reads $0$ its members hold a strict certificate, otherwise it becomes an atom with an interior count. Only a refinement creates a deduced-clean piece: refining the atom $X$ (count $r$) by $S\subsetneq X$ (count $s$) leaves $X\setminus S$ with count $r-s$, deduced-clean exactly when $s=r$. Since $|X|\le G$ and $|S|\ge1$, the piece has at most $G-1$ people, so a single strict test on the whole piece certifies it; pieces from different atoms cannot share a test, because a legal pool is fresh or contained in one atom. A refinement creates at most one such piece, and a posterior-zero policy never refines a deduced-clean piece, whose members it has already accredited.
+
+\emph{(iii) The copycat.} Let $\pi$ be a posterior-zero policy with budget $B$, and run it under the strict rule. Legality depends only on $h$: every fresh pool and every refinement of an interior atom is legal under strict as well, whose menu merely adds tests on deduced-clean pieces. The outcome distribution of a test depends only on the priors and on $h$, not on the accreditation rule. So the copied run produces the same histories with the same probabilities.
+
+\emph{(iv) Certification.} When $\pi$ stops, run one test on each deduced-clean piece of $h_{\rm final}$. Each is legal (a pool inside a live atom of count $0$, of size at most $G$), reads $0$ with certainty (the history already implies it), and accredits the piece. Every posterior-zero accredited person now holds a strict certificate: those who sat in a zero-count pool already did, and the deduced ones just received one. Hence $V_\str(\pi')\ge V_\pz(\pi)$ for the extended policy $\pi'$ (in fact equality, by Part 1 and because the certification tests are uninformative). On the trajectory ``pair reads 1, then $\{1\}$ reads 1'' of Part 3(b) the extra test is $\{2\}$.
+
+\emph{(v) The bill.} The first test is never a refinement, so a trajectory of $B$ tests contains at most $B-1$ refinements and therefore at most $B-1$ deduced-clean pieces: $\Delta(\pi)\le B-1$. The budget is hard on every path, so $\pi'$ needs $B+\Delta(\pi)$ tests, the maximum over trajectories and not the mean. Taking $\pi$ optimal, $\OPT_\pz(B)\le V_\str(\pi')\le\OPT_\str(B+\Delta(\pi))\le\OPT_\str(2B-1)$.
 \end{proof}
 
 \begin{proof}[Proof of Part 3(b)]
@@ -144,7 +154,7 @@ At scale, Map 1 (B, 2026-09-21, \texttt{results/mapa\_homogeneo\_1.csv}): for $q
 \begin{enumerate}
 \item We compare two rules for collecting utility. Soft clearing accredits a person as healthy as soon as the whole history proves it, whatever the proof. Hard clearing accredits a person only if they sat in a tested pool whose count came back zero.
 \item Soft clearing never collects less than hard clearing: a zero count on your pool is one of the proofs soft clearing accepts, so every hard-clearing certificate is also a soft-clearing certificate. With a single test the two rules collect the same; the difference needs a deduction.
-\item Soft clearing is not cheating. Everything it collects by deduction, a hard-clearing player could also collect by spending extra tests on people already known to be healthy, tests whose result is known before running them. So the soft-clearing optimum with budget $B$ never exceeds the hard-clearing optimum with a somewhat larger budget; in the four-person game one extra test is enough, 0.774 with two tests against 1.011 with three.
+\item Soft clearing is not cheating. Everything it collects by deduction, a hard-clearing player could also collect by spending extra tests on people already known to be healthy, tests whose result is known before running them. So the soft-clearing optimum with budget $B$ never exceeds the hard-clearing optimum with at most $B-1$ extra tests, one per deduction; in the four-person game one extra test is enough, 0.774 with two tests against 1.011 with three.
 \item The gap is real and it comes from one event. Test a pair, get count one, then test one member: soft clearing pays with certainty, because whichever way the count falls someone is proven healthy; hard clearing pays half the time. With four people, health probability 0.3 and two tests, the same policy is worth 0.774 under soft clearing and 0.564 under hard clearing, while two individual tests are worth 0.6.
 \item So the convention flips the optimal first move, not only the value: under hard clearing you should never group, under soft clearing you should open the pair.
 \item In the two-test game hard clearing reproduces the threshold of Nick's Proposition~1: below one half the optimum never groups, above it groups. Under soft clearing there is no threshold, the pair beats the individuals at every probability.
@@ -152,6 +162,6 @@ At scale, Map 1 (B, 2026-09-21, \texttt{results/mapa\_homogeneo\_1.csv}): for $q
 \end{enumerate}
 \end{quote}
 
-\medskip\noindent\textit{Números verificados en este documento: $3/10$, $3/5$, $387/500=0.774$, $141/250=0.564$, $1011/1000$, $537/500$ (referencias de diseño B-M17, dos vías); tabla $q\in\{0.1,\dots,0.5\}$ y valor exacto $1.5744$ en $q=0.6$ (enumeración, 2026-09-13; \texttt{tests\_brecha\_convencion.py} fija las fórmulas para $q\le\tfrac12$ y las desigualdades para $q>\tfrac12$); $1-0.95^{48}=0.9147$, $1-0.95^{32}=0.8063$ (aritmética, §16 del plan); Mapa 1 $665/665$ y Mapa 3 $0.8654$/$0.7080$/$1.1233$ (B, commit 5719df3). Pendiente: prueba de la Parte 2.}
+\medskip\noindent\textit{Números verificados en este documento: $3/10$, $3/5$, $387/500=0.774$, $141/250=0.564$, $1011/1000$, $537/500$ (referencias de diseño B-M17, dos vías); tabla $q\in\{0.1,\dots,0.5\}$ y valor exacto $1.5744$ en $q=0.6$ (enumeración, 2026-09-13; \texttt{tests\_brecha\_convencion.py} fija las fórmulas para $q\le\tfrac12$ y las desigualdades para $q>\tfrac12$); $1-0.95^{48}=0.9147$, $1-0.95^{32}=0.8063$ (aritmética, §16 del plan); Mapa 1 $665/665$ y Mapa 3 $0.8654$/$0.7080$/$1.1233$ (B, commit 5719df3); cota de la Parte 2 $\OPT_\pz(B)\le\OPT_\str(2B-1)$ en toda la malla $n\le5$, $B\le3$ (\texttt{tests\_brecha\_convencion.py}). Parte 2 probada el 2026-09-22 (A con guía; revisión cruzada de B pendiente).}
 
 \end{document}

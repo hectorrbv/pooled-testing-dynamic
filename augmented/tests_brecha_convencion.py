@@ -176,6 +176,34 @@ def test_formulas_juego_minimo_B2(q):
     assert f_pz - 2 * q == q * (q * q + p * p) > 0     # par > singletons bajo pz, todo q
 
 
+# ----------------------------------------------------------------------------
+# 5. Parte 2 (simulacion con sobrecosto): OPT_pz(B) <= OPT_str(2B - 1), con
+#    igualdad en B = 1 (sin refinamientos no hay deducciones)
+# ----------------------------------------------------------------------------
+def _malla_pz_vs_str():
+    return sorted({(n, G, B, q) for (n, G, B, q, _) in _malla()})
+
+
+@pytest.mark.parametrize("n,G,B,q", _malla_pz_vs_str())
+def test_simulacion_con_sobrecosto_homogenea(n, G, B, q):
+    U = frozenset(range(n))
+    v_pz = _solver([1 - q] * n, [1] * n, G, "posterior_zero").V(U, (), B)
+    v_st = _solver([1 - q] * n, [1] * n, G, "strict").V(U, (), 2 * B - 1)
+    assert v_pz <= v_st
+    if B == 1:
+        assert v_pz == v_st
+
+
+@pytest.mark.parametrize("p_list,u_list,G,B", _aleatorias())
+def test_simulacion_con_sobrecosto_heterogenea(p_list, u_list, G, B):
+    U = frozenset(range(len(p_list)))
+    v_pz = _solver(list(p_list), list(u_list), G, "posterior_zero").V(U, (), B)
+    v_st = _solver(list(p_list), list(u_list), G, "strict").V(U, (), 2 * B - 1)
+    assert v_pz <= v_st
+    if B == 1:
+        assert v_pz == v_st
+
+
 @pytest.mark.parametrize("q", Q_GRID)
 def test_primera_accion_optima_juego_minimo_B2(q):
     """Corolario en B=2: bajo posterior_zero la primera accion optima es un par
