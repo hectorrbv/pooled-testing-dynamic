@@ -55,8 +55,9 @@ ggml-*.bin
 transcription_work/
 transcripciones/
 audios/
-pasted-text.txt
+pasted-text*
 TRANSCRIPTION_README.md
+TRANSCRIPCION_*
 *.m4a
 *.srt
 *.vtt
