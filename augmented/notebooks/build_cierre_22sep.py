@@ -38,8 +38,9 @@ nb.cells = [c for c in nb.cells if not c.metadata.get('cierre_22sep')]
 nb.cells[0].source = '''# Contraejemplos → π_L → 0.9307
 
 **Sesión con Francisco: martes 22-sep, 19:00 Praga. Guion de 10 minutos.**
-Recorrido principal: **§5 → §7 → §8 → §10**. §11 contiene el cierre de tareas
-y los mapas para la discusión. §1 y el notebook 27 quedan como apoyo.
+Recorrido principal: **§5 → §7 → §8 → §10**. §11 corresponde al bloque
+adicional de **3 minutos después de A**: validación, ancla y C1.
+§1 y el notebook 27 quedan como apoyo.
 
 q = P(sano), p = P(infectado), R = número de infectados. El recorrido principal
 usa posterior-zero, incluida la primera tabla de §5. El apéndice histórico
@@ -139,6 +140,9 @@ plt.show()
 - **BM17:** 296 comparaciones exactas con enumeración de perfiles e historial;
   diferencia cero. Matriz local declarada: 8 anclas, 240 estados heterogéneos,
   48 raíces homogéneas; incluye ambas convenciones en los dos primeros grupos.
+- **Verificación integrada el 22-sep:** BM17 y la nueva suite de brecha pasan
+  **626 tests**. La suite de brecha usa otro enumerador por historias y coteja
+  óptimos y primeras acciones forzadas para n≤5, B≤3, en ambas convenciones.
 - **Ancla G0:** k=B−⌈log₂G⌉=3. 0.914742 es una cota inferior realizable.
 - **Mapa 1:** 665/665 casos prefieren estrictamente empezar con un grupo;
   población n=B·G, q=.05,.10,…,.95, G=2,3,4,5,8, B=2,…,8.

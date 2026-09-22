@@ -3,6 +3,12 @@
 Preparado el 21-sep-2026 para la sesión del **martes 22, 19:00 Praga**.
 Sync previsto a las **16:00** para congelar el guion.
 
+**Reparto actualizado tras integrar el guion conjunto del 22-sep:** Héctor
+presenta este relato en **10 minutos**; después A presenta la proposición de
+brecha de convención en **7 minutos**; Héctor retoma **3 minutos** para
+validación, ancla y C1. Las cinco preguntas conjuntas están en
+[guion de sesión](2026-09-22-guion-sesion.md).
+
 Tu parte es explicar qué objeción motivó cada cambio, qué mide cada número y
 qué pregunta queda abierta. El recorrido principal es **contraejemplo → π_L →
 0.9307**. Los mapas son evidencia adicional para la discusión.
@@ -40,7 +46,7 @@ Abre `augmented/notebooks/26_esencial.ipynb`, ya ejecutado. Recorrido:
 | 1:30–4:00 | 26 §7, instancia y rama AEF → E; tabla de valores de §8 | Las cuatro políticas concretas quedan alrededor del 66% del óptimo laminar. Explica una rama para mostrar la continuación que compra la primera prueba. |
 | 4:00–6:30 | 26 §8, fórmula y fila de π_L | El costo depende del resultado: una exploración puede terminar después de una prueba. π_L alcanza 96.41% del óptimo laminar en esa misma instancia. |
 | 6:30–8:30 | 26 §10, curva de λ | En otra instancia, de siete personas, la rejilla encuentra λ=1.238469 y ratio 0.930703. La calibración forma parte de la política. |
-| 8:30–10:00 | 26 §11, cierre | Solver contrastado con enumerador; evidencia de mapas; pregunta concreta sobre la especificación y la garantía que buscamos. |
+| 8:30–10:00 | 26 §10, cierre | Qué respalda el 0.9307 y qué falta para una garantía; pregunta sobre la especificación de λ. Los resultados de validación y mapas van en tu bloque adicional de 3 min. |
 
 **Frase de apertura:** «Voy a mostrar qué falla en las reglas que probamos,
 cómo π_L recupera valor al considerar el gasto de pruebas según el resultado,
@@ -132,7 +138,31 @@ con esta especificación. La búsqueda lo propone como conjetura empírica;
 no tenemos una garantía universal del 93%». La verificación de hoy no vuelve
 a evaluar las aproximadamente 7,000 instancias de la nota histórica.
 
-**8:30–10:00 · Cierre y preguntas (§11).**
+**8:30–10:00 · Cierre del relato (§10).**
+
+«El contraejemplo muestra una limitación de las cuatro reglas evaluadas;
+π_L recupera gran parte del valor en esa instancia. El 0.9307 se reprodujo
+en otra candidata con la rejilla declarada. La pregunta ahora es qué regla
+para λ, horizonte y no-parálisis fijamos antes de buscar una garantía».
+
+Da paso al bloque de A sobre la brecha de convención.
+
+## Bloque adicional de Héctor: 3 minutos, después de A (26 §11)
+
+**Primer minuto:** el solver se cotejó con dos enumeradores independientes.
+Tras integrar las verificaciones de A, `tests_bm17.py` y
+`tests_brecha_convencion.py` pasan **626 tests**, ejecutados el 22-sep.
+La segunda suite incluye óptimos y primeras acciones forzadas para n≤5, B≤3;
+la primera añade, entre otros casos, raíces homogéneas hasta n=6.
+
+**Segundo minuto:** G0 permite k=3 en el ancla, con **cota 0.914742**.
+La frontera del Mapa 3 tiene óptimo 0.865394; la variante CBS explícita que se
+detiene al primer cobro vale 0.727127. En el ancla, una política factible con
+G≤8 vale 1.123283 y supera a esa variante CBS, que vale 0.939440.
+El óptimo completo con G=16 sigue sin certificarse.
+
+**Tercer minuto:** C1 ya separa victorias, empates y derrotas: greedy global
+10.9 / 56.1 / 33.0%. Remite a las cinco preguntas del guion conjunto.
 
 «El enumerador independiente respalda el solver en los casos probados y el
 Mapa 1 respalda a escala la preferencia inicial por grupos. El Mapa 3 muestra

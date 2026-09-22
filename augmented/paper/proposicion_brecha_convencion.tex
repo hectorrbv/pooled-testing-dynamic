@@ -69,7 +69,7 @@ V_\pz(\pi_{\rm par})-V(\pi_{\rm sing}) = q\,(q^2+p^2)>0\ \ \forall q\in(0,1),\qq
 V_\str(\pi_{\rm par})-V(\pi_{\rm sing}) = q^2(2q-1).
 \]
 The first difference comes from the single branch $R=1$. For $q\le\tfrac12$, $\pi_{\rm par}$ is the best pair-first continuation under both conventions and $\pi_{\rm sing}$ is the strict optimum; for $q>\tfrac12$ the two formulas are strict lower bounds (Remark~\ref{rem:region}).
-\item[(c)] \emph{Scale.} \lab{cota realizable} At the anchor $(q,G,B)=(0.05,16,7)$ the fixed cover-then-bisect plan is worth $1-0.95^{48}=0.9147$ under posterior-zero and $1-0.95^{32}=0.8063$ under strict: the strict rule spends one full pool of tests on certification. This plan is \emph{not} optimal (Remark~\ref{rem:anchor}).
+\item[(c)] \emph{Scale.} \lab{cota realizable} At the anchor $(q,G,B)=(0.05,16,7)$, cover-then-bisect constructions guarantee at least $1-0.95^{48}\approx0.9147$ under posterior-zero and $1-0.95^{32}\approx0.8063$ under strict. Reserving the additional strict certification test reduces the number of root pools from three to two, losing one pool's worth of coverage. These are achievable lower bounds, not the full expected utilities of the constructions (Remark~\ref{rem:anchor}).
 \end{enumerate}
 \end{enumerate}
 \end{proposition}
@@ -116,13 +116,13 @@ With $n=2$ the second test has nowhere to go in the resolved branches: $V_\pz(\p
 The threshold of the corollary is a $B=2$ statement. With $B=3$ at $q=0.3$: $\OPT_\str(3)=1.011>0.9$, so strict clearing already groups; and under posterior-zero the pair-first and singleton-first optima tie exactly at $537/500=1.074$. The advantage of grouping is not monotone in $B$.
 \end{remark}
 
-\begin{remark}[The anchor plan is not optimal]\label{rem:anchor}
-Map 3 (B, 2026-09-21, \texttt{results/mapa\_homogeneo\_3.csv}): at the frontier $n=24$, $G=8$, $B=6$ the exact laminar optimum is $0.8654$ against the cover-then-bisect bound $0.7080$; in the anchor population with actions restricted to $G\le8$ the optimum is at least $1.1233$ against the bound $0.9147$; the full anchor $G=16$ is not certified (state limit). Part 3(c) is therefore a statement about the fixed plan under the two conventions, not about optima; the anchor bound is slack.
+\begin{remark}[Anchor bounds and an explicit suboptimal policy]\label{rem:anchor}
+Map 3 (B, 2026-09-21, \texttt{results/mapa\_homogeneo\_3.csv}): at the frontier $n=24$, $G=8$, $B=6$ the exact laminar optimum is $0.8654$ against the cover-then-bisect bound $0.7080$. The explicitly evaluated variant covers until the first root with a healthy member, bisects it, prefers the left child when both contain healthy members, and stops at the first certification; its expected utility is $0.7271$. In the anchor population, a feasible policy restricted to $G\le8$ achieves $1.1233$, exceeding both the bound $0.9147$ and the same explicit CBS variant's value $0.9394$. Thus that variant is suboptimal and the anchor bound is slack. Other continuations of CBS require their own definition and evaluation; the full anchor $G=16$ is not certified (state limit). Part 3(c) states achievable lower bounds under the two conventions, not their exact policy values or optima.
 \end{remark}
 
 \section{Verification by enumeration}
 
-Two programs that share no code compute the exact laminar optimum: the Bellman solver on residual atoms (\texttt{augmented/bm17\_toy\_solver.py}) and brute-force enumeration over explicit profiles and histories (\texttt{augmented/enumerador\_historias.py}; independently, B's \texttt{augmented/pathwise\_enum.py}). They agree exactly, in rational arithmetic, on every optimum and every forced first action for $n\le5$, $B\le3$, both conventions (\texttt{tests\_brecha\_convencion.py}, \texttt{tests\_bm17.py}: 626 tests). The table gives $n=4$, $G=2$, $B=2$, $u\equiv1$, where the formulas of Part 3(b) are exact:
+The Bellman solver on residual atoms (\texttt{augmented/bm17\_toy\_solver.py}) is checked against explicit-profile enumeration over histories (\texttt{augmented/enumerador\_historias.py}) and independently against B's \texttt{augmented/pathwise\_enum.py}. In \texttt{tests\_brecha\_convencion.py}, optima and all forced first actions agree exactly in rational arithmetic on the declared homogeneous and heterogeneous cases with $n\le5$, $B\le3$, under both conventions. The BM17 suite also includes homogeneous roots up to $n=6$. Together, \texttt{tests\_brecha\_convencion.py} and \texttt{tests\_bm17.py} pass 626 tests (2026-09-22). The table gives $n=4$, $G=2$, $B=2$, $u\equiv1$, where the formulas of Part 3(b) are exact:
 \begin{center}
 \begin{tabular}{cccccc}
 \toprule

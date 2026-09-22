@@ -4,13 +4,13 @@
 
 ## Frase de apertura (A)
 
-> "Cumplimos el encargo del 1-sep con sobre-entrega y lo presenta Héctor: contraejemplo donde todos los greedy fallan, el ingrediente que lo repara y una constante empírica del portafolio. Yo traigo la primera pieza propia del paper bajo posterior-zero: la brecha de convención, con el ejemplo de cuatro personas que te pareció interesante, ya como proposición con prueba y verificación. Traemos cinco preguntas de decisión."
+> "Cumplimos el encargo del 1-sep con sobre-entrega y lo presenta Héctor: contraejemplo donde fallan las cuatro reglas evaluadas, el ingrediente que mejora ese caso y una constante empírica del portafolio. Yo traigo la primera pieza propia del paper bajo posterior-zero: la brecha de convención, con el ejemplo de cuatro personas que te pareció interesante, ya como proposición con prueba y verificación. Traemos cinco preguntas de decisión."
 
 ## Paquete
 
-1. **Héctor, 10 min:** contraejemplo universal (n=6, B=3, G=4: las cuatro políticas a 0.6576 del óptimo) → π_L con índice Lagrangiano (0.9641) → constante del portafolio best-of-5, 0.9307 reproducido en la candidata registrada. *Frase defendible:* "el 0.9307 es conjetura empírica reproducida con esta especificación; no tenemos garantía universal del 93%".
+1. **Héctor, 10 min:** contraejemplo para la batería (n=6, B=3, G=4: π_M, π_C y π_R a 0.6576 del óptimo laminar; C3 a 0.6567) → π_L con índice Lagrangiano (0.9641) → constante del portafolio best-of-5, 0.9307 reproducido en otra candidata, de siete personas. *Frase defendible:* "el 0.9307 es evidencia empírica reproducida con esta especificación; no tenemos garantía universal del 93%".
 2. **A, 7 min, en el pizarrón:** las siete frases (sección "A's version" del `.tex`) sobre el árbol de cuatro personas. Orden: dominación (1 línea) → el evento único, par con conteo 1 y refinamiento: paga 1 vs ½ → los tres números 0.774 / 0.564 / 0.6 → la política óptima se voltea → el umbral ½ de la Prop 1 de Nick aparece bajo estricta y desaparece bajo posterior-zero, en el juego de dos pruebas → Mapa 1 de Héctor como Figura 1 (665/665). Cierre: "la brecha es un fenómeno de conteos: con pruebas binarias las dos reglas coinciden". Parte 2 se declara enunciada, con el testigo 0.774 ≤ 1.011.
-3. **Héctor, 3 min:** el juez validado por dos enumeradores independientes (626 tests exactos, n≤5, B≤3, ambas convenciones); k del ancla corregida a 3 (0.9147); C1 recontada gana/empata/pierde 10.9/56.1/33.0. **Mapa 3:** el plan cover-then-bisect no es óptimo (frontera n=24, G=8, B=6: 0.8654 vs 0.7080; ancla restringida a G≤8: ≥1.1233 vs 0.9147); el ancla completa G=16 sigue abierta computacionalmente.
+3. **Héctor, 3 min:** el juez contrastado con dos enumeradores independientes (626 tests pasan el 22-sep; la suite de brecha coteja óptimos y primeras acciones para n≤5, B≤3, ambas convenciones; BM17 incluye además raíces homogéneas hasta n=6); k del ancla corregida a 3 (cota 0.9147); C1 recontada gana/empata/pierde 10.9/56.1/33.0. **Mapa 3:** la variante cover-then-bisect explícita que se detiene al primer cobro es subóptima: frontera n=24, G=8, B=6, óptimo 0.8654 frente a valor CBS 0.7271 (cota 0.7080); en el ancla, una política restringida a G≤8 logra 1.1233 frente a valor CBS 0.9394 (cota 0.9147). El ancla completa G=16 sigue abierta computacionalmente. Otras continuaciones de CBS requieren una definición y evaluación propias.
 
 ## Preguntas congeladas (§34), en orden de decisión
 
@@ -29,7 +29,7 @@ Preguntas de Héctor que van dentro de su bloque: (i) ¿qué continuación inclu
 
 ## Qué NO se dice
 
-- "El ancla es exacta" o "cover-then-bisect es óptimo": Mapa 3 dice lo contrario. El 0.9147 es el valor de un plan fijo bajo posterior-zero.
+- "El ancla es exacta" o "cover-then-bisect es óptimo": el óptimo completo no está certificado. El 0.9147 es una cota inferior realizable, no el valor completo de CBS. La variante explícita que se detiene al primer cobro vale 0.9394 y sí quedó superada por una política factible.
 - "0.9307 es una garantía". Es conjetura empírica reproducida.
 - Nada del companion como validado ni como nuestro antes de (18)/(19).
 - Las fórmulas de la Proposición para q > ½ (son cotas inferiores; el enunciado vive en q ≤ ½).
@@ -39,6 +39,6 @@ Preguntas de Héctor que van dentro de su bloque: (i) ¿qué continuación inclu
 ## Checklist para el sync de las 16:00
 
 - [ ] A: siete frases aprobadas; `.tex` compila (`git add -f`, está ignorado por `*.tex`).
-- [ ] Héctor: su guion y el notebook 26 ejecutado; Mapa 1 como figura lista para compartir pantalla.
+- [x] Héctor: su guion y el notebook 26 ejecutado; Mapa 1 como figura lista para compartir pantalla.
 - [ ] Los dos: ensayo de 7 + 10 min; quién comparte pantalla; grabación.
 - [ ] Commit y push de guion y `.tex` antes de las 17:30.
