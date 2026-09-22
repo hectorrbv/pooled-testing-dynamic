@@ -9,7 +9,7 @@
 ## Paquete
 
 1. **Héctor, 10 min:** contraejemplo para la batería (n=6, B=3, G=4: π_M, π_C y π_R a 0.6576 del óptimo laminar; C3 a 0.6567) → π_L con índice Lagrangiano (0.9641) → constante del portafolio best-of-5, 0.9307 reproducido en otra candidata, de siete personas. *Frase defendible:* "el 0.9307 es evidencia empírica reproducida con esta especificación; no tenemos garantía universal del 93%".
-2. **A, 7 min, en el pizarrón:** las siete frases (sección "A's version" del `.tex`) sobre el árbol de cuatro personas. Orden: dominación (1 línea) → el evento único, par con conteo 1 y refinamiento: paga 1 vs ½ → los tres números 0.774 / 0.564 / 0.6 → la política óptima se voltea → el umbral ½ de la Prop 1 de Nick aparece bajo estricta y desaparece bajo posterior-zero, en el juego de dos pruebas → Mapa 1 de Héctor como Figura 1 (665/665). Cierre: "la brecha es un fenómeno de conteos: con pruebas binarias las dos reglas coinciden". Parte 2 se declara enunciada, con el testigo 0.774 ≤ 1.011.
+2. **A, 7 min, en el pizarrón:** las siete frases (sección "A's version" del `.tex`) sobre el árbol de cuatro personas. Orden: dominación (1 línea) → el evento único, par con conteo 1 y refinamiento: paga 1 vs ½ → los tres números 0.774 / 0.564 / 0.6 → la política óptima se voltea → el umbral ½ de la Prop 1 de Nick aparece bajo estricta y desaparece bajo posterior-zero, en el juego de dos pruebas → Mapa 1 de Héctor como Figura 1 (665/665). Cierre: "la brecha es un fenómeno de conteos: con pruebas binarias las dos reglas coinciden". **Parte 2 probada hoy** (A con guía; revisión cruzada de Héctor pendiente): posterior-zero no hace trampa, todo lo que cobra por deducción se compra con una prueba de certificación por pieza deducida-limpia, a lo más B−1 pruebas, luego OPT_pz(B) ≤ OPT_str(2B−1); testigo 0.774 ≤ 1.011; cota verificada en toda la malla n≤5, B≤3.
 3. **Héctor, 3 min:** el juez contrastado con dos enumeradores independientes (626 tests pasan el 22-sep; la suite de brecha coteja óptimos y primeras acciones para n≤5, B≤3, ambas convenciones; BM17 incluye además raíces homogéneas hasta n=6); k del ancla corregida a 3 (cota 0.9147); C1 recontada gana/empata/pierde 10.9/56.1/33.0. **Mapa 3:** la variante cover-then-bisect explícita que se detiene al primer cobro es subóptima: frontera n=24, G=8, B=6, óptimo 0.8654 frente a valor CBS 0.7271 (cota 0.7080); en el ancla, una política restringida a G≤8 logra 1.1233 frente a valor CBS 0.9394 (cota 0.9147). El ancla completa G=16 sigue abierta computacionalmente. Otras continuaciones de CBS requieren una definición y evaluación propias.
 
 ## Preguntas congeladas (§34), en orden de decisión
@@ -38,7 +38,7 @@ Preguntas de Héctor que van dentro de su bloque: (i) ¿qué continuación inclu
 
 ## Checklist para el sync de las 16:00
 
-- [ ] A: siete frases aprobadas; `.tex` compila (`git add -f`, está ignorado por `*.tex`).
+- [x] A: siete frases aprobadas; `.tex` compila y está versionado (`git add -f`); Parte 2 probada a las 17:00.
 - [x] Héctor: su guion y el notebook 26 ejecutado; Mapa 1 como figura lista para compartir pantalla.
 - [ ] Los dos: ensayo de 7 + 10 min; quién comparte pantalla; grabación.
 - [ ] Commit y push de guion y `.tex` antes de las 17:30.
