@@ -9,6 +9,8 @@
 \usepackage{booktabs}
 \usepackage[margin=1in]{geometry}
 \usepackage{xcolor}
+\usepackage{url}\urlstyle{tt}
+\emergencystretch=1.5em
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
 \newtheorem{lemma}{Lemma}
@@ -57,17 +59,17 @@ Witness in the four-person game of Part 3(b): $\OPT_\pz(2)=0.774\le\OPT_\str(3)=
 \begin{enumerate}
 \item[(a)] \emph{State witness.} \lab{DEMOSTRADO} A pair with count $1$ and one test left, $u\equiv1$: refining one member is worth $1$ under posterior-zero (whichever way the count falls, someone is proven healthy) and $\tfrac12$ under strict.
 \item[(b)] \emph{Minimal full game.} \lab{DEMOSTRADO $B=2$; VERIFICADO $n=4$ por dos enumeraciones independientes} Let $n\ge3$, $G=2$, $B=2$, $u\equiv1$, homogeneous $q$, $p=1-q$. Let $\pi_{\rm par}$ test the pair $\{1,2\}$, refine $\{1\}$ on count $1$, and test the fresh singleton $\{3\}$ otherwise; let $\pi_{\rm sing}$ test two singletons. Then
-\[
-V_\pz(\pi_{\rm par}) = 2q^3-2q^2+3q = 2q + q\,(q^2+p^2),\qquad
+\begin{gather*}
+V_\pz(\pi_{\rm par}) = 2q^3-2q^2+3q = 2q + q\,(q^2+p^2),\\
 V_\str(\pi_{\rm par}) = 2q^3-q^2+2q = 2q + q^2(2q-1),\qquad
 V(\pi_{\rm sing}) = 2q,
-\]
+\end{gather*}
 so that
-\[
+\begin{gather*}
 V_\pz(\pi_{\rm par})-V_\str(\pi_{\rm par}) = pq,\qquad
-V_\pz(\pi_{\rm par})-V(\pi_{\rm sing}) = q\,(q^2+p^2)>0\ \ \forall q\in(0,1),\qquad
-V_\str(\pi_{\rm par})-V(\pi_{\rm sing}) = q^2(2q-1).
-\]
+V_\str(\pi_{\rm par})-V(\pi_{\rm sing}) = q^2(2q-1),\\
+V_\pz(\pi_{\rm par})-V(\pi_{\rm sing}) = q\,(q^2+p^2)>0\ \ \forall q\in(0,1).
+\end{gather*}
 The first difference comes from the single branch $R=1$. For $q\le\tfrac12$, $\pi_{\rm par}$ is the best pair-first continuation under both conventions and $\pi_{\rm sing}$ is the strict optimum; for $q>\tfrac12$ the two formulas are strict lower bounds (Remark~\ref{rem:region}).
 \item[(c)] \emph{Scale.} \lab{cota realizable} At the anchor $(q,G,B)=(0.05,16,7)$, cover-then-bisect constructions guarantee at least $1-0.95^{48}\approx0.9147$ under posterior-zero and $1-0.95^{32}\approx0.8063$ under strict. Reserving the additional strict certification test reduces the number of root pools from three to two, losing one pool's worth of coverage. These are achievable lower bounds, not the full expected utilities of the constructions (Remark~\ref{rem:anchor}).
 \end{enumerate}
@@ -127,12 +129,12 @@ The threshold of the corollary is a $B=2$ statement. With $B=3$ at $q=0.3$: $\OP
 \end{remark}
 
 \begin{remark}[Anchor bounds and an explicit suboptimal policy]\label{rem:anchor}
-Map 3 (B, 2026-09-21, \texttt{results/mapa\_homogeneo\_3.csv}): at the frontier $n=24$, $G=8$, $B=6$ the exact laminar optimum is $0.8654$ against the cover-then-bisect bound $0.7080$. The explicitly evaluated variant covers until the first root with a healthy member, bisects it, prefers the left child when both contain healthy members, and stops at the first certification; its expected utility is $0.7271$. In the anchor population, a feasible policy restricted to $G\le8$ achieves $1.1233$, exceeding both the bound $0.9147$ and the same explicit CBS variant's value $0.9394$. Thus that variant is suboptimal and the anchor bound is slack. Other continuations of CBS require their own definition and evaluation; the full anchor $G=16$ is not certified (state limit). Part 3(c) states achievable lower bounds under the two conventions, not their exact policy values or optima.
+Map 3 (B, 2026-09-21, \path{results/mapa_homogeneo_3.csv}): at the frontier $n=24$, $G=8$, $B=6$ the exact laminar optimum is $0.8654$ against the cover-then-bisect bound $0.7080$. The explicitly evaluated variant covers until the first root with a healthy member, bisects it, prefers the left child when both contain healthy members, and stops at the first certification; its expected utility is $0.7271$. In the anchor population, a feasible policy restricted to $G\le8$ achieves $1.1233$, exceeding both the bound $0.9147$ and the same explicit CBS variant's value $0.9394$. Thus that variant is suboptimal and the anchor bound is slack. Other continuations of CBS require their own definition and evaluation; the full anchor $G=16$ is not certified (state limit). Part 3(c) states achievable lower bounds under the two conventions, not their exact policy values or optima.
 \end{remark}
 
 \section{Verification by enumeration}
 
-The Bellman solver on residual atoms (\texttt{augmented/bm17\_toy\_solver.py}) is checked against explicit-profile enumeration over histories (\texttt{augmented/enumerador\_historias.py}) and independently against B's \texttt{augmented/pathwise\_enum.py}. In \texttt{tests\_brecha\_convencion.py}, optima and all forced first actions agree exactly in rational arithmetic on the declared homogeneous and heterogeneous cases with $n\le5$, $B\le3$, under both conventions. The BM17 suite also includes homogeneous roots up to $n=6$. Together, \texttt{tests\_brecha\_convencion.py} and \texttt{tests\_bm17.py} pass 626 tests (2026-09-22). The table gives $n=4$, $G=2$, $B=2$, $u\equiv1$, where the formulas of Part 3(b) are exact:
+The Bellman solver on residual atoms (\path{augmented/bm17_toy_solver.py}) is checked against explicit-profile enumeration over histories (\path{augmented/enumerador_historias.py}) and independently against B's \path{augmented/pathwise_enum.py}. In \path{tests_brecha_convencion.py}, optima and all forced first actions agree exactly in rational arithmetic on the declared homogeneous and heterogeneous cases with $n\le5$, $B\le3$, under both conventions. The BM17 suite also includes homogeneous roots up to $n=6$. Together, \path{tests_brecha_convencion.py} and \path{tests_bm17.py} pass 626 tests (2026-09-22). The table gives $n=4$, $G=2$, $B=2$, $u\equiv1$, where the formulas of Part 3(b) are exact:
 \begin{center}
 \begin{tabular}{cccccc}
 \toprule
@@ -146,7 +148,7 @@ $q$ & $V_\pz(\pi_{\rm par})$ & $V_\str(\pi_{\rm par})$ & $V(\pi_{\rm sing})=2q$ 
 \bottomrule
 \end{tabular}
 \end{center}
-At scale, Map 1 (B, 2026-09-21, \texttt{results/mapa\_homogeneo\_1.csv}): for $q\in\{0.05,\dots,0.95\}$, $G\in\{2,3,4,5,8\}$, $B\in\{2,\dots,8\}$, $n=BG$, $u\equiv1$, posterior-zero, in $665$ of $665$ cells the optimal first action is a group. \lab{VERIFICADO por B}
+At scale, Map 1 (B, 2026-09-21, \path{results/mapa_homogeneo_1.csv}): for $q\in\{0.05,\dots,0.95\}$, $G\in\{2,3,4,5,8\}$, $B\in\{2,\dots,8\}$, $n=BG$, $u\equiv1$, posterior-zero, in $665$ of $665$ cells the optimal first action is a group. \lab{VERIFICADO por B}
 
 \section{A's version, in his own words}
 
@@ -162,6 +164,6 @@ At scale, Map 1 (B, 2026-09-21, \texttt{results/mapa\_homogeneo\_1.csv}): for $q
 \end{enumerate}
 \end{quote}
 
-\medskip\noindent\textit{Números verificados en este documento: $3/10$, $3/5$, $387/500=0.774$, $141/250=0.564$, $1011/1000$, $537/500$ (referencias de diseño B-M17, dos vías); tabla $q\in\{0.1,\dots,0.5\}$ y valor exacto $1.5744$ en $q=0.6$ (enumeración, 2026-09-13; \texttt{tests\_brecha\_convencion.py} fija las fórmulas para $q\le\tfrac12$ y las desigualdades para $q>\tfrac12$); $1-0.95^{48}=0.9147$, $1-0.95^{32}=0.8063$ (aritmética, §16 del plan); Mapa 1 $665/665$ y Mapa 3 $0.8654$/$0.7080$/$1.1233$ (B, commit 5719df3); cota de la Parte 2 $\OPT_\pz(B)\le\OPT_\str(2B-1)$ en toda la malla $n\le5$, $B\le3$ (\texttt{tests\_brecha\_convencion.py}). Parte 2 probada el 2026-09-22 (A con guía; revisión cruzada de B pendiente).}
+\medskip\noindent\textit{Números verificados en este documento: $3/10$, $3/5$, $387/500=0.774$, $141/250=0.564$, $1011/1000$, $537/500$ (referencias de diseño B-M17, dos vías); tabla $q\in\{0.1,\dots,0.5\}$ y valor exacto $1.5744$ en $q=0.6$ (enumeración, 2026-09-13; \path{tests_brecha_convencion.py} fija las fórmulas para $q\le\tfrac12$ y las desigualdades para $q>\tfrac12$); $1-0.95^{48}=0.9147$, $1-0.95^{32}=0.8063$ (aritmética, §16 del plan); Mapa 1 $665/665$ y Mapa 3 $0.8654$/$0.7080$/$1.1233$ (B, commit 5719df3); cota de la Parte 2 $\OPT_\pz(B)\le\OPT_\str(2B-1)$ en toda la malla $n\le5$, $B\le3$ (\path{tests_brecha_convencion.py}). Parte 2 probada el 2026-09-22 (A con guía; revisión cruzada de B pendiente).}
 
 \end{document}
