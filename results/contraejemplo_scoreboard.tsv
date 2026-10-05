@@ -1,0 +1,11 @@
+workspace_ref	score_max_ratio	ratio_inmediato	ratio_committed	ratio_receding	ratio_C3	opt	n	B	G	violations	runtime_seconds	tests_status	status	description
+17c9f21	1.000000	0.775194	0.775194	0.775194	1.000000	0.774000	4	2	2	0	0.015	pass	baseline	B-M16: n=4 q_sano=0.3 B=2 G=2
+17c9f21	0.999926	0.508727	0.635859	0.997605	0.999926	0.078628	8	4	4	0	13.208	pass	baseline	rare-health: n=8 q_sano=0.01 B=4 G=4
+17c9f21	1.000000	0.775194	0.775194	0.775194	1.000000	0.774000	4	2	2	0	0.314	pass	candidate	semilla B-M16 re-corrida (sanity del runner)
+50eb431	1.000000	0.775194	0.775194	0.775194	1.000000	0.774000	4	2	2	0	0.748	pass	candidate	sanity tras el review de codex (instancia exacta, gate ampliado, timeout)
+50eb431	1.000000	0.775194	0.775194	0.775194	1.000000	0.774000	4	2	2	0	0.746	pass	candidate	semilla B-M16 homogenea 0.7
+50eb431	0.959789	0.883335	0.945447	0.959789	0.877211	11.044512	8	5	4	0	25.657	pass	candidate	escalera p=0.2..0.9 con u=1..8 pro-correlacionada, B=5 G=4: OPT fabrica atomo de los 4 peores
+50eb431	0.896947	0.896947	0.896947	0.896947	0.896947	10.480000	3	2	2	0	1.053	pass	candidate	gadget premio+acompanante n=3 B=2 G=2: OPT abre par {premio,comp} con refinamiento-deduccion; golosas prueban el premio solo
+50eb431	0.743435	0.743435	0.743435	0.743435	0.716667	1.210597	6	3	4	0	1.818	pass	candidate	todo-alta-p n=6 B=3 G=4: cadenas de deduccion posterior-zero; hallazgo de micro2
+50eb431	0.657577	0.657577	0.657577	0.657577	0.656676	1.064514	6	3	4	0	1.963	pass	keep	KEEP pulido: todo-alta-p n=6 B=3 G=4, cadenas de deduccion doble filo; descenso local desde 0.7434
+50eb431	0.657577	0.657577	0.657577	0.657577	0.656676	1.064514	6	3	4	0	1.098	pass	candidate	verificacion independiente del coordinador (re-corrida del keep)

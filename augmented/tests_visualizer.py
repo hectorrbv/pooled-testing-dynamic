@@ -3,7 +3,12 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import graphviz
+import pytest
+
+# La clase de visualizacion (graphviz) es opcional: sin ella la coleccion debe
+# saltar el modulo, no romper la suite base (plan maestro §22).
+graphviz = pytest.importorskip("graphviz", reason="clase visualizacion opcional: pip install -r requirements-viz.txt")
+
 from augmented.solver import solve_optimal_dapts
 from augmented.tree_extractor import extract_tree
 from augmented.tree_visualizer import render_tree

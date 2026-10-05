@@ -1,0 +1,8 @@
+# Solvers comerciales (plan maestro §22). REQUIEREN LICENCIA VIGENTE.
+#
+# Sin licencia valida, los tests que validan al solver comercial se SALTAN.
+# Nunca se degradan a la heuristica en silencio: un test que valida a MOSEK
+# corriendo sobre `_heuristic_best_pool` no valida nada.
+-r requirements.txt
+Mosek>=10.0
+gurobipy>=10.0

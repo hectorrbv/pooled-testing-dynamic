@@ -1,0 +1,17 @@
+[
+  {
+    "case": "ancla",
+    "seconds": 25.445218917011516,
+    "states": 2500000
+  },
+  {
+    "case": "frontera",
+    "seconds": 0.14568137499736622,
+    "states": 52251
+  },
+  {
+    "case": "ancla_acciones_G8",
+    "seconds": 2.016448333975859,
+    "states": 349936
+  }
+]

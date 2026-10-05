@@ -1,0 +1,9 @@
+n,q,B,individual_baseline,static_binary,static_augmented,dynamic_binary,dynamic_augmented_laminar,dynamic_augmented,tractable
+10,0.2,1,0.2,0.2,0.2,0.2,0.2,0.2,exact
+10,0.2,2,0.4,0.4,0.408,0.488,0.536,0.536,exact
+10,0.2,3,0.6,0.6,0.8,0.7902848,0.9282432,1.00032,exact
+10,0.2,4,0.8,,,,1.288971264,,laminar-only
+10,0.2,5,1.0,,,,1.54405376,,laminar-only
+10,0.2,6,1.2,,,,1.791136768,,laminar-only
+10,0.2,7,1.4,,,,1.913623552,,laminar-only
+10,0.2,8,1.6,,,,1.978110976,,laminar-only

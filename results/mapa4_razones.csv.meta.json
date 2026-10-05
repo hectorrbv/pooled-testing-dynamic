@@ -1,0 +1,48 @@
+{
+  "artifact": "mapa4_razones.csv",
+  "columns": [
+    "q",
+    "G",
+    "B",
+    "n",
+    "opt",
+    "pi_M",
+    "pi_C",
+    "pi_R",
+    "C3",
+    "pi_L",
+    "pi_ratio",
+    "tam_opt",
+    "tam_pi_M",
+    "tam_pi_C",
+    "tam_pi_R",
+    "tam_C3",
+    "tam_pi_L",
+    "tam_pi_ratio",
+    "decisiones",
+    "dispersion"
+  ],
+  "generated_utc": "2026-09-28T14:36:18+00:00",
+  "generator": "augmented/notebooks/build_mapa4_notebook.py",
+  "git": {
+    "commit": "41390d9e0338b9216b96c1adff06d430027790d6",
+    "dirty": true
+  },
+  "params": {
+    "clase": "pathwise",
+    "convencion": "posterior_zero",
+    "estatuto": "diagnostico §25; Mapa 4 del plan 28-sep",
+    "malla": "n=6 homogeneo, u=1, q<=0.5, G 2-4, B 2-3",
+    "metodo": "exacto por enumeracion (sin Monte Carlo)"
+  },
+  "rows": 36,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.1",
+    "pandas": "2.3.3",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.16.3"
+  }
+}

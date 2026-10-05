@@ -1,0 +1,53 @@
+{
+  "artifact": "falsificador_decisiones.csv",
+  "columns": [
+    "instance_id",
+    "history_id",
+    "probability",
+    "policy",
+    "action",
+    "action_size",
+    "depth",
+    "class",
+    "flags",
+    "score",
+    "immediate",
+    "rollout_q",
+    "local_regret",
+    "final_value"
+  ],
+  "generated_utc": "2026-08-18T04:55:35+00:00",
+  "generator": "augmented.falsificador.run",
+  "git": {
+    "commit": "0b6e019755b8f86f6b55562c300cbcdaa0e9014e",
+    "dirty": true
+  },
+  "params": {
+    "classes": [
+      "repetida",
+      "descendiente",
+      "ancestro",
+      "union_de_atomos",
+      "compatible_mixta",
+      "virgen",
+      "cruzada",
+      "dominada"
+    ],
+    "policies": [
+      "S0",
+      "rollout",
+      "optimo"
+    ],
+    "sweep_size": 54
+  },
+  "rows": 872,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.1",
+    "pandas": "2.3.3",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.16.3"
+  }
+}
