@@ -228,3 +228,64 @@ def test_primera_accion_optima_juego_minimo_B2(q):
             assert v_pair == v_single
         else:
             assert v_pair > v_single
+
+
+# ----------------------------------------------------------------------------
+# 5. Proposicion (sesion 2026-09-29, fila §32): con conteos y posterior_zero las
+#    pruebas individuales nunca son optimas si B >= 2, G >= 2 y n >= B + 1.
+#    Fronteras exactas: n <= B (singletons optimos) y B = 1 (los conteos no
+#    sirven: el optimo es la mejor prueba unica del modelo binario).
+# ----------------------------------------------------------------------------
+def _top_singletons(q, u, B):
+    orden = sorted(range(len(q)), key=lambda i: q[i] * u[i], reverse=True)
+    S = orden[:min(B, len(q))]
+    return S, sum(q[i] * u[i] for i in S)
+
+
+def _cota_intercambio(q, u, B):
+    """Cambiar los singletons {a},{b} por el par {a,b} + refinamiento libera, en
+    las ramas resueltas por el conteo (0 o 2), una prueba para un c fresco:
+    ganancia (q_a q_b + p_a p_b) q_c u_c sobre el valor T_B de los singletons."""
+    S, T = _top_singletons(q, u, B)
+    fuera = [i for i in range(len(q)) if i not in S]
+    return T + max(
+        (q[a] * q[b] + (1 - q[a]) * (1 - q[b])) * q[c] * u[c]
+        for a, b in combinations(S, 2)
+        for c in fuera
+    )
+
+
+def _instancias_individuales(cuantas=60, semilla=20260929):
+    rng = random.Random(semilla)
+    casos = []
+    for n in (2, 3, 4, 5):
+        for q0 in (Fraction(1, 20), Fraction(3, 10), Fraction(1, 2), Fraction(7, 10)):
+            casos.append((tuple([q0] * n), tuple([Fraction(1)] * n)))
+    for _ in range(cuantas):
+        n = rng.choice([2, 3, 4, 5])
+        q = tuple(Fraction(rng.randint(1, 19), 20) for _ in range(n))
+        u = tuple(Fraction(rng.randint(1, 8), 4) for _ in range(n))
+        casos.append((q, u))
+    return [(q, u, G, B) for (q, u) in casos for G in (2, 3) for B in (1, 2, 3)]
+
+
+@pytest.mark.parametrize("q,u,G,B", _instancias_individuales())
+def test_pruebas_individuales_nunca_optimas_con_conteos(q, u, G, B):
+    n = len(q)
+    v = _solver([1 - x for x in q], list(u), G, "posterior_zero").V(frozenset(range(n)), (), B)
+    _, T = _top_singletons(q, u, B)
+    if n <= B:
+        # todos caben en pruebas individuales: se conoce el estado de todos
+        assert v == sum(q[i] * u[i] for i in range(n))
+    elif B == 1:
+        # una sola prueba: un conteo positivo no acredita a nadie
+        mejor = Fraction(0)
+        for m in range(1, G + 1):
+            for pool in combinations(range(n), m):
+                prob = Fraction(1)
+                for i in pool:
+                    prob *= q[i]
+                mejor = max(mejor, prob * sum(u[i] for i in pool))
+        assert v == mejor
+    else:
+        assert v >= _cota_intercambio(q, u, B) > T
