@@ -6,21 +6,24 @@ You are running an autonomous experiment loop, in the style of karpathy/autorese
 
 Francisco (our advisor) asked on 2026-10-06 for two concrete examples:
 
-1. **binario** — an instance where the optimal *dynamic binary* policy (tests return positive/negative, overlapping pools allowed) beats the optimal *laminar augmented* policy (tests return exact infection counts, pools nested or disjoint). The worst one possible: minimize `laminar / binary`. Known: it needs Λ > 1 (some healthy probabilities above ½); the judge skips instances with Λ ≤ 1. Best so far 0.978 at n = 4 (random search).
-2. **precio** — the price of laminarity: minimize `laminar_augmented / unrestricted_augmented`. Francisco conjectures the worst case is near q = ½. Best so far 0.833 at n = 6, q = ½, G = 3, B = 4 (grid search).
+1. **binario** — minimize optimal `laminar / binary`. The starting family is n=4, B=G=2, q=(s,½,½,s), u=(1,3,3,2), s=999999/1000000. The certified finite ratio is about 0.90000075; its family tends to 0.9. This limit is NOT a universal lower bound. Do not restart from the obsolete 0.978 baseline. Full fractions and source are in `warm_start.json`.
+2. **precio** — minimize `laminar_augmented / unrestricted_augmented`. Start from the smallest verified ratio in `warm_start.json` that meets NMAX. The current n=7 seed is 41/52 at q=½, G=3, B=4; if NMAX=6, use 5/6 at n=6 with the same q,G,B. The expanded grid is in `results/precio_q05_G/`. Compare within the same (n,G,B) as well as globally.
 
 ## The rules (do not break them)
 
 - You edit **only** `generator.py` (the function `sample(rng)`). Never edit `judge.py`, never edit solvers under `augmented/`, never write anywhere else except this folder.
 - One experiment = one run of the judge with a fixed wall-clock budget. From the repository root:
-  `PYTHONPATH=. /opt/miniconda3/bin/python augmented/autoresearch_ejemplos/judge.py binario 180 6 "<one-line description of the family you tried>"`
-  and the same with `precio`. Budget 180 s, n ≤ 6. Alternate missions or focus on one; both results files matter.
-- Read the printed line. **Keep** the generator if `status=ok` and `ratio_min` improved on the best kept value for that mission; otherwise **revert** `generator.py` to the last kept version (keep a copy as `generator_best_<mission>.py`). Status `fail` means a gate tripped: revert and do not retry the same idea.
+  `PYTHONPATH=. ../venv/bin/python -m augmented.autoresearch_ejemplos.run_bounded binario --seconds 180 --nmax 6 --description "<one-line description of the family you tried>"`
+  For `precio`, use `precio --seconds 180 --nmax 7` so the new best seven-person seed is included. On another machine replace `../venv/bin/python` with its Python environment. The wrapper sets the mission for the generator and stops a single slow run after 360 s. Budget 180 s; n≤6 for binario and n≤7 for precio. Alternate missions; both results files matter. A timeout is LIMITED, not a successful experiment and not an optimum.
+- Read the printed line. **Keep** the generator if `status=ok` and `ratio_min` improves on the best certified seed or later kept value for that mission; otherwise **revert** `generator.py` to the last kept version (keep a copy as `generator_best_<mission>.py`). Replaying a seed is a smoke check, not a discovery. Status `fail` means a gate tripped: revert and do not retry the same idea.
 - Every experiment is logged by the judge in `results_<mission>.tsv` with the full argmin instance. Never edit those files.
-- Ideas worth trying, in order of promise: one very healthy person plus several at ½–0.7 (the cross {a,c} mechanism found on 2026-10-12); two-type populations; utilities concentrated on one or two people; B equal to n − 1 or n − 2; for `precio`: all q = ½ with structure in u, G = 3, B = 3–4, n = 6; mixtures of q = ½ and q near 0 or 1.
+- Ideas: perturb the four-person 10/9 family in probabilities and utilities; compare different budgets without assuming the mechanism persists; retain some fresh heterogeneous trials. For `precio`, perturb probabilities around the verified q=½ examples, retaining u=1, and report homogeneous and heterogeneous priors separately. The q=½, u=1 grid within this judge's n≤7, B≤4, G≤4 limits is already covered (plus trivial full-budget cases); repeating 40 runs there cannot improve it. This supersedes the original nights 3–5 schedule. `--q-half-only` stops before launching for that reason. G=5 belongs to the separate completed grid. Any larger homogeneous experiment needs a separately specified domain; do not change the judge to obtain a better result.
+- The generator suppresses duplicates within one run. The judge deliberately resets its random seed each run: do not run an unchanged generator 40 times. Change the proposed family between experiments and record the hypothesis; otherwise stop the loop.
 - Write a short note of what you learned after every 5 experiments in `notes.md` (append only): which families moved the minimum, which did nothing.
 - Stop after 40 experiments or when told. Do not commit.
 
 ## What the humans will do with it
 
-On Tuesday morning they re-solve the top three instances of each mission by hand-run of the solvers, draw the optimal trees, and explain the mechanism to Francisco. Nothing you find is a theorem; it is a diagnostic on small exact cases.
+Before Tuesday 20 October, re-solve the top three instances of each mission through the independent path, draw their trees and explain the mechanism. Search outputs remain finite-instance diagnostics. The previously certified 10/9 family has a separate symbolic argument; a new search record does not inherit that proof.
+
+Preparation status, 14 October: short binario and n≤6 precio controls passed. The attempt to replay the n=7 record through this fixed judge hit the short pilot's 60 s / 1536 MiB limits; it is LIMITED, not an `ok` TSV row. Its value remains independently checked in the grid. The production wrapper permits up to 360 s, but completing that seed under the production judge budget is still pending. No overnight loop has started.

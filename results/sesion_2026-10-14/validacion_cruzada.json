@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-10-14T11:39:21.910489+00:00",
+  "created_utc": "2026-10-14T13:41:24.555216+00:00",
   "seed": 20261014,
   "grid": [
     {
@@ -1618,13 +1618,13 @@
     "one_test": 20
   },
   "mismatches": 0,
-  "seconds": 18.22957320799469,
+  "seconds": 18.59644558301079,
   "sha256": {
     "augmented/verifica_encargos_oct14.py": "8e7ecc0c93c74d6ff57475d412378785b355ae7d20f73274c1e5aefa126d6a90",
     "augmented/bellman_binario_exacto.py": "18ee2c5550024cdf087f4428581bec4d94452134a9bde6878405fafcd1b83731",
     "augmented/bellman_perfiles.py": "9498dde3806b35f998b428b5f21a66c84ac189db57dda0df6a9476b0593782a1",
     "augmented/dp_perfiles_binario_conteo.py": "80386255f60e46ef0f335e27f3384e0150b5e59e555096871cc2af09840536c5",
-    "augmented/laminar_benchmarks.py": "f2f1b8a6207ebaa3db01232171844ad493298c9065ab52272018d694d5ee5972",
+    "augmented/laminar_benchmarks.py": "5c271d8776b649b15e1d622a5175bc18d338a49d88c87d47827d7348a37274d4",
     "results/encargos_2026-10-06/binario_vs_laminar_seed1.csv": "5a407d41ac3075920055ecea4540c8e2fd3ff445be38d46131ee42ad93b8e364",
     "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv": "2399797596c4b40cacdac2ccdf521f610be6e10736b41834ba30530a779a1700",
     "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv": "925718612779675e3f2687f08421129dd1bd9e8dc137059036d098d3e92842e9",

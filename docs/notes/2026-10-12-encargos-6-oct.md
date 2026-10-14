@@ -92,3 +92,51 @@ Q1 sigue pendiente en la malla nueva: las columnas greedy y rollout del plan no 
 Corrección numérica del plan: n=4, B=2, G=2, q=0.3, u=1 da T₄=1.2 ≥ 0.774 ≥ 0.6=T₂. El 1.074 corresponde al óptimo laminar con B=3; el general en ese caso vale 1.137.
 
 El siguiente loop de búsqueda debe tomar esta familia como referencia binaria. Las misiones de precio laminar y crecimiento en G continúan abiertas. El push de estos archivos no significa que se hayan enviado a Francisco ni que haya comenzado el loop nocturno.
+
+## 5. Malla y políticas completadas — 14-oct
+
+Esta actualización cierra los pendientes computacionales Q1 y Q2 descritos al final de §4. No sustituye la revisión humana de los argumentos.
+
+### Datos y comprobaciones
+
+Se completaron las 32 combinaciones de n∈{6,7}, B∈{1,2,3,4}, G∈{2,3,4,5}, q=1/2 y u=1. [CSV completo](../../results/precio_q05_G/malla_2026-10-14_completa.csv), con parámetros y hashes en el archivo `.meta.json`, comprobaciones en `.audit.json` y tres ejemplos heterogéneos en `.examples.json`. El [resumen por (G,B)](../../results/precio_q05_G/resumen_por_G_B.csv) conserva el n donde se alcanza cada mínimo.
+
+- El óptimo laminar por átomos coincide con `BellmanPerfiles(laminar=True)` en las cinco celdas designadas; greedy y rollout se evaluaron de nuevo sobre todos los perfiles de cada una, verificando presupuesto, laminaridad y crédito por inferencia.
+- Para el general homogéneo, solo se reduce la primera acción: por simetría, todos los grupos del mismo tamaño son equivalentes al inicio. Las continuaciones conservan todas las pruebas. La reducción coincide con las 30 celdas que ya habían terminado con el menú inicial completo; permitió terminar también n=7, B=4, G=4/5.
+- El peor testigo Q2 (n=7,B=4,G=3) se resolvió además con ambos Bellman por perfiles y se evaluaron sus árboles en los 128 perfiles. Los dos testigos Q1 de n=7,B=4,G=4/5 tienen evaluación independiente de greedy y rollout. Véase [testigos_verificados.json](../../results/precio_q05_G/testigos_verificados.json).
+- Los 32 casos respetan la cota de información. Pasaron las 13 pruebas de `tests_malla_q1_q2.py` y `tests_laminar_benchmarks.py`, incluidas regresiones del comportamiento hard clearing anterior.
+- Tras añadir soft clearing se repitió también el contraste inicial 81+20+20: cero discrepancias. Su informe y hashes corresponden al código final.
+
+Reproducción de la malla, desde la raíz del repositorio, escogiendo un archivo de salida nuevo:
+
+```bash
+../venv/bin/python -m augmented.malla_precio_laminar_q results/precio_q05_G/repeticion.csv --q 1/2 --n 6 7 --G 2 3 4 5 --B 1 2 3 4 --case-seconds 60 --states 1000000 --examples
+../venv/bin/python -m augmented.verifica_testigos_malla
+../venv/bin/python augmented/notebooks/build_29_sesion.py
+```
+
+El segundo comando vuelve a evaluar los seis árboles o políticas destacados sobre los 128 perfiles de cada instancia, sin usar las transiciones ni recompensas del solver; su informe es `replay_testigos.json`. El último dibuja los datos publicados, no ejecuta de nuevo la búsqueda. Los límites se registran como `limited`, nunca como óptimos. No quedó ninguna celda limitada en la entrega completa.
+
+### Qué aporta Q2
+
+En n=7,B=4,G=3, general=13/4 y laminar=41/16; laminar/general=41/52, es decir, pérdida del 21.15%. En n=6 con esos B,G era 16.67%. Con B=1 o B=2 hay igualdad en toda esta malla. La pérdida no es monótona en G y estos tamaños no establecen la dependencia asintótica log G.
+
+### Qué aporta Q1
+
+Los benchmarks anteriores usaban hard clearing. Se añadió `clearing="soft"` de forma explícita y se conservó el valor predeterminado antiguo. El control n=3,B=G=2,q=.3 pasa de rollout=.6 a .774 al permitir el crédito por inferencia. Comparar ambas convenciones como si fueran políticas distintas habría sido engañoso.
+
+Con soft clearing, greedy conserva como mínimo 73.85% del óptimo laminar; rollout, 94.74% (=18/19). Rollout alcanza el óptimo en 26/32 casos. Greedy desempata por máscara menor: en q=.5 el individuo y el par empatan en cobro inmediato, y elige individuo. Su pérdida no es una conclusión independiente del desempate.
+
+La comparación mide también el óptimo dentro de la misma jerarquía fija. En n=7,B=4,G=5: laminar=171/64, jerarquía=41/16 y rollout=81/32. De la pérdida 9/64, 7/64 corresponden a la jerarquía y 2/64 a las decisiones de rollout. Con G=4, ambos alcanzaban 171/64. Aumentar G permite más opciones al óptimo, pero el constructor automático cambia los grupos y puede empeorar la heurística.
+
+Dos experimentos que sí distinguirían mecanismos: mantener todo igual y cambiar solo el desempate de greedy; mantener rollout igual y comparar jerarquías, incluyendo la de G=4 cuando se permite G=5. No se compararon aquí π_L y π_ratio: las figuras anteriores se conservaron en las notas, con su propia malla.
+
+### Búsqueda y estudio
+
+`warm_start.json` parte de laminar/binario≈.90000075 y laminar/general=41/52 (5/6 si n≤6). `run_bounded.py` ejecuta el juez fijo en un proceso separado con límites de tiempo y memoria. Dos pruebas breves del arranque pasaron; no son avances sobre las semillas ni una noche completada. El loop nocturno está preparado, no iniciado.
+
+La malla nueva, la anterior, ocho controles exactos de n=2–3 y los casos triviales B=1/B≥n ya cubren el dominio homogéneo q=.5 permitido por el juez. Por ello se reemplazó la propuesta de repetirlo las noches 3–5: después de las semillas, la misión precio explora probabilidades cercanas a .5, con u=1; la misión binaria perturba la familia 10/9. No cambia los límites del juez ni demuestra que q=.5 sea el peor régimen. Se comprobaron 200 candidatos válidos y distintos por misión; dentro de una ejecución se suprimen duplicados. El juez reinicia su semilla aleatoria: repetir un generador idéntico tampoco aporta un experimento nuevo.
+
+Un control adicional de la semilla n=7 con el juez nocturno alcanzó el límite del piloto (60 s / 1536 MiB) y salió `limited`. La semilla sigue verificada por la malla y el recorrido independiente; todavía falta completar su ejecución con ese juez bajo el límite de producción de 360 s. No se añadió una fila `ok` artificial al TSV. Véase `pilot_status.json` en la carpeta de búsqueda.
+
+El notebook 29 ya sigue el plan: par, binario frente a laminar, malla Q2, argumento log G, malla Q1. Dos mapas mínimos sustituyen figuras del hilo principal; las figuras anteriores permanecen en las notas de estudio. Para Héctor, comenzar por una rama del árbol binario y después una del laminar; continuar con una celda de Q2 y solo entonces estudiar información y rollout. Pendientes humanos: entender y revisar los argumentos, escribir la proposición y ensayar el guion; todavía no se ha enviado nada a Francisco.

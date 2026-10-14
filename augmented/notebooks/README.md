@@ -8,9 +8,9 @@ que los modulos Python en `augmented/` siguen siendo la fuente del codigo.
 
 - `27_sesion_francisco.ipynb`: decisiones y regímenes de las reglas con planificación.
 - `28_pooling_y_precio_laminar.ipynb`: agrupar frente a individuales y general frente a laminar, con árboles. Cálculos y guion en `28_notas_de_estudio.ipynb`.
-- `29_tres_clases_y_contraejemplo.ipynb`: cinco bloques para distinguir binario, aumentado laminar y aumentado general. Cálculos y familia posterior con cociente límite 10/9 en `29_notas_de_estudio.ipynb`.
+- `29_tres_clases_y_contraejemplo.ipynb`: actualizado al plan del 14-oct. Cinco bloques: ganancia del par, binario frente a laminar, mapa de la pérdida laminar, argumento log G y comparación greedy/rollout. Incluye los 32 casos completos de n=6–7, G=2–5, B=1–4. Las figuras anteriores, los cálculos y la familia con cociente límite 10/9 se conservan en `29_notas_de_estudio.ipynb`.
 
-Los notebooks de presentación llevan las figuras incorporadas y se pueden leer sin ejecutar búsquedas. Sus generadores `build_27_sesion.py`, `build_28_sesion.py` y `build_29_sesion.py` leen los datos versionados en `results/sesion_*` y `results/diseno_mapa_2026-10-05/`.
+Los notebooks de presentación llevan las figuras incorporadas y se pueden leer sin ejecutar búsquedas. Sus generadores `build_27_sesion.py`, `build_28_sesion.py` y `build_29_sesion.py` leen los datos versionados en `results/sesion_*`, `results/diseno_mapa_2026-10-05/` y `results/precio_q05_G/`. El último verifica los hashes de las fuentes de la malla antes de dibujarla.
 
 El [plan del 14 de octubre](../../docs/notes/2026-10-14-plan-semana.md) y la [actualización de resultados](../../docs/notes/2026-10-12-encargos-6-oct.md#4-actualización-de-héctor-14-oct) distinguen resultados disponibles de tareas pendientes. Los experimentos de búsqueda ampliada usan SciPy; la versión compilada usa Numba y el certificado simbólico, SymPy.
 

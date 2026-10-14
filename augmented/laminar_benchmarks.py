@@ -163,8 +163,11 @@ def balanced_laminar_library(p, u, G):
 class ExactPolicyEvaluator:
     """Exact scenario DP shared by all four small-n quantities."""
 
-    def __init__(self, p, u, B, G):
+    def __init__(self, p, u, B, G, *, clearing="hard"):
         p, u, B, G = _validated_instance(p, u, B, G)
+        if clearing not in ("hard", "soft"):
+            raise ValueError("clearing must be 'hard' or 'soft'")
+        self.clearing = clearing
         self.p = p
         self.u = u
         self.B = B
@@ -180,6 +183,9 @@ class ExactPolicyEvaluator:
         self.weights = np.prod(
             np.where(self.scenarios == 1, p, 1.0 - p), axis=1
         )
+        self.positive_worlds = sum(1 << int(z) for z in np.flatnonzero(self.weights > 0))
+        self._healthy_cache = {}
+        self.initial_cleared = self.healthy(self.all_worlds) if clearing == "soft" else 0
 
         self.utility = np.zeros(1 << self.n, dtype=float)
         for mask in range(1, 1 << self.n):
@@ -199,6 +205,15 @@ class ExactPolicyEvaluator:
 
         self._mass_cache = {0: 0.0, self.all_worlds: float(self.weights.sum())}
 
+    def healthy(self, worlds):
+        """People healthy in every positive-probability compatible profile."""
+        if worlds not in self._healthy_cache:
+            infected = 0
+            for z in _iter_bits(worlds & self.positive_worlds):
+                infected |= z
+            self._healthy_cache[worlds] = ((1 << self.n)-1) & ~infected
+        return self._healthy_cache[worlds]
+
     def mass(self, worlds):
         cached = self._mass_cache.get(worlds)
         if cached is not None:
@@ -216,24 +231,26 @@ class ExactPolicyEvaluator:
         total_mass = self.mass(worlds)
         if total_mass <= 0.0:
             return ()
-        reward = float(self.utility[pool & ~cleared])
         branches = []
         for result, compatible_worlds in enumerate(self.outcome_worlds[pool]):
             child = worlds & compatible_worlds
             child_mass = self.mass(child)
             if child_mass <= 0.0:
                 continue
-            new_cleared = cleared | pool if result == 0 else cleared
+            if self.clearing == "soft":
+                new_cleared = cleared | self.healthy(child)
+            else:
+                new_cleared = cleared | pool if result == 0 else cleared
             branches.append(
                 (child_mass / total_mass, child, new_cleared,
-                 reward if result == 0 else 0.0)
+                 float(self.utility[new_cleared & ~cleared]))
             )
         return tuple(branches)
 
     def optimal_value(self, action_pools=None):
         actions = tuple(self.pools if action_pools is None else action_pools)
         if self.B == 0 or not actions:
-            return 0.0
+            return float(self.utility[self.initial_cleared])
 
         @lru_cache(maxsize=None)
         def solve(step, worlds, cleared):
@@ -250,14 +267,17 @@ class ExactPolicyEvaluator:
                     best = value
             return best
 
-        return float(solve(0, self.all_worlds, 0))
+        return float(self.utility[self.initial_cleared] +
+                     solve(0, self.all_worlds, self.initial_cleared))
 
     def greedy_and_rollout_values(self, action_pools):
         """Exact values of myopic greedy and one-step rollout in one library."""
 
         actions = tuple(action_pools)
+        self.policy_actions = {"greedy": {}, "rollout": {}}
         if self.B == 0 or not actions:
-            return 0.0, 0.0
+            initial = float(self.utility[self.initial_cleared])
+            return initial, initial
 
         def greedy_action(worlds, cleared):
             scored = []
@@ -271,7 +291,8 @@ class ExactPolicyEvaluator:
         def base(step, worlds, cleared):
             if step == self.B:
                 return 0.0
-            _, branches = greedy_action(worlds, cleared)
+            pool, branches = greedy_action(worlds, cleared)
+            self.policy_actions["greedy"][step, worlds, cleared] = pool
             return sum(
                 probability * (reward + base(step + 1, child, new_cleared))
                 for probability, child, new_cleared, reward in branches
@@ -288,16 +309,17 @@ class ExactPolicyEvaluator:
                     probability * (reward + base(step + 1, child, new_cleared))
                     for probability, child, new_cleared, reward in branches
                 )
-                candidates.append((q_base, -pool, branches))
-            _, _, chosen = max(candidates)
+                candidates.append((q_base, -pool, pool, branches))
+            _, _, pool, chosen = max(candidates)
+            self.policy_actions["rollout"][step, worlds, cleared] = pool
             return sum(
                 probability * (reward + rollout(step + 1, child, new_cleared))
                 for probability, child, new_cleared, reward in chosen
             )
 
         return (
-            float(base(0, self.all_worlds, 0)),
-            float(rollout(0, self.all_worlds, 0)),
+            float(self.utility[self.initial_cleared] + base(0, self.all_worlds, self.initial_cleared)),
+            float(self.utility[self.initial_cleared] + rollout(0, self.all_worlds, self.initial_cleared)),
         )
 
     def static_value(self):
@@ -396,14 +418,16 @@ def laminar_ratio(p, u, B, G):
     return float(best / unrestricted)
 
 
-def greedy_laminar_value(p, u, B, G):
-    evaluator = ExactPolicyEvaluator(p, u, B, G)
+def greedy_laminar_value(p, u, B, G, *, clearing="hard"):
+    """Myopic greedy; request clearing='soft' for credit by inference."""
+    evaluator = ExactPolicyEvaluator(p, u, B, G, clearing=clearing)
     library = balanced_laminar_library(p, u, G)
     return evaluator.greedy_and_rollout_values(library)[0]
 
 
-def rollout_laminar_value(p, u, B, G):
-    evaluator = ExactPolicyEvaluator(p, u, B, G)
+def rollout_laminar_value(p, u, B, G, *, clearing="hard"):
+    """One-step policy improvement of greedy in the same fixed hierarchy."""
+    evaluator = ExactPolicyEvaluator(p, u, B, G, clearing=clearing)
     library = balanced_laminar_library(p, u, G)
     return evaluator.greedy_and_rollout_values(library)[1]
 

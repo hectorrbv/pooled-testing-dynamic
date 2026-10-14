@@ -4,7 +4,7 @@
 
 ## 0. Direction (master plan §1, the three parts of 6 Oct) and what changed
 
-Update from Héctor's workspace, 14 Oct: [the results note, §4](2026-10-12-encargos-6-oct.md#4-actualización-de-héctor-14-oct) records the completed computational second-way check (81 grid cells, 20 binary rows, 20 B=1 controls; no discrepancies) and the already available family with laminar/binary approaching 0.9. Use that as the binary search baseline instead of 0.978. Human review/sign-off, the extended Q2 grid and the new Q1 columns remain pending.
+Update from Héctor's workspace, 14 Oct: [the results note, §4](2026-10-12-encargos-6-oct.md#4-actualización-de-héctor-14-oct) records the completed computational second-way check (81 grid cells, 20 binary rows, 20 B=1 controls; no discrepancies) and the family with laminar/binary approaching 0.9. Use that as the binary search baseline instead of 0.978. The expanded Q2 grid and Q1 columns are now complete: all 32 cells, five independent laminar spot checks and full-profile policy replays; see §5 of that note. Human review/sign-off and A's written proof remain pending. The notebook is aligned; the seeded night loop is prepared and smoke-tested, not started.
 
 Francisco's three parts: **(a)** laminar and augmented against the best binary policy; **(b)** Q2, what is lost by forcing laminar, worst case conjectured at q = ½; **(c)** Q1, efficient laminar policies against the best laminar policy — the backbone of the master plan (§0: greedy with planning, rollout, acid test). Last week's plan covered (a) and (b) only; this one covers all three.
 
@@ -15,9 +15,9 @@ Francisco's three parts: **(a)** laminar and augmented against the best binary p
 | # | Part | Piece | Owner | Status today | Label on Tuesday |
 |---|---|---|---|---|---|
 | 1 | (b) | **Proposition "price of laminarity ≤ 2·log₂(G+1) at q = ½, u = 1"**, one page, A's proof (counting lemma), with the q = ½ table as numeric check; sent Sun | A (proof), Héctor (table), AI (typeset) | argument derived, not yet in A's words | DERIVED, A's wording; table "two implementations agree" if the check passes |
-| 2 | (b) | **q = ½ table as G grows:** u = 1, G = 2…5, n = 6–7, B ≤ 4, laminar vs unrestricted, every ratio checked against 1 / (2·log₂(G+1)) | Héctor | n ≤ 6, G ≤ 4 exists (0.875 / 0.857 / 0.833 at n = 4/5/6), one implementation | same as 1 |
-| 3 | (c) | **First Q1 measurement:** on the same grid, greedy-laminar and rollout-laminar (fixed balanced hierarchy) vs the exact laminar optimum; worst ratio per (G, B); plus the n = 3 witness and the loop's best cases | Héctor | tools exist (`augmented/laminar_benchmarks.py`), never run on this grid | "diagnostic, one implementation" unless Héctor spot-checks 5 cells with `BellmanPerfiles(laminar=True)` |
-| 4 | (a) | **Binary beats laminar:** witness n = 3, B = 2, G = 3, q = (0.9, 0.7, 0.7), 2.079 vs 2.062; 63 of 6,800 Λ > 1 instances; min ratio 0.978; plus the loop's best, re-solved | Héctor validates, A explains | one implementation | "two implementations agree" if the Thu check passes, else "diagnostic" |
+| 2 | (b) | **q = ½ table as G grows:** u = 1, G = 2…5, n = 6–7, B ≤ 4, laminar vs unrestricted, every ratio checked against 1 / (2·log₂(G+1)) | Héctor | Complete, 32/32; min ratio 41/52 at n=7, B=4, G=3; all 32 information checks pass | Exact finite grid; worst witness independently re-solved and replayed |
+| 3 | (c) | **First Q1 measurement:** same grid, soft clearing, greedy/rollout and fixed-hierarchy optimum vs pathwise laminar optimum; worst ratio per (G, B) | Héctor | Complete; five independent laminar checks and ten full-profile policy replays; rollout min 18/19 and exact in 26/32 | Checked finite-grid comparison; specify hierarchy and tie-break |
+| 4 | (a) | **Binary beats laminar:** original n=3 witness plus notebook witness (2.432 vs 2.366) and certified four-person family approaching laminar/binary=0.9 | Héctor validates, A explains | 20 binary rows and B=1 controls pass; family has symbolic certificate | Computationally verified; human reading/sign-off still pending |
 | 5 | (a) | **A's reply to the log G message** (Thu) and **A's own version of T_BG ≤ G·T_B ≤ G·Binary** (Mon) | A | not written | A's wording; closes companion Cor 8.3 by identification |
 
 Extras only if the base above is closed (§1 over-delivery rule, verified artefacts never claims): the "individuals never optimal" note with steps 3–4; two sentences on Section 3 of his paper.
@@ -60,9 +60,13 @@ claude --dangerously-skip-permissions -p "Read augmented/autoresearch_ejemplos/p
 
 **Every morning (5 min):** `git add augmented/autoresearch_ejemplos/ && git commit -m "loop: night N" && git push`.
 
-**From Friday (nights 3–5), Francisco's setting:** add to `program.md` under "Ideas": "Nights 3–5: mission `precio` only, q = ½ and u = 1 for everyone, vary n (pass NMAX = 7 to the judge), B = 3–4, G = 2–4 (the judge caps G at 4); report the minimum ratio separately for each G." The judge does not change.
+**Execution update, 14 Oct; supersedes the q=½ search in nights 3–5 above:** the homogeneous q=½, u=1 domain within this judge's n≤7, B≤4, G≤4 limits is now covered by the old and expanded grids, the eight n=2–3 controls and trivial B=1/full-budget cases. Repeating random runs there cannot improve the record. Keep the best examples as initial controls, then explore probability perturbations around them (homogeneous and heterogeneous reported separately), or continue the binary mission. To study larger homogeneous instances, specify a new experiment first; do not silently change the fixed judge. The generator rejects duplicates within a run; an unchanged generator must not be rerun 40 times, because the judge resets its random seed.
 
-What it can give: a lower minimum ratio than random search (0.978 / 0.833) and the *family* that produces it, in `notes.md`. What it cannot give: a theorem. Every number stays "diagnostic" until Héctor re-solves it (Sat and Mon). If it stalls or breaks, the week still stands on §1.
+Updated starting points: binario 0.900000750000975 (finite member of the 10/9 family); precio 41/52 at n=7, or 5/6 when capped at n=6. The guarded wrapper in `program.md` uses the local Python and imposes time and memory limits without modifying `judge.py`. Two short smoke runs passed; they rediscovered seeds and are not new findings or a completed night.
+
+The additional n=7 seed replay through the fixed night judge hit the short pilot's 60 s / 1536 MiB limits. Its grid value is independently verified, but an `ok` judge run at n=7 under the production 360 s cap remains pending. Do not label that limited pilot a successful search.
+
+What it can give: a lower ratio than these verified starting points and the *family* that produces it, in `notes.md`. What it cannot give: a theorem. Every new number stays "diagnostic" until Héctor re-solves it (Sat and Mon). If it stalls or breaks, the week still stands on §1.
 
 ## 5. WhatsApps to Francisco (A sends, in A's words)
 
