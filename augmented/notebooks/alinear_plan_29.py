@@ -2,6 +2,7 @@
 from copy import deepcopy
 import nbformat as nb
 from figuras_plan_29 import plan_figures
+from respuestas_discusion_29 import add_answers
 
 
 def align(presentation,study,cell,images,root):
@@ -9,7 +10,6 @@ def align(presentation,study,cell,images,root):
     images.update(new_images)
     previous=deepcopy(presentation.cells)
     first=previous[0]
-    first.source=first.source.replace('12 de octubre de 2026','Actualización del 14 de octubre · sesión del 20 de octubre')
     first.source=first.source.replace('Comparamos utilidades esperadas óptimas con los mismos', 'Comparamos políticas y óptimos con los mismos')
     first.source+='\n\nTres preguntas: binario frente a laminar; laminar frente a general; reglas eficientes frente al óptimo laminar.'
     binary=previous[3];binary.source=binary.source.replace('## 3.','## 2.',1)
@@ -117,5 +117,7 @@ Preguntas para Francisco: ¿conviene optimizar primero la jerarquía? ¿Cuánto 
     for old in [previous[2],previous[4],previous[5]]:
         old.source='## Consulta conservada\n\n'+old.source
         study.cells.append(old)
-    for notebook in [presentation,study]:nb.validate(notebook)
+    for notebook in [presentation,study]:
+        add_answers(notebook)
+        nb.validate(notebook)
     return presentation,study

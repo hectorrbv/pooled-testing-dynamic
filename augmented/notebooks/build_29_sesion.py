@@ -104,8 +104,6 @@ def cell(source,*names):
 intro=r'''
 # ¿Cuánto cuesta exigir laminaridad?
 
-Continuación de la sesión del 6 de octubre · Héctor · 12 de octubre de 2026
-
 Comparamos utilidades esperadas óptimas con los mismos $n,B,G,q_i,u_i$.
 
 - Binario: resultado negativo o positivo; hard clearing, se cobra al pertenecer a un pool negativo.
