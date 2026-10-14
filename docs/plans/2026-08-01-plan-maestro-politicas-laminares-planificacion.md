@@ -41,6 +41,8 @@ Las etapas cierran por gate, no por fecha (§28). La capa operativa (§1) asigna
 
 ## 1. Capa operativa
 
+Actualización 2026-10-14: para fechas, entregables y responsables vigentes, usar el [plan semanal hacia el 20-oct](../notes/2026-10-14-plan-semana.md). El bloque del 12-oct conservado abajo es histórico: la sesión del 13-oct se canceló. La [actualización de resultados de Héctor](../notes/2026-10-12-encargos-6-oct.md#4-actualización-de-héctor-14-oct) registra el contraste computacional independiente y la familia binario/laminar con límite 10/9; mantiene separadas comprobación computacional y validación humana.
+
 **Reparto.** A empuja la cadena teórica (A2 → Lema A → formalización del objetivo → celda dinámico-binaria → frontera). B empuja la cadena de instrumentos (reproducibilidad → tests ancla → interfaz de scorers → oráculo → falsificador → candidatas → atlas). El soporte IA empuja literatura, arbitra borradores y arma harness — subordinado a la validación de A y B. Las tres cadenas son paralelas; se sincronizan en los gates.
 
 **Semana del 12 de octubre (sesión con Francisco: martes 13-oct, 19:00 Praga / 11:00 CDMX) — reescrita 2026-10-12 tras el despacho de la sesión del 6-oct (acta `docs/notes/2026-10-06-sesion-francisco.md`). Tercera sesión seguida sin pieza escrita entregada: la base es UNA pieza, cerrada y enviada, antes de abrir cualquier frente.**

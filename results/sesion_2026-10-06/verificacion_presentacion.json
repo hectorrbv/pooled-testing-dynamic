@@ -1,0 +1,47 @@
+{
+  "independent_policy_values": {
+    "pair_n6": "387/500",
+    "simple_conversion": "3/2",
+    "replan_after_ABC": "7/4",
+    "crossing_three_counts": "2"
+  },
+  "horizon_audit": {
+    "conditional_profiles": 32,
+    "all_six_forced_trees_replayed": true,
+    "all_nodes_checked": true,
+    "matches_stored_B4_branches": true,
+    "scope": "Two horizons at one fixed history; not a theorem for the whole grid."
+  },
+  "separation_tree_audit": {
+    "independent_profiles_per_policy": 64,
+    "all_nodes_checked": true,
+    "independent_laminar_atom_check": true,
+    "root_gap": "1/2",
+    "mixed_branch_contribution": "3/8",
+    "mixed_share_of_gap": "3/4"
+  },
+  "separation_tree_node_counts": {
+    "general": 104,
+    "laminar": 64
+  },
+  "grouping_cases": 228,
+  "improvements": 170,
+  "ties": 58,
+  "strict_interior_improvements": 152,
+  "artifacts": {
+    "28_pooling_y_precio_laminar": {
+      "cells": 5,
+      "embedded_images": 5,
+      "sha256": "3ad607ea358dfe7f6f1b71417e650608a7531fb97927bc09b02b76ae6d2fda82"
+    },
+    "28_notas_de_estudio": {
+      "cells": 16,
+      "embedded_images": 9,
+      "sha256": "15efdc22bc9774e11a54f8c0f21fb149b45da0fe0c0211ded7908a37a95a6a76"
+    }
+  },
+  "matched_three_reference_cases": 228,
+  "general_beats_laminar": 110,
+  "general_ties_laminar": 118,
+  "note": "Value replay is independent; stored Bellman results establish optimality."
+}

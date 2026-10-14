@@ -1,0 +1,50 @@
+{
+  "verified_utc": "2026-09-29T15:19:09.783785+00:00",
+  "presentation": "augmented/notebooks/27_sesion_francisco.ipynb",
+  "presentation_cells": 5,
+  "main_screens": 4,
+  "consultation_cells": 1,
+  "presentation_images": [
+    "mapa_global.png",
+    "mapa_candidatas.png",
+    "par_completo.png",
+    "lambda_decisiones.png"
+  ],
+  "presentation_minutes": 8.5,
+  "experiment_rows": 114,
+  "lambda_rows": 26,
+  "render": "Four figures visually checked; PNG attachments match saved figures; four data URLs resolve in exported HTML.",
+  "visible_main_words": 323,
+  "evidence_sha256": {
+    "results/sesion_2026-09-29/lambda_refinado.csv": "8a7a0b0aece39689415fbd9a6ac59c5ce88d6e29b047ee1e430b1b1d534d5720",
+    "results/sesion_2026-09-29/regimenes_politicas.csv": "b87fa72f549896a5b0b5cf4a3c92deb672b6edfccc50381a80314d73177a6e47"
+  },
+  "figure_arrays_match_csv": true,
+  "original_36_cases": {
+    "rows": 114,
+    "reproduced_old_rows": 36,
+    "max_old_grid_error": 1.1102230246251565e-16,
+    "runtime_seconds": 6.186107873916626,
+    "optimal_cases": {
+      "pi_M": 31,
+      "pi_C": 31,
+      "pi_R": 36,
+      "C3": 77,
+      "pi_L": 90,
+      "pi_ratio": 93
+    },
+    "ratio_vs_L": {
+      "ratio_wins": 13,
+      "L_wins": 10,
+      "ties": 91
+    }
+  },
+  "profile_comparisons": 12,
+  "profiles_per_check": 64,
+  "max_profile_error": 4.440892098500626e-16,
+  "lambda_continuation_loss_explained": 0.07072000000000002,
+  "previous_verification": "results/sesion_2026-09-29/verificacion_antes_mapa_global.json",
+  "review": "Current redesign based on the recorded questions of 22 September; earlier Opus review belongs to the archived version.",
+  "research_questions_source": "docs/notes/2026-09-22-sesion-francisco.md",
+  "scope": "n=6, homogeneous utilities, independent homogeneous priors, soft clearing; finite grid, no general guarantee."
+}

@@ -1,0 +1,25 @@
+{
+  "cases": 228,
+  "exact_cases": 228,
+  "positive_gain": 170,
+  "ties": 58,
+  "largest_gain": {
+    "n": 6,
+    "G": 3,
+    "B": 1,
+    "q": "19/20",
+    "q_decimal": 0.95,
+    "status": "exact",
+    "individual": "19/20",
+    "grouping": "20577/8000",
+    "gain": "12977/8000",
+    "gain_percent": 170.75,
+    "optimal_first_sizes": [
+      3
+    ],
+    "certified_by": "exact Bellman over all feasible pools",
+    "independent_profile_check": true,
+    "profiles": 64,
+    "seconds": 0.0044
+  }
+}

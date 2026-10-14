@@ -1,0 +1,340 @@
+{
+  "n": 5,
+  "B": 2,
+  "G": 2,
+  "q": [
+    "19/20",
+    "4/25",
+    "17/20",
+    "17/20",
+    "11/20"
+  ],
+  "u": [
+    "1",
+    "1",
+    "1",
+    "1",
+    "1"
+  ],
+  "phase": "adaptive",
+  "status": "exact",
+  "binary": "208981/80000",
+  "laminar": "102481/40000",
+  "ratio": "208981/204962",
+  "delta": "4019/80000",
+  "first_binary": [
+    0,
+    2
+  ],
+  "first_laminar": [
+    0,
+    2
+  ],
+  "binary_states": 256,
+  "laminar_states": 436,
+  "binary_tree": {
+    "remaining_tests": 2,
+    "cleared": [],
+    "value": "208981/80000",
+    "pool": [
+      0,
+      2
+    ],
+    "branches": [
+      {
+        "result": 0,
+        "probability": "323/400",
+        "next": {
+          "remaining_tests": 1,
+          "cleared": [
+            0,
+            2
+          ],
+          "value": "587/200",
+          "pool": [
+            3,
+            4
+          ],
+          "branches": [
+            {
+              "result": 0,
+              "probability": "187/400",
+              "next": {
+                "remaining_tests": 0,
+                "cleared": [
+                  0,
+                  2,
+                  3,
+                  4
+                ],
+                "value": "4",
+                "stop": true
+              }
+            },
+            {
+              "result": 1,
+              "probability": "213/400",
+              "next": {
+                "remaining_tests": 0,
+                "cleared": [
+                  0,
+                  2
+                ],
+                "value": "2",
+                "stop": true
+              }
+            }
+          ]
+        }
+      },
+      {
+        "result": 1,
+        "probability": "77/400",
+        "next": {
+          "remaining_tests": 1,
+          "cleared": [],
+          "value": "969/770",
+          "pool": [
+            0,
+            3
+          ],
+          "branches": [
+            {
+              "result": 0,
+              "probability": "969/1540",
+              "next": {
+                "remaining_tests": 0,
+                "cleared": [
+                  0,
+                  3
+                ],
+                "value": "2",
+                "stop": true
+              }
+            },
+            {
+              "result": 1,
+              "probability": "571/1540",
+              "next": {
+                "remaining_tests": 0,
+                "cleared": [],
+                "value": "0",
+                "stop": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "binary_replay": {
+    "value": "208981/80000",
+    "profiles": 32,
+    "max_tests": 2,
+    "profiles_with_nonlaminar_pools": 24
+  },
+  "laminar_tree": {
+    "remaining_tests": 2,
+    "compatible_profiles": 32,
+    "newly_healthy": [],
+    "healthy": [],
+    "value": "102481/40000",
+    "pool": [
+      0,
+      2
+    ],
+    "crosses_previous": [],
+    "branches": [
+      {
+        "infected_count": 0,
+        "probability": "323/400",
+        "next": {
+          "remaining_tests": 1,
+          "compatible_profiles": 8,
+          "newly_healthy": [
+            0,
+            2
+          ],
+          "healthy": [
+            0,
+            2
+          ],
+          "value": "587/200",
+          "pool": [
+            3,
+            4
+          ],
+          "crosses_previous": [],
+          "branches": [
+            {
+              "infected_count": 0,
+              "probability": "187/400",
+              "next": {
+                "remaining_tests": 0,
+                "compatible_profiles": 2,
+                "newly_healthy": [
+                  3,
+                  4
+                ],
+                "healthy": [
+                  0,
+                  2,
+                  3,
+                  4
+                ],
+                "value": "4",
+                "stop": true
+              }
+            },
+            {
+              "infected_count": 1,
+              "probability": "93/200",
+              "next": {
+                "remaining_tests": 0,
+                "compatible_profiles": 4,
+                "newly_healthy": [],
+                "healthy": [
+                  0,
+                  2
+                ],
+                "value": "2",
+                "stop": true
+              }
+            },
+            {
+              "infected_count": 2,
+              "probability": "27/400",
+              "next": {
+                "remaining_tests": 0,
+                "compatible_profiles": 2,
+                "newly_healthy": [],
+                "healthy": [
+                  0,
+                  2
+                ],
+                "value": "2",
+                "stop": true
+              }
+            }
+          ]
+        }
+      },
+      {
+        "infected_count": 1,
+        "probability": "37/200",
+        "next": {
+          "remaining_tests": 1,
+          "compatible_profiles": 16,
+          "newly_healthy": [],
+          "healthy": [],
+          "value": "1",
+          "pool": [
+            0
+          ],
+          "crosses_previous": [],
+          "branches": [
+            {
+              "infected_count": 0,
+              "probability": "57/74",
+              "next": {
+                "remaining_tests": 0,
+                "compatible_profiles": 8,
+                "newly_healthy": [
+                  0
+                ],
+                "healthy": [
+                  0
+                ],
+                "value": "1",
+                "stop": true
+              }
+            },
+            {
+              "infected_count": 1,
+              "probability": "17/74",
+              "next": {
+                "remaining_tests": 0,
+                "compatible_profiles": 8,
+                "newly_healthy": [
+                  2
+                ],
+                "healthy": [
+                  2
+                ],
+                "value": "1",
+                "stop": true
+              }
+            }
+          ]
+        }
+      },
+      {
+        "infected_count": 2,
+        "probability": "3/400",
+        "next": {
+          "remaining_tests": 1,
+          "compatible_profiles": 8,
+          "newly_healthy": [],
+          "healthy": [],
+          "value": "187/200",
+          "pool": [
+            3,
+            4
+          ],
+          "crosses_previous": [],
+          "branches": [
+            {
+              "infected_count": 0,
+              "probability": "187/400",
+              "next": {
+                "remaining_tests": 0,
+                "compatible_profiles": 2,
+                "newly_healthy": [
+                  3,
+                  4
+                ],
+                "healthy": [
+                  3,
+                  4
+                ],
+                "value": "2",
+                "stop": true
+              }
+            },
+            {
+              "infected_count": 1,
+              "probability": "93/200",
+              "next": {
+                "remaining_tests": 0,
+                "compatible_profiles": 4,
+                "newly_healthy": [],
+                "healthy": [],
+                "value": "0",
+                "stop": true
+              }
+            },
+            {
+              "infected_count": 2,
+              "probability": "27/400",
+              "next": {
+                "remaining_tests": 0,
+                "compatible_profiles": 2,
+                "newly_healthy": [],
+                "healthy": [],
+                "value": "0",
+                "stop": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "laminar_replay": {
+    "value": "102481/40000",
+    "positive_profiles": 32,
+    "max_tests_used": 2,
+    "profiles_with_crossing": 0
+  },
+  "seconds": 0.001726
+}

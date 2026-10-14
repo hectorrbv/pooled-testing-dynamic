@@ -1,0 +1,1634 @@
+{
+  "created_utc": "2026-10-14T11:39:21.910489+00:00",
+  "seed": 20261014,
+  "grid": [
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 2,
+      "n": 4,
+      "B": 2,
+      "G": 2,
+      "q": "3/10",
+      "saved": "387/500",
+      "independent": "387/500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 3,
+      "n": 4,
+      "B": 3,
+      "G": 2,
+      "q": "3/10",
+      "saved": "1137/1000",
+      "independent": "1137/1000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 4,
+      "n": 4,
+      "B": 4,
+      "G": 2,
+      "q": "3/10",
+      "saved": "6/5",
+      "independent": "6/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 5,
+      "n": 4,
+      "B": 2,
+      "G": 3,
+      "q": "3/10",
+      "saved": "387/500",
+      "independent": "387/500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 6,
+      "n": 4,
+      "B": 3,
+      "G": 3,
+      "q": "3/10",
+      "saved": "6/5",
+      "independent": "6/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 7,
+      "n": 4,
+      "B": 4,
+      "G": 3,
+      "q": "3/10",
+      "saved": "6/5",
+      "independent": "6/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 8,
+      "n": 4,
+      "B": 2,
+      "G": 4,
+      "q": "3/10",
+      "saved": "387/500",
+      "independent": "387/500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 9,
+      "n": 4,
+      "B": 3,
+      "G": 4,
+      "q": "3/10",
+      "saved": "6/5",
+      "independent": "6/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 10,
+      "n": 4,
+      "B": 4,
+      "G": 4,
+      "q": "3/10",
+      "saved": "6/5",
+      "independent": "6/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 11,
+      "n": 4,
+      "B": 2,
+      "G": 2,
+      "q": "1/2",
+      "saved": "5/4",
+      "independent": "5/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 12,
+      "n": 4,
+      "B": 3,
+      "G": 2,
+      "q": "1/2",
+      "saved": "15/8",
+      "independent": "15/8",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 13,
+      "n": 4,
+      "B": 4,
+      "G": 2,
+      "q": "1/2",
+      "saved": "2",
+      "independent": "2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 14,
+      "n": 4,
+      "B": 2,
+      "G": 3,
+      "q": "1/2",
+      "saved": "5/4",
+      "independent": "5/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 15,
+      "n": 4,
+      "B": 3,
+      "G": 3,
+      "q": "1/2",
+      "saved": "2",
+      "independent": "2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 16,
+      "n": 4,
+      "B": 4,
+      "G": 3,
+      "q": "1/2",
+      "saved": "2",
+      "independent": "2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 17,
+      "n": 4,
+      "B": 2,
+      "G": 4,
+      "q": "1/2",
+      "saved": "5/4",
+      "independent": "5/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 18,
+      "n": 4,
+      "B": 3,
+      "G": 4,
+      "q": "1/2",
+      "saved": "2",
+      "independent": "2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 19,
+      "n": 4,
+      "B": 4,
+      "G": 4,
+      "q": "1/2",
+      "saved": "2",
+      "independent": "2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 20,
+      "n": 4,
+      "B": 2,
+      "G": 2,
+      "q": "7/10",
+      "saved": "4921/2500",
+      "independent": "4921/2500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 21,
+      "n": 4,
+      "B": 3,
+      "G": 2,
+      "q": "7/10",
+      "saved": "2653/1000",
+      "independent": "2653/1000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 22,
+      "n": 4,
+      "B": 4,
+      "G": 2,
+      "q": "7/10",
+      "saved": "14/5",
+      "independent": "14/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 23,
+      "n": 4,
+      "B": 2,
+      "G": 3,
+      "q": "7/10",
+      "saved": "20083/10000",
+      "independent": "20083/10000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 24,
+      "n": 4,
+      "B": 3,
+      "G": 3,
+      "q": "7/10",
+      "saved": "14/5",
+      "independent": "14/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 25,
+      "n": 4,
+      "B": 4,
+      "G": 3,
+      "q": "7/10",
+      "saved": "14/5",
+      "independent": "14/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 26,
+      "n": 4,
+      "B": 2,
+      "G": 4,
+      "q": "7/10",
+      "saved": "20083/10000",
+      "independent": "20083/10000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 27,
+      "n": 4,
+      "B": 3,
+      "G": 4,
+      "q": "7/10",
+      "saved": "14/5",
+      "independent": "14/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 28,
+      "n": 4,
+      "B": 4,
+      "G": 4,
+      "q": "7/10",
+      "saved": "14/5",
+      "independent": "14/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 29,
+      "n": 5,
+      "B": 2,
+      "G": 2,
+      "q": "3/10",
+      "saved": "387/500",
+      "independent": "387/500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 30,
+      "n": 5,
+      "B": 3,
+      "G": 2,
+      "q": "3/10",
+      "saved": "7737/6250",
+      "independent": "7737/6250",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 31,
+      "n": 5,
+      "B": 4,
+      "G": 2,
+      "q": "3/10",
+      "saved": "73677/50000",
+      "independent": "73677/50000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 32,
+      "n": 5,
+      "B": 2,
+      "G": 3,
+      "q": "3/10",
+      "saved": "387/500",
+      "independent": "387/500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 33,
+      "n": 5,
+      "B": 3,
+      "G": 3,
+      "q": "3/10",
+      "saved": "13551/10000",
+      "independent": "13551/10000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 34,
+      "n": 5,
+      "B": 4,
+      "G": 3,
+      "q": "3/10",
+      "saved": "3/2",
+      "independent": "3/2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 35,
+      "n": 5,
+      "B": 2,
+      "G": 4,
+      "q": "3/10",
+      "saved": "387/500",
+      "independent": "387/500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 36,
+      "n": 5,
+      "B": 3,
+      "G": 4,
+      "q": "3/10",
+      "saved": "13551/10000",
+      "independent": "13551/10000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 37,
+      "n": 5,
+      "B": 4,
+      "G": 4,
+      "q": "3/10",
+      "saved": "3/2",
+      "independent": "3/2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 38,
+      "n": 5,
+      "B": 2,
+      "G": 2,
+      "q": "1/2",
+      "saved": "5/4",
+      "independent": "5/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 39,
+      "n": 5,
+      "B": 3,
+      "G": 2,
+      "q": "1/2",
+      "saved": "2",
+      "independent": "2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 40,
+      "n": 5,
+      "B": 4,
+      "G": 2,
+      "q": "1/2",
+      "saved": "39/16",
+      "independent": "39/16",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 41,
+      "n": 5,
+      "B": 2,
+      "G": 3,
+      "q": "1/2",
+      "saved": "5/4",
+      "independent": "5/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 42,
+      "n": 5,
+      "B": 3,
+      "G": 3,
+      "q": "1/2",
+      "saved": "35/16",
+      "independent": "35/16",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 43,
+      "n": 5,
+      "B": 4,
+      "G": 3,
+      "q": "1/2",
+      "saved": "5/2",
+      "independent": "5/2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 44,
+      "n": 5,
+      "B": 2,
+      "G": 4,
+      "q": "1/2",
+      "saved": "5/4",
+      "independent": "5/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 45,
+      "n": 5,
+      "B": 3,
+      "G": 4,
+      "q": "1/2",
+      "saved": "35/16",
+      "independent": "35/16",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 46,
+      "n": 5,
+      "B": 4,
+      "G": 4,
+      "q": "1/2",
+      "saved": "5/2",
+      "independent": "5/2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 47,
+      "n": 5,
+      "B": 2,
+      "G": 2,
+      "q": "7/10",
+      "saved": "4921/2500",
+      "independent": "4921/2500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 48,
+      "n": 5,
+      "B": 3,
+      "G": 2,
+      "q": "7/10",
+      "saved": "36841/12500",
+      "independent": "36841/12500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 49,
+      "n": 5,
+      "B": 4,
+      "G": 2,
+      "q": "7/10",
+      "saved": "171913/50000",
+      "independent": "171913/50000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 50,
+      "n": 5,
+      "B": 2,
+      "G": 3,
+      "q": "7/10",
+      "saved": "108241/50000",
+      "independent": "108241/50000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 51,
+      "n": 5,
+      "B": 3,
+      "G": 3,
+      "q": "7/10",
+      "saved": "81767/25000",
+      "independent": "81767/25000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 52,
+      "n": 5,
+      "B": 4,
+      "G": 3,
+      "q": "7/10",
+      "saved": "7/2",
+      "independent": "7/2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 53,
+      "n": 5,
+      "B": 2,
+      "G": 4,
+      "q": "7/10",
+      "saved": "54887/25000",
+      "independent": "54887/25000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 54,
+      "n": 5,
+      "B": 3,
+      "G": 4,
+      "q": "7/10",
+      "saved": "16429/5000",
+      "independent": "16429/5000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv",
+      "line": 55,
+      "n": 5,
+      "B": 4,
+      "G": 4,
+      "q": "7/10",
+      "saved": "7/2",
+      "independent": "7/2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 2,
+      "n": 6,
+      "B": 2,
+      "G": 2,
+      "q": "1/2",
+      "saved": "5/4",
+      "independent": "5/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 3,
+      "n": 6,
+      "B": 3,
+      "G": 2,
+      "q": "1/2",
+      "saved": "2",
+      "independent": "2",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 4,
+      "n": 6,
+      "B": 4,
+      "G": 2,
+      "q": "1/2",
+      "saved": "43/16",
+      "independent": "43/16",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 5,
+      "n": 6,
+      "B": 2,
+      "G": 3,
+      "q": "1/2",
+      "saved": "5/4",
+      "independent": "5/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 6,
+      "n": 6,
+      "B": 3,
+      "G": 3,
+      "q": "1/2",
+      "saved": "9/4",
+      "independent": "9/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 7,
+      "n": 6,
+      "B": 4,
+      "G": 3,
+      "q": "1/2",
+      "saved": "3",
+      "independent": "3",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 8,
+      "n": 6,
+      "B": 2,
+      "G": 4,
+      "q": "1/2",
+      "saved": "5/4",
+      "independent": "5/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 9,
+      "n": 6,
+      "B": 3,
+      "G": 4,
+      "q": "1/2",
+      "saved": "9/4",
+      "independent": "9/4",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 10,
+      "n": 6,
+      "B": 4,
+      "G": 4,
+      "q": "1/2",
+      "saved": "3",
+      "independent": "3",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 11,
+      "n": 6,
+      "B": 2,
+      "G": 2,
+      "q": "3/10",
+      "saved": "387/500",
+      "independent": "387/500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 12,
+      "n": 6,
+      "B": 3,
+      "G": 2,
+      "q": "3/10",
+      "saved": "7737/6250",
+      "independent": "7737/6250",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 13,
+      "n": 6,
+      "B": 4,
+      "G": 2,
+      "q": "3/10",
+      "saved": "82377/50000",
+      "independent": "82377/50000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 14,
+      "n": 6,
+      "B": 2,
+      "G": 3,
+      "q": "3/10",
+      "saved": "387/500",
+      "independent": "387/500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 15,
+      "n": 6,
+      "B": 3,
+      "G": 3,
+      "q": "3/10",
+      "saved": "35487/25000",
+      "independent": "35487/25000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 16,
+      "n": 6,
+      "B": 4,
+      "G": 3,
+      "q": "3/10",
+      "saved": "9/5",
+      "independent": "9/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 17,
+      "n": 6,
+      "B": 2,
+      "G": 4,
+      "q": "3/10",
+      "saved": "387/500",
+      "independent": "387/500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 18,
+      "n": 6,
+      "B": 3,
+      "G": 4,
+      "q": "3/10",
+      "saved": "35487/25000",
+      "independent": "35487/25000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 19,
+      "n": 6,
+      "B": 4,
+      "G": 4,
+      "q": "3/10",
+      "saved": "9/5",
+      "independent": "9/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 20,
+      "n": 6,
+      "B": 2,
+      "G": 2,
+      "q": "7/10",
+      "saved": "4921/2500",
+      "independent": "4921/2500",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 21,
+      "n": 6,
+      "B": 3,
+      "G": 2,
+      "q": "7/10",
+      "saved": "47523/15625",
+      "independent": "47523/15625",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 22,
+      "n": 6,
+      "B": 4,
+      "G": 2,
+      "q": "7/10",
+      "saved": "969591/250000",
+      "independent": "969591/250000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 23,
+      "n": 6,
+      "B": 2,
+      "G": 3,
+      "q": "7/10",
+      "saved": "2192211/1000000",
+      "independent": "2192211/1000000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 24,
+      "n": 6,
+      "B": 3,
+      "G": 3,
+      "q": "7/10",
+      "saved": "345177/100000",
+      "independent": "345177/100000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 25,
+      "n": 6,
+      "B": 4,
+      "G": 3,
+      "q": "7/10",
+      "saved": "21/5",
+      "independent": "21/5",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 26,
+      "n": 6,
+      "B": 2,
+      "G": 4,
+      "q": "7/10",
+      "saved": "295029/125000",
+      "independent": "295029/125000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 27,
+      "n": 6,
+      "B": 3,
+      "G": 4,
+      "q": "7/10",
+      "saved": "446481/125000",
+      "independent": "446481/125000",
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/precio_laminar_malla_n6.csv",
+      "line": 28,
+      "n": 6,
+      "B": 4,
+      "G": 4,
+      "q": "7/10",
+      "saved": "21/5",
+      "independent": "21/5",
+      "match": true
+    }
+  ],
+  "binary": [
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 1444,
+      "q": [
+        "7/10",
+        "1/2",
+        "1/2"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 3,
+      "G": 2,
+      "saved": "17/10",
+      "independent": "17/10",
+      "profile_replay": {
+        "value": "17/10",
+        "profiles": 8,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 2149,
+      "q": [
+        "4/5",
+        "4/5",
+        "4/5",
+        "4/5"
+      ],
+      "u": [
+        "3/2",
+        "2",
+        "1/2",
+        "2"
+      ],
+      "B": 2,
+      "G": 2,
+      "saved": "96/25",
+      "independent": "96/25",
+      "profile_replay": {
+        "value": "96/25",
+        "profiles": 16,
+        "max_tests": 2,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed1.csv",
+      "line": 1434,
+      "q": [
+        "7/10",
+        "3/10",
+        "9/10",
+        "7/10",
+        "1/10"
+      ],
+      "u": [
+        "1/4",
+        "3/4",
+        "3/2",
+        "1/4",
+        "1/2"
+      ],
+      "B": 2,
+      "G": 3,
+      "saved": "66789/40000",
+      "independent": "66789/40000",
+      "profile_replay": {
+        "value": "66789/40000",
+        "profiles": 32,
+        "max_tests": 2,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 1035,
+      "q": [
+        "1/10",
+        "3/10",
+        "9/10",
+        "9/10",
+        "9/10"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 3,
+      "G": 2,
+      "saved": "29403/10000",
+      "independent": "29403/10000",
+      "profile_replay": {
+        "value": "29403/10000",
+        "profiles": 32,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 24
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 1777,
+      "q": [
+        "1/2",
+        "1/10",
+        "7/10"
+      ],
+      "u": [
+        "3/4",
+        "7/4",
+        "1/4"
+      ],
+      "B": 3,
+      "G": 3,
+      "saved": "29/40",
+      "independent": "29/40",
+      "profile_replay": {
+        "value": "29/40",
+        "profiles": 8,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed1.csv",
+      "line": 1226,
+      "q": [
+        "3/5",
+        "3/10",
+        "2/5",
+        "9/10",
+        "4/5"
+      ],
+      "u": [
+        "7/4",
+        "3/4",
+        "1/4",
+        "1/2",
+        "1"
+      ],
+      "B": 2,
+      "G": 2,
+      "saved": "213/100",
+      "independent": "213/100",
+      "profile_replay": {
+        "value": "213/100",
+        "profiles": 32,
+        "max_tests": 2,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 2098,
+      "q": [
+        "7/10",
+        "9/10",
+        "1/2"
+      ],
+      "u": [
+        "3/4",
+        "1",
+        "5/4"
+      ],
+      "B": 2,
+      "G": 2,
+      "saved": "9/5",
+      "independent": "9/5",
+      "profile_replay": {
+        "value": "9/5",
+        "profiles": 8,
+        "max_tests": 2,
+        "profiles_with_nonlaminar_pools": 6
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 1625,
+      "q": [
+        "3/5",
+        "3/5",
+        "3/5",
+        "3/5"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 2,
+      "G": 3,
+      "saved": "36/25",
+      "independent": "36/25",
+      "profile_replay": {
+        "value": "36/25",
+        "profiles": 16,
+        "max_tests": 2,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 326,
+      "q": [
+        "3/10",
+        "7/10",
+        "3/10",
+        "7/10"
+      ],
+      "u": [
+        "5/4",
+        "3/2",
+        "1",
+        "1"
+      ],
+      "B": 3,
+      "G": 3,
+      "saved": "4319/2000",
+      "independent": "4319/2000",
+      "profile_replay": {
+        "value": "4319/2000",
+        "profiles": 16,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 1840,
+      "q": [
+        "3/5",
+        "9/10",
+        "2/5",
+        "1/10",
+        "4/5"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 2,
+      "G": 2,
+      "saved": "261/125",
+      "independent": "261/125",
+      "profile_replay": {
+        "value": "261/125",
+        "profiles": 32,
+        "max_tests": 2,
+        "profiles_with_nonlaminar_pools": 24
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 389,
+      "q": [
+        "3/5",
+        "3/5",
+        "4/5",
+        "1/2"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 2,
+      "G": 3,
+      "saved": "204/125",
+      "independent": "204/125",
+      "profile_replay": {
+        "value": "204/125",
+        "profiles": 16,
+        "max_tests": 2,
+        "profiles_with_nonlaminar_pools": 12
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 671,
+      "q": [
+        "1/2",
+        "1/2",
+        "9/10",
+        "1/5"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 3,
+      "G": 3,
+      "saved": "97/50",
+      "independent": "97/50",
+      "profile_replay": {
+        "value": "97/50",
+        "profiles": 16,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 612,
+      "q": [
+        "9/10",
+        "9/10",
+        "9/10"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 3,
+      "G": 2,
+      "saved": "27/10",
+      "independent": "27/10",
+      "profile_replay": {
+        "value": "27/10",
+        "profiles": 8,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 297,
+      "q": [
+        "1/2",
+        "9/10",
+        "1/2",
+        "1/10"
+      ],
+      "u": [
+        "3/2",
+        "2",
+        "1/4",
+        "1/4"
+      ],
+      "B": 3,
+      "G": 2,
+      "saved": "107/40",
+      "independent": "107/40",
+      "profile_replay": {
+        "value": "107/40",
+        "profiles": 16,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 1990,
+      "q": [
+        "3/5",
+        "3/5",
+        "3/5"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 2,
+      "G": 2,
+      "saved": "33/25",
+      "independent": "33/25",
+      "profile_replay": {
+        "value": "33/25",
+        "profiles": 8,
+        "max_tests": 2,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 584,
+      "q": [
+        "9/10",
+        "1/2",
+        "9/10"
+      ],
+      "u": [
+        "1/4",
+        "3/2",
+        "1/4"
+      ],
+      "B": 3,
+      "G": 2,
+      "saved": "6/5",
+      "independent": "6/5",
+      "profile_replay": {
+        "value": "6/5",
+        "profiles": 8,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 2011,
+      "q": [
+        "1/2",
+        "1/2",
+        "9/10",
+        "1/2",
+        "9/10"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 3,
+      "G": 2,
+      "saved": "2169/800",
+      "independent": "2169/800",
+      "profile_replay": {
+        "value": "2169/800",
+        "profiles": 32,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 18
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed1.csv",
+      "line": 1249,
+      "q": [
+        "1/2",
+        "7/10",
+        "1/2",
+        "7/10"
+      ],
+      "u": [
+        "1/4",
+        "1/2",
+        "2",
+        "5/4"
+      ],
+      "B": 3,
+      "G": 2,
+      "saved": "89/40",
+      "independent": "89/40",
+      "profile_replay": {
+        "value": "89/40",
+        "profiles": 16,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 2147,
+      "q": [
+        "4/5",
+        "4/5",
+        "4/5"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 2,
+      "G": 3,
+      "saved": "52/25",
+      "independent": "52/25",
+      "profile_replay": {
+        "value": "52/25",
+        "profiles": 8,
+        "max_tests": 2,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 1252,
+      "q": [
+        "1/5",
+        "4/5",
+        "3/5"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 3,
+      "G": 2,
+      "saved": "8/5",
+      "independent": "8/5",
+      "profile_replay": {
+        "value": "8/5",
+        "profiles": 8,
+        "max_tests": 3,
+        "profiles_with_nonlaminar_pools": 0
+      },
+      "match": true
+    }
+  ],
+  "one_test": [
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 1444,
+      "dynamic": "7/10",
+      "independent": "7/10",
+      "static": 0.7,
+      "absolute_error": 0.0,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 2149,
+      "dynamic": "64/25",
+      "independent": "64/25",
+      "static": 2.5600000000000005,
+      "absolute_error": 4.440892098500626e-16,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed1.csv",
+      "line": 1434,
+      "dynamic": "27/20",
+      "independent": "27/20",
+      "static": 1.3499999999999999,
+      "absolute_error": 2.220446049250313e-16,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 1035,
+      "dynamic": "81/50",
+      "independent": "81/50",
+      "static": 1.6200000000000003,
+      "absolute_error": 2.220446049250313e-16,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 1777,
+      "dynamic": "3/8",
+      "independent": "3/8",
+      "static": 0.375,
+      "absolute_error": 0.0,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed1.csv",
+      "line": 1226,
+      "dynamic": "33/25",
+      "independent": "33/25",
+      "static": 1.3200000000000003,
+      "absolute_error": 2.220446049250313e-16,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 2098,
+      "dynamic": "441/400",
+      "independent": "441/400",
+      "static": 1.1025,
+      "absolute_error": 0.0,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 1625,
+      "dynamic": "18/25",
+      "independent": "18/25",
+      "static": 0.72,
+      "absolute_error": 0.0,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 326,
+      "dynamic": "49/40",
+      "independent": "49/40",
+      "static": 1.2249999999999996,
+      "absolute_error": 4.440892098500626e-16,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 1840,
+      "dynamic": "36/25",
+      "independent": "36/25",
+      "static": 1.4400000000000002,
+      "absolute_error": 2.220446049250313e-16,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 389,
+      "dynamic": "24/25",
+      "independent": "24/25",
+      "static": 0.96,
+      "absolute_error": 0.0,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 671,
+      "dynamic": "9/10",
+      "independent": "9/10",
+      "static": 0.9000000000000001,
+      "absolute_error": 1.1102230246251565e-16,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 612,
+      "dynamic": "81/50",
+      "independent": "81/50",
+      "static": 1.62,
+      "absolute_error": 0.0,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 297,
+      "dynamic": "9/5",
+      "independent": "9/5",
+      "static": 1.8,
+      "absolute_error": 0.0,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 1990,
+      "dynamic": "18/25",
+      "independent": "18/25",
+      "static": 0.72,
+      "absolute_error": 0.0,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 584,
+      "dynamic": "63/80",
+      "independent": "63/80",
+      "static": 0.7875,
+      "absolute_error": 0.0,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv",
+      "line": 2011,
+      "dynamic": "81/50",
+      "independent": "81/50",
+      "static": 1.6200000000000006,
+      "absolute_error": 4.440892098500626e-16,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed1.csv",
+      "line": 1249,
+      "dynamic": "91/80",
+      "independent": "91/80",
+      "static": 1.1375,
+      "absolute_error": 0.0,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 2147,
+      "dynamic": "192/125",
+      "independent": "192/125",
+      "static": 1.5360000000000005,
+      "absolute_error": 4.440892098500626e-16,
+      "match": true
+    },
+    {
+      "source": "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv",
+      "line": 1252,
+      "dynamic": "24/25",
+      "independent": "24/25",
+      "static": 0.9600000000000001,
+      "absolute_error": 1.1102230246251565e-16,
+      "match": true
+    }
+  ],
+  "counts": {
+    "grid": 81,
+    "binary": 20,
+    "one_test": 20
+  },
+  "mismatches": 0,
+  "seconds": 18.22957320799469,
+  "sha256": {
+    "augmented/verifica_encargos_oct14.py": "8e7ecc0c93c74d6ff57475d412378785b355ae7d20f73274c1e5aefa126d6a90",
+    "augmented/bellman_binario_exacto.py": "18ee2c5550024cdf087f4428581bec4d94452134a9bde6878405fafcd1b83731",
+    "augmented/bellman_perfiles.py": "9498dde3806b35f998b428b5f21a66c84ac189db57dda0df6a9476b0593782a1",
+    "augmented/dp_perfiles_binario_conteo.py": "80386255f60e46ef0f335e27f3384e0150b5e59e555096871cc2af09840536c5",
+    "augmented/laminar_benchmarks.py": "f2f1b8a6207ebaa3db01232171844ad493298c9065ab52272018d694d5ee5972",
+    "results/encargos_2026-10-06/binario_vs_laminar_seed1.csv": "5a407d41ac3075920055ecea4540c8e2fd3ff445be38d46131ee42ad93b8e364",
+    "results/encargos_2026-10-06/binario_vs_laminar_seed2.csv": "2399797596c4b40cacdac2ccdf521f610be6e10736b41834ba30530a779a1700",
+    "results/encargos_2026-10-06/binario_vs_laminar_seed3.csv": "925718612779675e3f2687f08421129dd1bd9e8dc137059036d098d3e92842e9",
+    "results/encargos_2026-10-06/precio_laminar_malla_n4_5.csv": "95103031c758a844876b07a8bb8e277f1b0bc657122927c5c957e5115429e5ed",
+    "results/encargos_2026-10-06/precio_laminar_malla_n6.csv": "1dd74c2a694d3da01cf3e3b66579ae1cfbebfa777c9ff232578d62b89b1c3b76"
+  }
+}

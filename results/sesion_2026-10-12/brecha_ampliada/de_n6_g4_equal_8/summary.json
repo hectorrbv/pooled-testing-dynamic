@@ -1,0 +1,46 @@
+{
+  "parameters": {
+    "n": 6,
+    "G": 4,
+    "mode": "equal",
+    "seed": 8,
+    "iterations": 350,
+    "seconds": 75.0,
+    "restarts": 4,
+    "out": "results/sesion_2026-10-12/brecha_ampliada/de_n6_g4_equal_8"
+  },
+  "created_utc": "2026-10-12T13:18:21.219062+00:00",
+  "calls": 85821,
+  "completed_restarts": 4,
+  "seconds": 8.808013999994728,
+  "best": {
+    "n": 6,
+    "B": 2,
+    "G": 4,
+    "mode": "equal",
+    "seed": 8,
+    "q": [
+      0.7164724140556966,
+      0.00010000031721712723,
+      0.9998999996860023,
+      0.7164724140936256,
+      0.00010000033392818471,
+      0.0001000001790177623
+    ],
+    "u": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "ratio": 1.0550018833709187,
+    "binary": 2.3523216797363578,
+    "laminar": 2.2296848155571736,
+    "calls": 85550,
+    "seconds": 8.782612499999232
+  },
+  "status": "floating search candidate, requires rational certification",
+  "source_sha256": "22f02e59cf6ea5b9f5cbb179b5f78f684c5ccbf475592bbd93f8be7fa072ea57"
+}

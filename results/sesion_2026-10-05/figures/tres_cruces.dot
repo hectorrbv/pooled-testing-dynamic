@@ -1,0 +1,20 @@
+digraph tres_cruces {
+	bgcolor=white dpi=140 nodesep=.35 ordering=out pad=.15 rankdir=TB ranksep=.5
+	node [color="#00856a" fontcolor="#172033" fontname=Helvetica fontsize=16 margin=".15,.12" penwidth=1.5 shape=box style=rounded]
+	edge [arrowsize=.65 color="#64748b" fontcolor="#64748b" fontname=Helvetica fontsize=13]
+	nodesep=.7
+	{
+		rank=same
+		ABC [label="Probar ABC" color="#b95716"]
+		ABD [label="Probar ABD" color="#b95716"]
+		ACD [label="Probar ACD" color="#b95716"]
+	}
+	decode [label="Los tres conteos distinguen
+los 16 perfiles de salud"]
+	ABC -> decode
+	ABD -> decode
+	ACD -> decode
+	all [label="Identificamos a todos
+E[U] = 2"]
+	decode -> all
+}
