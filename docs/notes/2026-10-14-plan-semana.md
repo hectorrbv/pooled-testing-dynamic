@@ -4,6 +4,8 @@
 
 ## 0. Direction (master plan §1, the three parts of 6 Oct) and what changed
 
+Research direction reference, saved at Héctor's request on 15 Oct: [Francisco's message and the intended scale of results](2026-10-15-direccion-y-alcance-francisco.md). It preserves the original wording, separates the proposed log G result from an established proof, and records how small examples and grids should contribute toward structural bounds and separating families.
+
 Update from Héctor's workspace, 14 Oct: [the results note, §4](2026-10-12-encargos-6-oct.md#4-actualización-de-héctor-14-oct) records the completed computational second-way check (81 grid cells, 20 binary rows, 20 B=1 controls; no discrepancies) and the family with laminar/binary approaching 0.9. Use that as the binary search baseline instead of 0.978. The expanded Q2 grid and Q1 columns are now complete: all 32 cells, five independent laminar spot checks and full-profile policy replays; see §5 of that note. Human review/sign-off and A's written proof remain pending. The notebook is aligned; the seeded night loop is prepared and smoke-tested, not started.
 
 Francisco's three parts: **(a)** laminar and augmented against the best binary policy; **(b)** Q2, what is lost by forcing laminar, worst case conjectured at q = ½; **(c)** Q1, efficient laminar policies against the best laminar policy — the backbone of the master plan (§0: greedy with planning, rollout, acid test). Last week's plan covered (a) and (b) only; this one covers all three.
