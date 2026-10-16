@@ -324,6 +324,8 @@ study=nb.v4.new_notebook(cells=[cell(study1),cell(study2),cell(study3,'regimen_l
 study.metadata.update(language_info={'name':'python'},generator='build_29_sesion.py')
 from alinear_plan_29 import align
 presentation,study=align(presentation,study,cell,images,ROOT)
+from enfocar_log_g_29 import focus
+presentation,study=focus(presentation,study,ROOT)
 nb.write(presentation,OUT/'29_tres_clases_y_contraejemplo.ipynb')
 nb.write(study,OUT/'29_notas_de_estudio.ipynb')
 for path in [OUT/'29_tres_clases_y_contraejemplo.ipynb',OUT/'29_notas_de_estudio.ipynb']:

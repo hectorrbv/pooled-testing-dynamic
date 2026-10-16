@@ -4,7 +4,9 @@
 
 ## 0. Direction (master plan §1, the three parts of 6 Oct) and what changed
 
-Execution update, 15 Oct: Héctor requested the night search on Hermeneuta. It started at 15:20 Prague in an isolated VPS directory, with a separate n=7 feasibility pilot followed by up to 40 bounded experiments. The judge and solvers are unchanged; no completed night or new record is claimed yet. See [deployment, resource limits and retrieval instructions](2026-10-15-busqueda-hermeneuta.md). This supersedes only the "not started" status below; the independent review of future records remains pending.
+Execution update, audited 16 Oct: the requested Hermeneuta search finished on 15 Oct at 17:46 Prague. All 40 experiments returned `ok`; no seed was improved. The separate n=7 pilot hit the 360 s limit, so the search used n≤6 as planned. The judge and solvers are unchanged, and the logs are recovered. See [configuration, results and audit](2026-10-15-busqueda-hermeneuta.md). This supersedes the historical "not started" status below; future new records still require independent review.
+
+Study/presentation update, 16 Oct: notebook 29 now opens with Francisco's proposed log G gap, then the exact n=4 separation (2 vs 1.75), a checked conditional-gain example (4/3 after ABC=1), and the limits of the fixed-population grid. The conditional example only rules out the simple proof step "every test gains at most one in every history"; it does not refute a global O(B) bound. The previous binary, pair and Q1 blocks remain with their figures in the study notebook. This changes the discussion order, not ownership of the proof tasks or their completion status.
 
 Research direction reference, saved at Héctor's request on 15 Oct: [Francisco's message and the intended scale of results](2026-10-15-direccion-y-alcance-francisco.md). It preserves the original wording, separates the proposed log G result from an established proof, and records how small examples and grids should contribute toward structural bounds and separating families.
 

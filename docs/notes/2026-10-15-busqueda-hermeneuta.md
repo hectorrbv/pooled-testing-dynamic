@@ -1,8 +1,18 @@
 # Búsqueda en Hermeneuta — 15 de octubre de 2026
 
-Héctor pidió ejecutar en el VPS la búsqueda nocturna preparada. Se inició a las 15:20 de Praga (13:20 UTC), como servicio independiente de la conexión SSH. El arranque se comprobó con el servicio activo, su proceso consumiendo CPU y el registro del piloto. Todavía no hay una noche terminada ni un resultado nuevo que presentar.
+Héctor pidió ejecutar en el VPS la búsqueda nocturna preparada. Se inició el 15 de octubre a las 15:20 de Praga (13:20 UTC), como servicio independiente de la conexión SSH, y terminó a las 17:46 de Praga. Los registros se recuperaron y cotejaron el 16 de octubre. No mejoró los ejemplos de partida.
 
-## Qué está ejecutándose
+## Resultado recuperado el 16 de octubre
+
+Los 40 experimentos terminaron con estado `ok`: 20 binarios y 20 de precio laminar/general. El piloto previo n=7 alcanzó el límite de 360 segundos (`limited`, código 124); después se aplicó el límite n≤6 previsto. Ese piloto no es un contraste completado del ejemplo n=7, cuyo certificado procede de la malla anterior.
+
+El juez reporta 254080 evaluaciones en la misión binaria y 190 en precio, sin candidatos inválidos. Incluyen semillas repetidas entre ejecuciones; no son cantidades de instancias distintas en toda la sesión. En todos los experimentos, el mejor valor fue una semilla: laminar/binario≈0.90000075 y laminar/general=5/6 en n≤6. El récord previo 41/52 con n=7 sigue siendo el de la malla, no un descubrimiento de esta ejecución.
+
+Los hashes de los cuatro archivos fijos coinciden con los actuales. Se guardaron los registros compactos y el cotejo en `results/sesion_2026-10-15/noche_hermeneuta/summary.json`, `completed_experiments.jsonl`, `completed_status.json` y los dos `completed_*.tsv`. La copia completa de logs y generadores está en `recuperado/`. No hubo un candidato nuevo que requiriera una nueva certificación; tampoco se obtiene una garantía general de esta búsqueda.
+
+Implicación para la siguiente discusión: repetir perturbaciones pequeñas no está aportando una separación mayor. Para la pregunta de log G necesitamos una familia de parámetros ligada a la construcción de matrices o un argumento estructural sobre laminaridad, no presentar más evaluaciones como evidencia asintótica.
+
+## Configuración que se ejecutó
 
 - Host SSH: `hermeneuta-vps`.
 - Directorio aislado: `/home/hermeneuta/agent-workspace/groupcount-night-20261015`.
@@ -20,7 +30,7 @@ El controlador cambia la familia y la semilla aleatoria entre experimentos, cons
 
 Los 23 archivos desplegados coincidieron con sus hashes locales; pasaron las ocho anclas exactas del juez en el VPS. Se comprobaron localmente 700 candidatos distintos y válidos entre las siete familias. Python 3.11 y sus dependencias viven en `.venv311` dentro del directorio aislado. La copia inicial incompleta no llegó a lanzar ningún experimento.
 
-Manifiesto: `results/sesion_2026-10-15/noche_hermeneuta/deployment.json`. El código de referencia parte del commit `072e0d9`; el controlador nuevo queda versionado con esta nota. La comprobación humana e independiente de nuevos récords sigue pendiente.
+Manifiesto: `results/sesion_2026-10-15/noche_hermeneuta/deployment.json`. El código de referencia parte del commit `072e0d9`; el controlador nuevo quedó versionado con esta nota. Cualquier récord futuro requiere comprobación independiente y revisión humana; esta ejecución no produjo uno nuevo.
 
 ## Dónde consultar y recuperar
 
@@ -38,4 +48,4 @@ Para detenerlo por petición del usuario:
 ssh hermeneuta-vps 'systemctl --user stop groupcount-night-20261015'
 ```
 
-Al terminar: recuperar los registros, separar controles de descubrimientos, comparar con las semillas y re-resolver los mejores candidatos por la vía independiente. El inicio de la ejecución no cierra esas tareas ni constituye un teorema.
+La recuperación y comparación con las semillas están cerradas para esta ejecución. El servicio terminó; no se ha programado otra búsqueda ni un monitor.
