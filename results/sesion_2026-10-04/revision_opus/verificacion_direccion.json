@@ -1,0 +1,87 @@
+{
+  "source": "results/precio_laminar_2026-09-21/resultados.json",
+  "source_sha256": "4410dba87045d85c565d5dddee75057cb523e55b3d6a3422df485d812af0fbb7",
+  "scope": "Finite independent checks, not proofs or worst-case guarantees.",
+  "path_replay": [
+    {
+      "id": "individuales",
+      "n": 3,
+      "B": 2,
+      "G": 1,
+      "general": "3/5",
+      "laminar": "3/5",
+      "individual": "3/5",
+      "virtual_path_replay": "3/5",
+      "replay_over_general": "1",
+      "distinct_virtual_paths": 1
+    },
+    {
+      "id": "par_B2",
+      "n": 4,
+      "B": 2,
+      "G": 2,
+      "general": "387/500",
+      "laminar": "387/500",
+      "individual": "3/5",
+      "virtual_path_replay": "663/1250",
+      "replay_over_general": "442/645",
+      "distinct_virtual_paths": 2
+    },
+    {
+      "id": "par_B3",
+      "n": 4,
+      "B": 3,
+      "G": 2,
+      "general": "1137/1000",
+      "laminar": "537/500",
+      "individual": "9/10",
+      "virtual_path_replay": "83607/100000",
+      "replay_over_general": "27869/37900",
+      "distinct_virtual_paths": 3
+    },
+    {
+      "id": "cuatro_triples",
+      "n": 4,
+      "B": 3,
+      "G": 3,
+      "general": "2",
+      "laminar": "7/4",
+      "individual": "3/2",
+      "virtual_path_replay": "53/32",
+      "replay_over_general": "53/64",
+      "distinct_virtual_paths": 3
+    },
+    {
+      "id": "seis_homogeneo",
+      "n": 6,
+      "B": 3,
+      "G": 3,
+      "general": "35487/25000",
+      "laminar": "62469/50000",
+      "individual": "9/10",
+      "virtual_path_replay": "2223579/2500000",
+      "replay_over_general": "741193/1182900",
+      "distinct_virtual_paths": 8
+    },
+    {
+      "id": "seis_heterogeneo",
+      "n": 6,
+      "B": 3,
+      "G": 4,
+      "general": "710697/640000",
+      "laminar": "681289/640000",
+      "individual": "7/10",
+      "virtual_path_replay": "38891377/100000000",
+      "replay_over_general": "155565508/444185625",
+      "distinct_virtual_paths": 8
+    }
+  ],
+  "atom_checks": {
+    "n": 4,
+    "max_tests": 3,
+    "families": 276,
+    "histories": 2332,
+    "legal_refinements": 2460,
+    "static_laminar_bound_checks": 276
+  }
+}

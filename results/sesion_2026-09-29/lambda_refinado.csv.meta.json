@@ -1,0 +1,68 @@
+{
+  "artifact": "lambda_refinado.csv",
+  "columns": [
+    "lambda",
+    "first_pool_size",
+    "value",
+    "opt",
+    "relative_value"
+  ],
+  "generated_utc": "2026-09-29T15:10:05+00:00",
+  "generator": "augmented.experimento_regimenes_presentacion.refined_lambda_scan",
+  "git": {
+    "commit": "d968be9fd4087adf835fe10c7d767a9f180e5328",
+    "dirty": true
+  },
+  "params": {
+    "B": 3,
+    "G": 4,
+    "clearing": "soft",
+    "lambda_values": [
+      0.001,
+      0.01,
+      0.05,
+      0.1,
+      0.2,
+      0.21,
+      0.22,
+      0.23,
+      0.24,
+      0.25,
+      0.26,
+      0.27,
+      0.28,
+      0.29,
+      0.3,
+      0.31,
+      0.32,
+      0.33,
+      0.34,
+      0.35,
+      0.36,
+      0.37,
+      0.38,
+      0.39,
+      0.4,
+      0.8
+    ],
+    "motivation": "Fill interval .2-.4 missed by previous seven-point scan",
+    "n": 6,
+    "no_paralisis": true,
+    "planning_limit": 3,
+    "q": 0.2,
+    "source_sha256": {
+      "augmented/indice_lagrangiano.py": "90bba5314f58220a3d8d46387ca4b73c091ae65da720b035d3bbacb59da6770d"
+    },
+    "u": 1
+  },
+  "rows": 26,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.3",
+    "pandas": "3.0.1",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.18.0"
+  }
+}

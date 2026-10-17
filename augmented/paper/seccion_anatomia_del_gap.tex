@@ -1,0 +1,372 @@
+\section{The Anatomy of the Dynamic Gap}
+\label{sec:anatomy}
+
+Section~\ref{sec:separation} establishes that dynamic count-valued testing can
+strictly outperform static designs. This section asks a finer question: what is
+that advantage made of, and how much of it survives the structural restrictions
+that make the problem computationally tractable?
+
+We decompose the gap along two orthogonal axes --- the \emph{observation
+channel} (binary versus count-valued) and the \emph{design mode} (static versus
+adaptive) --- and then measure separately the price of restricting attention to
+laminar pool histories. All quantities reported here are exact: they are
+obtained by enumerating the belief state, not by sampling.
+
+\paragraph{Conventions.}
+Throughout, $X_i=1$ indicates that agent $i$ is infected, $p_i=\Pr[X_i=1]$, and
+$q_i=1-p_i$ is the prior probability that agent $i$ is healthy. The regime of
+interest is $q_i<\tfrac12$, in which healthy agents are the scarce resource. We
+write $r(t,X)=\sum_{i\in t}X_i$ for the count returned by an augmented test on
+pool $t$.
+
+Two coarsenings of the count are natural, and they are not equivalent:
+\[
+  Y^{\mathrm{inf}}(t)=\mathbf{1}\{r(t,X)>0\},
+  \qquad
+  Y^{\mathrm{heal}}(t)=\mathbf{1}\{r(t,X)<|t|\}.
+\]
+The first is the classical group-testing channel and reports the presence of an
+infected agent; the second reports the presence of a \emph{healthy} agent. In a
+welfare-maximizing setting the object of interest is the healthy population, and
+$Y^{\mathrm{heal}}$ is the binary channel we study. Every binary quantity below
+refers to $Y^{\mathrm{heal}}$.
+
+We also distinguish two certification rules, and the distinction turns out to be
+consequential rather than cosmetic.
+
+\begin{definition}[Certification rules]
+\label{def:certification}
+Fix a testing history $H$ with observed outcomes. Under \emph{credited-only}
+certification, agent $i$ contributes $u_i$ to welfare if and only if $i$ belongs
+to some tested pool $t$ with observed count $r(t)=0$. Under
+\emph{inference-based} certification, agent $i$ contributes $u_i$ if and only if
+$X_i=0$ in every assignment consistent with $H$.
+\end{definition}
+
+Credited-only certification is the hard-clearing convention: a deduction informs
+future decisions but does not itself generate reward. Inference-based
+certification counts an agent whenever the observed constraint system determines
+its status. Every agent credited under the first rule is certified under the
+second, but not conversely.
+
+\subsection{Two Orthogonal Ingredients}
+\label{sec:anatomy-ladder}
+
+We first quantify the two ingredients separately. Consider $N=10$ homogeneous
+agents with $q_i=0.2$ and $u_i=1$, no pool-size constraint, inference-based
+certification, and a testing budget $B$. Table~\ref{tab:ladder} reports the exact
+optimum of each class, obtained by complete enumeration of the belief state.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccccc}
+\toprule
+$B$ & static binary & dynamic binary & static count & laminar count & dynamic count \\
+\midrule
+1 & 0.200 & 0.200 & 0.200 & 0.200 & 0.200 \\
+2 & 0.400 & 0.488 & 0.408 & 0.536 & 0.536 \\
+3 & 0.600 & 0.790 & 0.800 & 0.928 & 1.000 \\
+\bottomrule
+\end{tabular}
+\caption{Exact expected welfare by class, $N=10$, $q_i=0.2$, $u_i=1$,
+inference-based certification. ``Laminar count'' restricts the dynamic
+count-valued optimum to histories in which any two pools are nested or
+disjoint.}
+\label{tab:ladder}
+\end{table}
+
+Three observations follow. First, at $B=1$ all five classes coincide, which fixes
+the base case. Second, at $B=3$ the two ingredients are of comparable value in
+isolation: counting without adaptivity yields $0.800$ and adaptivity without
+counting yields $0.790$, an increase of $33\%$ and $32\%$ respectively over the
+static binary baseline. Neither dominates the other. Third, the two together
+yield $1.000$, an increase of $67\%$, so the ingredients are complementary rather
+than redundant.
+
+That counting alone should be worth as much as adaptivity alone is not obvious,
+and the next subsection explains where the static count-valued gain comes from.
+
+\subsection{Certification Rules and the Static Baseline}
+\label{sec:anatomy-certification}
+
+The value of the static count-valued class depends entirely on which
+certification rule is in force. Under credited-only certification, singleton
+designs are optimal in the high-prevalence regime.
+
+\begin{proposition}[Optimality of singleton designs under credited-only certification]
+\label{prop:singleton-optimal}
+Let all agents be homogeneous with $q_i=q\le\tfrac12$ and $u_i=u$, and adopt
+credited-only certification. Then no static design of $B$ tests achieves
+expected welfare greater than $B\,u\,q$, and $B$ distinct singleton tests attain
+this value.
+\end{proposition}
+
+\begin{proof}
+Let $t_1,\ldots,t_B$ be any static design. An agent is credited only if it lies
+in a pool whose observed count is zero, so by a union bound over pools the
+expected number of credited agents is at most
+$\sum_{j=1}^{B}|t_j|\Pr[r(t_j,X)=0]=\sum_{j=1}^{B}|t_j|\,q^{|t_j|}$.
+For $g\ge1$ the ratio of consecutive terms of $g\mapsto g\,q^{g}$ is
+$q(g+1)/g\le 2q\le 1$, so the sequence is nonincreasing and
+$\max_{g\ge1} g\,q^{g}=q$. Hence the expected welfare is at most $B\,u\,q$.
+Singleton tests on distinct agents attain it, since each is credited
+independently with probability $q$.
+\end{proof}
+
+Under inference-based certification the conclusion fails, and it fails for a
+structural reason: a count is an integer-valued linear measurement, and a small
+number of such measurements can identify more agents than they test
+individually.
+
+\begin{proposition}[Three count-valued tests identify four agents]
+\label{prop:coin-weighing}
+There is a static design of three count-valued tests on four agents that
+determines $X\in\{0,1\}^{4}$ exactly, for every realization. Consequently, under
+inference-based certification with homogeneous parameters, the static
+count-valued optimum with $B=3$ is at least $4uq$, which strictly exceeds the
+bound $3uq$ of Proposition~\ref{prop:singleton-optimal}.
+\end{proposition}
+
+\begin{proof}
+Label the agents $a,b,c,d$ and take
+\[
+  t_1=\{a,b,d\},\qquad t_2=\{a,c,d\},\qquad t_3=\{b,c,d\},
+\]
+so that each agent belongs to a distinct subset of the tests. Writing
+$r_1,r_2,r_3$ for the observed counts,
+\[
+  r_1+r_2+r_3 \;=\; 2(X_a+X_b+X_c)+3X_d,
+\]
+whose parity equals the parity of $X_d$; since $X_d\in\{0,1\}$, this determines
+$X_d$. Given $X_d$, the three equations become
+$X_a+X_b=r_1-X_d$, $X_a+X_c=r_2-X_d$, $X_b+X_c=r_3-X_d$, whose sum is
+$2(X_a+X_b+X_c)$ and therefore determines $X_a+X_b+X_c$; subtracting each
+pairwise sum recovers each variable individually. All four agents are thus
+determined, and the $4q$ of them that are healthy in expectation are certified.
+\end{proof}
+
+The same statement is impossible for binary tests, by a counting argument that
+requires no design at all.
+
+\begin{proposition}[Binary channels cannot identify four agents with three tests]
+\label{prop:binary-impossible}
+No static design of three binary tests determines $X\in\{0,1\}^{4}$ for every
+realization.
+\end{proposition}
+
+\begin{proof}
+Three binary tests induce at most $2^{3}=8$ distinct outcome vectors, while
+there are $2^{4}=16$ realizations. By pigeonhole two distinct realizations
+produce the same outcome vector; they differ in the status of some agent, which
+therefore cannot be determined.
+\end{proof}
+
+Proposition~\ref{prop:coin-weighing} is an instance of the coin-weighing problem
+of Erd\H{o}s and R\'enyi: $B$ measurements that report subset sums identify on
+the order of $B\log B$ binary unknowns. Under inference-based certification the
+static count-valued optimum therefore grows superlinearly in the budget, rather
+than as $B\,u\,q$. Any separation argument that measures the dynamic advantage
+against $B\,u\,q$ is correct under credited-only certification and compares
+against the wrong baseline under the inference-based rule. We adopt
+credited-only certification as the normative convention of the paper and record
+the alternative explicitly, since the choice determines the value of an entire
+class.
+
+\subsection{The Cost of Laminarity}
+\label{sec:anatomy-laminar}
+
+Laminar histories admit exact inference (Section~\ref{sec:laminar-pools}), and
+with count-valued tests the structure is even stronger: every tested pool ends
+with a known count, so the tested population decomposes into residual atoms with
+known counts and the untested territory retains its product prior.
+
+\begin{proposition}[Whole atoms carry no information]
+\label{prop:atoms-constant}
+Let $H$ be a laminar history of count-valued tests with residual atoms
+$\{D_t\}$ and residual counts $\{c(D_t)\}$, and let $V(H)$ denote the untested
+territory. Let $s$ be a new pool that is the union of a subfamily
+$\mathcal{A}$ of whole residual atoms with a subset $v\subseteq V(H)$. Then
+\[
+  r(s,X) \;=\; \sum_{D\in\mathcal{A}} c(D) \;+\; r(v,X),
+\]
+so the observation $r(s,X)$ is informationally equivalent to $r(v,X)$ alone.
+\end{proposition}
+
+\begin{proof}
+By Lemma~\ref{lem:count-equivalence}(a) the history determines $r(D,X)=c(D)$ for
+every residual atom $D$. The atoms are pairwise disjoint and disjoint from
+$V(H)$ by Lemma~\ref{lem:atomic-partition}, so counts add over the blocks of
+$s$. The first summand is a constant given $H$, and subtracting a constant from
+an observation preserves the induced partition of the sample space.
+\end{proof}
+
+Proposition~\ref{prop:atoms-constant} has an algorithmic consequence: when
+searching over laminar continuations it suffices to consider fresh pools and
+strict subsets of a single atom, since enlarging a pool by whole atoms changes
+nothing. This reduces the laminar state to a multiset of (size, count) pairs
+together with the size of the untested territory, and it is the reason the
+laminar optimum remains computable at budgets where the unrestricted optimum
+does not: in our implementation the laminar solver reaches $B=8$ in seconds,
+while the unrestricted solver does not terminate at $B=4$.
+
+Tractability, however, is not free. Table~\ref{tab:ladder} shows that at $B=3$
+the laminar optimum is $0.928$ against an unrestricted optimum of $1.000$, a
+relative loss of $7.2\%$, while at $B\le2$ the restriction is costless. The
+optimal unrestricted policy crosses a previously tested pool, and the mechanism
+is worth stating explicitly.
+
+\begin{example}
+\label{ex:crossing}
+Consider $N=10$ homogeneous agents with $q_i=0.2$, $u_i=1$, and $B=3$ under
+inference-based certification. The optimal policy first tests a pool
+$\{a,b,c\}$. On the outcome $r=2$, exactly one of the three agents is healthy
+and each has posterior health probability $\tfrac13$. The optimal second test is
+$\{a,b,d\}$, where $d$ is untested --- a pool that neither contains, is contained
+in, nor is disjoint from $\{a,b,c\}$.
+
+The crossing test performs two functions simultaneously. If it returns a count
+of three, then $a$, $b$ and $d$ are all infected, so $c$ is healthy and is
+certified without ever being tested, and the remaining budget is not spent on
+$d$. If it returns a count of one, then exactly one of $\{a,b\}$ is healthy and
+so is $d$, which is certified; the last test resolves the pair. A laminar policy
+must choose between probing the tested group and probing fresh territory; the
+crossing test uses the residual information of the group to extract value from a
+new agent with the same test.
+\end{example}
+
+The loss reported here is a single instance and is evidence, not a bound;
+adversarial search over the same family has located instances with a ratio of
+$0.9069$.
+
+\subsection{Where Policies Leave the Laminar Class}
+\label{sec:anatomy-falsifier}
+
+Example~\ref{ex:crossing} raises the question of how often crossing matters. We
+answer it by classifying every decision taken by a policy at every reachable
+state, weighted by the probability of reaching that state.
+
+\begin{definition}[Crossing]
+\label{def:crossing}
+A pool $t$ \emph{crosses} a pool $s$ if $t\cap s\notin\{\varnothing,t,s\}$. An
+action is crossing with respect to a history $H$ if it crosses some pool already
+executed in $H$. Disjoint pools, descendants, ancestors and repetitions are not
+crossing.
+\end{definition}
+
+For a policy $\pi$ and a class $\kappa$ of actions we write
+$W^{\pi}_{\kappa}=\sum_{H}\Pr^{\pi}[H]\,\mathbf{1}\{\pi(H)\in\kappa\}$ for the
+probability mass of decisions of that class. Table~\ref{tab:crossing} reports
+$W^{\pi}_{\mathrm{cross}}$ over a sweep of $54$ instances with
+$N\in\{4,5,6\}$, $B\in\{1,2,3\}$, pool-size constraint $G\in\{2,3\}$ and
+$q\in\{0.05,0.45,0.90\}$, comprising $872$ decisions in total.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\toprule
+Policy & crossing mass & mean local regret \\
+\midrule
+myopic $S_0$ & 0.0026 & 0.0160 \\
+rollout & 0.0215 & 0.0000 \\
+unrestricted optimum & 0.0367 & 0.0026 \\
+\bottomrule
+\end{tabular}
+\caption{Probability mass of crossing decisions, and mean local regret against
+the rollout $Q$-function, averaged over $54$ instances.}
+\label{tab:crossing}
+\end{table}
+
+The crossing mass is strictly increasing in the quality of the policy: the
+optimum crosses roughly fourteen times as often as the myopic policy. The
+laminar restriction therefore binds precisely on the policies that are worth
+restricting, which is the empirical counterpart of Example~\ref{ex:crossing}.
+
+The second column records a further observation. The rollout policy maximizes
+$Q^{\mathrm{g}}$ by construction and so has zero local regret; the unrestricted
+optimum does not, because $Q^{\mathrm{g}}$ evaluates an action under a greedy
+continuation rather than an optimal one. The magnitude of that regret quantifies
+the residual between rollout and optimality.
+
+\subsection{Planning without Solving}
+\label{sec:anatomy-rollout}
+
+Exact dynamic optimization is infeasible beyond small instances, which motivates
+policies that plan without solving. The rollout policy scores each action by its
+value under a greedy continuation,
+\[
+  Q^{\mathrm{g}}_b(H,t)
+  =\mathbb{E}\!\left[r(H,t,R)+V^{\mathrm{g}}_{b-1}(H')\,\middle|\,H,t\right],
+\]
+executes the maximizer, and re-plans at the next state rather than continuing
+greedily. Proposition~\ref{prop:policy-improvement} guarantees
+$V^{\mathrm{r}}\ge V^{\mathrm{g}}$ at every reachable state.
+
+We verify the implementation rather than assume it. The hypothesis that the
+greedy action belongs to the rollout candidate set is checked state by state,
+as is the dominance conclusion. Expected values are computed by two independent
+procedures: a backward recursion over the belief tree, which branches on
+observed counts and weights by conditional probabilities, and a forward
+enumeration over all $2^{N}$ latent profiles, which runs the policy
+deterministically on each profile and averages under the prior. No probability
+appears inside the second computation. Over the test battery the two agree to
+within $2.22\times10^{-16}$.
+
+On the instance $N=5$, $q_i=0.3$, $u_i=1$, $B=3$, $G=2$, the myopic policy
+attains $0.900$ and the rollout attains $1.011$, an improvement of $12.3\%$. The
+myopic value coincides digit for digit with the static optimum, since a myopic
+policy on homogeneous parameters never conditions on what it observes and is
+therefore a fixed design in disguise.
+
+\paragraph{A diagnostic for surrogate objectives.}
+The same machinery supplies a falsification test for candidate scoring
+functions. In the family with homogeneous parameters and small $q$, the plan
+that covers the population with $k$ disjoint pools of size $G$ and then locates a
+healthy agent by binary search attains, under credited-only certification,
+\[
+  u\left(1-(1-q)^{kG}\right),
+  \qquad k=\max\{0,\;B-\lceil\log_2 G\rceil-1\},
+\]
+where the subtracted test is the one that converts a located agent into credited
+utility. At $(q,G,k,B)=(0.05,16,2,7)$ this gives $0.8063u$ against a singleton
+baseline of $0.35u$, a ratio of $2.30$. A scoring function that does not value
+this plan cannot recover the separation, whatever its form. The myopic score
+$S_0$ fails exactly two of the nine trajectory checks: it does not value opening
+fresh territory, since a pool of size $g$ is scored by $q^{g}$, and it is blind
+to the remaining budget. These are precisely the two properties a planning
+score must supply.
+
+\subsection{Open Questions}
+\label{sec:anatomy-open}
+
+\begin{enumerate}
+  \item Is the near-equality between the value of counting alone and the value
+    of adaptivity alone a coincidence of these parameters, or does it reflect a
+    structural relation between the two relaxations?
+
+  \item Under inference-based certification, what is the exact growth rate of the
+    static count-valued optimum, and does the coin-weighing construction remain
+    optimal when utilities are heterogeneous?
+
+  \item Proposition~\ref{prop:singleton-optimal} is stated for homogeneous
+    parameters. Does the singleton bound survive heterogeneous $q_i$ and $u_i$,
+    where a pool contributes $\left(\prod_{i\in t}q_i\right)\sum_{i\in t}u_i$?
+
+  \item Can the laminar class be relaxed to admit a bounded number of crossings
+    while retaining exact inference, and does the resulting class recover the
+    $7.2\%$?
+
+  \item Given that the unrestricted optimum does not maximize $Q^{\mathrm{g}}$,
+    is there a continuation policy, cheaper than optimal, whose induced
+    $Q$-function is maximized by the optimum?
+
+  \item Does a budget-aware surrogate exist that passes all nine trajectory
+    checks while remaining strictly cheaper to evaluate than the rollout oracle?
+\end{enumerate}
+
+Taken together, these results suggest that the advantage of dynamic count-valued
+testing is not a single phenomenon but the composition of three separable ones:
+the resolution supplied by integer-valued observations, the conditioning
+supplied by adaptivity, and the freedom to test pools that cut across the
+history. The first two are of comparable magnitude and combine
+superadditively; the third is small in mass but concentrated on exactly the
+decisions that distinguish good policies from mediocre ones.
