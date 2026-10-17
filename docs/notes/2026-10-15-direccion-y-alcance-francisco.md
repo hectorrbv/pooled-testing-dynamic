@@ -29,3 +29,11 @@ Los ejemplos pequeños sirven para establecer existencia y hacer visible el meca
 Si la separación propuesta se demuestra, ninguna mejora de una heurística laminar podrá eliminar esa pérdida de la clase en el peor caso. Q1 —aproximar eficientemente el óptimo laminar— sigue siendo relevante, pero se distingue de Q2 —el costo de exigir laminaridad frente al general—.
 
 Para el estudio de Héctor, la prioridad es poder explicar esas dos piezas y su cociente, distinguir un límite para toda una clase de un fallo de una regla, y llegar con una pregunta concreta sobre el argumento que podría acotar la utilidad laminar por CB. Los encargos, responsables y fechas siguen en el [plan semanal](2026-10-14-plan-semana.md).
+
+## Prioridad de estudio ratificada por Héctor — 17 de octubre
+
+Héctor pide que el repaso construya progresivamente hacia la dirección propuesta de log G. Esa es la meta de preparación para la discusión; no implica dar por demostrada la propuesta.
+
+Ordenar el estudio por lo que ayuda a entender las dos piezas: el límite para toda política laminar y la utilidad alcanzable mediante matrices, con los mismos recursos. Conectar cada ejemplo explícitamente con la pieza que ilustra, el paso que pone a prueba o la hipótesis que necesita. Después trabajar el cociente y la cota de información que limita su crecimiento.
+
+Usar las intervenciones pasadas de Francisco como contexto, sin convertir su orden cronológico en un recorrido obligatorio. Retomar individuales, binario frente a laminar o heurísticas cuando resuelvan una duda necesaria, o para cerrar sus encargos separados; evitar que desplacen el objetivo principal. Dar un paso y una pregunta cada vez. La meta es que Héctor pueda explicar qué está verificado, qué falta demostrar y qué ejemplo, argumento o experimento puede aportar a esa discusión.
