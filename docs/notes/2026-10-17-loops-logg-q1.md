@@ -33,3 +33,14 @@ Loop 1 (20 experimentos del agente, 8 descartados por límite de tiempo o memori
 Loop 2 (31 experimentos del agente). Mejor regla: en la raíz se evalúan todos los pools laminares candidatos; cada uno se puntúa con su ganancia inmediata exacta más una mirada hacia adelante de profundidad 4 en la que cada nivel interno toma los cuatro pools de mayor ganancia y además el mejor pool de cada tamaño; la hoja es el greedy. Peor cociente sobre la batería: 0.720 (greedy) → 0.997; media 0.99998; 124 de 125 celdas exactas; 150 s por batería. La única celda no exacta es $q=0.7$, $n=6$, $B=3$, $G=4$. La lección del agente: ampliar por rango de ganancia no mueve la peor celda; diversificar por tamaño de pool sí. Ningún valor superó el óptimo en ninguna corrida.
 
 Qué falta antes de decir algo: re-resolver por vía independiente el mejor diseño por objetivo del loop 1 y la mejor regla del loop 2; medir la regla en $n=50$ contra el rollout con Monte Carlo (`augmented/laminar_benchmarks.py`), porque la batería es pequeña y la regla se ajustó sobre ella. Los TSV son de solo añadido y nada está commiteado.
+
+## Medición de la regla del loop 2 en $n=50$ (19 de octubre)
+
+`augmented/medir_q1_n50.py` evalúa greedy, rollout de un paso con base greedy y la regla del loop 2 sobre un harness exacto por bloques: partición fija en bloques de $G$ personas (ordenadas por $q\cdot u$), soft clearing, laminaridad por trayectoria dentro del bloque, Monte Carlo pareado sobre el perfil latente. Las instancias son las del experimento anterior de rollout: $N=50$, $B=5$, $u\sim U\{1,2,3\}$, $p\sim U[0,1]$. El harness se validó contra el juez de la batería en instancias de un solo bloque: greedy y regla coinciden a $10^{-6}$ por dos caminos de código distintos. Poda común: candidatos de los bloques tocados más los tres bloques intactos de mayor ganancia inmediata.
+
+| $G$ | Instancias × sorteos | Rollout frente a greedy | Regla frente a greedy | Regla frente a rollout | Costo por instancia (rollout / regla) |
+|---|---|---|---|---|---|
+| 3 | 48 × 24 | +2.01% (se 0.42%) | +2.18% (se 0.40%) | +0.16% (se 0.14%) | 4.8 s / 18 s |
+| 5 | 24 × 12 | +5.20% (se 1.09%) | +5.56% (se 1.14%) | +0.34% (se 0.65%) | 95 s / 919 s |
+
+Por instancia en $G=5$ la regla gana al rollout en 11, empata en 5 y pierde en 8. Lectura: en $n=50$ la regla reproduce la ganancia del rollout sobre el greedy y no la supera con significancia, con un costo entre cuatro y diez veces mayor. Su ventaja medible está en la batería pequeña, donde el óptimo laminar exacto existe y la regla queda a 0.3% de él en el peor caso frente al 5% del rollout. La búsqueda optimizó el peor cociente sobre 125 celdas de $n\le7$; ese objetivo no se traduce en ganancia media en $n=50$. Resultados en `results/sesion_2026-10-19/q1_n50/`.
