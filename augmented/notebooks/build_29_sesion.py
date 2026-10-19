@@ -11,6 +11,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from figuras_separacion_28 import canvas, text, box, line, png, INK, GRAY, BLUE, WARM
+from figura_detector_29 import detector_figure
 
 ROOT=Path(__file__).resolve().parents[2]
 DATA=ROOT/'results/sesion_2026-10-12/evidencia_29.json'
@@ -55,14 +56,8 @@ for center,title,color,branches in [
         text(ax,x,.075,value,20,color)
 save('binario_laminar',fig)
 
-# A small detector, shown as three equations instead of a dense matrix panel.
-fig,ax=canvas(9.6,2.4)
-for x,pool,r in [(.17,'ABC','1'),(.5,'ABD','1'),(.83,'ACD','2')]:
-    box(ax,x,.76,.19,.20,pool,INK,18)
-    line(ax,(x,.63),(x,.44),GRAY)
-    text(ax,x,.31,f'R = {r}',19,BLUE)
-text(ax,.5,.03,'A, B sanos',18,BLUE)
-save('detector',fig)
+# A small detector: people are dots, each test is a contour around its pool.
+save('detector',detector_figure())
 
 # Absolute utility, direct labels; algorithmic loss and restriction loss are separate.
 fig,ax=plt.subplots(figsize=(9.4,3.3))
