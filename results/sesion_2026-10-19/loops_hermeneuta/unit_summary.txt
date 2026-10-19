@@ -1,0 +1,6 @@
+Result=success
+ExecMainStatus=0
+MemoryPeak=[not set]
+CPUUsageNSec=[not set]
+2026-10-19T05:38:06+00:00 debian-4gb-fsn1-1 systemd[388059]: Started groupcount-all-20261019-0538.service - GroupCounting autoresearch all (30 experiments, rounds of 10).
+2026-10-19T08:12:21+00:00 debian-4gb-fsn1-1 systemd[388059]: groupcount-all-20261019-0538.service: Consumed 2h 31min 55.862s CPU time, 977.5M memory peak.
