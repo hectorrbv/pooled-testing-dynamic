@@ -321,8 +321,11 @@ from alinear_plan_29 import align
 presentation,study=align(presentation,study,cell,images,ROOT)
 from enfocar_log_g_29 import focus
 presentation,study=focus(presentation,study,ROOT)
-nb.write(presentation,OUT/'29_tres_clases_y_contraejemplo.ipynb')
+from base_29 import write_unless_base
+write_unless_base(presentation,OUT/'29_tres_clases_y_contraejemplo.ipynb')
 nb.write(study,OUT/'29_notas_de_estudio.ipynb')
+from simplificar_29 import build as build_presentation
+build_presentation()
 for path in [OUT/'29_tres_clases_y_contraejemplo.ipynb',OUT/'29_notas_de_estudio.ipynb']:
     nb.validate(nb.read(path,as_version=4))
     print(path)

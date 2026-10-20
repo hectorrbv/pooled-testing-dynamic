@@ -31,20 +31,24 @@ def outline(points, r, k=16):
     return xs, ys
 
 
-def contour(ax, pool, color, pad=.58, ring=1.6):
+def contour(ax, pool, color, pad=.58, ring=1.6, positions=None):
     """Rounded hull around the pool, drawn as a line so contours can cross or nest."""
-    xs, ys = outline([POSITIONS[p] for p in pool], pad)
+    positions = positions or POSITIONS
+    xs, ys = outline([positions[p] for p in pool], pad)
     ax.plot(xs, ys, color=color, lw=ring, zorder=2, solid_joinstyle='round')
 
 
-def dots(ax, hollow='', infected=''):
-    for name, (x, y) in POSITIONS.items():
+def dots(ax, hollow='', infected='', people='ABCD', positions=None, labels=None):
+    positions = positions or POSITIONS
+    for name, (x, y) in positions.items():
+        if name not in people:
+            continue
         if name in hollow:
             ax.plot(x, y, 'o', ms=11, mfc='white', mec=BLUE, mew=1.6, zorder=5)
         else:
             ax.plot(x, y, 'o', ms=9, color=WARM if name in infected else INK, zorder=5)
-        ax.text(1.75 * x, 1.75 * y, name, ha='center', va='center',
-                fontsize=13, color=GRAY, zorder=6)
+        ax.text(1.75 * x, 1.75 * y, (labels or {}).get(name, name), ha='center', va='center',
+                fontsize=13 if not labels else 11, color=GRAY, zorder=6)
 
 
 def panel(ax):
