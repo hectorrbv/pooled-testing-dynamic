@@ -22,30 +22,32 @@ def code(s): C.append(nbf.v4.new_code_cell(s.strip()))
 md(r"""
 # Mapa 4: las reglas con planeación en salud rara
 
-**Cómo leerlo.** Cinco secciones que despachan los tres encargos de la sesión
+Cuaderno de cálculo. Para presentar, usa [27_sesion_francisco.ipynb](27_sesion_francisco.ipynb).
+
+Cómo leerlo. Cinco secciones que despachan los tres encargos de la sesión
 del 22 de septiembre. La regla de cociente que pidió Francisco, implementada
 y medida (§1). El Mapa 4: la razón contra el óptimo exacto, por celda, en el
 régimen de salud rara (§2). Qué abre cada regla y dónde difiere del greedy
 clásico (§3). La instancia donde las reglas no coinciden (§4). Y qué decide
 cada λ (§5).
 
-**La pregunta que organiza todo.** ¿Alguna regla con planeación mantiene una
+La pregunta que organiza todo. ¿Alguna regla con planeación mantiene una
 razón uniforme contra el óptimo cuando la salud es rara? Esa sería la
 candidata a garantía de Q1.
 
-**Estatuto.** Diagnóstico (§25). Ninguna regla se adopta sin G4a/G4b.
+Estatuto. Diagnóstico (§25). Ninguna regla se adopta sin G4a/G4b.
 
-**Procedencia.** Cada número se regenera en su celda. El óptimo es exacto por
+Procedencia. Cada número se regenera en su celda. El óptimo es exacto por
 enumeración de estados; las políticas se evalúan exactas sobre los 2^n
 perfiles, sin Monte Carlo. Nada escrito a mano.
 
-**Los tres regímenes, con sus nombres completos.** **Estático** (las pruebas
-se fijan de antemano), **dinámico binario** (adaptativo, la prueba dice si hay
-o no al menos un sano) y **dinámico aumentado** (adaptativo, la prueba
+Los tres regímenes, con sus nombres completos. Estático (las pruebas
+se fijan de antemano), dinámico binario (adaptativo, la prueba dice si hay
+o no al menos un infectado) y dinámico aumentado (adaptativo, la prueba
 devuelve el conteo). Todo el notebook vive en el dinámico aumentado con
-disciplina laminar y acreditación posterior-zero.
+disciplina laminar y acreditación soft clearing.
 
-Convención: `q` es la probabilidad de estar **sano**. Salud rara es `q ≤ 0.5`.
+Convención: `q` es la probabilidad de estar sano. Salud rara es `q ≤ 0.5`.
 """)
 
 code(r"""
@@ -91,15 +93,15 @@ conteo resuelve el par, así que gasta menos.
 """)
 
 md(r"""
-**Definición.** π_ratio elige el par (componente, horizonte) que maximiza
+Definición. π_ratio elige el par (componente, horizonte) que maximiza
 E[U] / E[T]^α, donde E[U] es la utilidad esperada del mejor plan local con
-derecho a parar y E[T] son las pruebas que ese plan gasta **en esperanza**.
+derecho a parar y E[T] son las pruebas que ese plan gasta en esperanza.
 Ejecuta la primera acción del plan ganador y recalcula. Con α = 1 es el
 cociente puro del encargo.
 
 Las tres reglas con planeación difieren solo en cómo cobran el costo:
-π_C y π_R dividen entre el horizonte **reservado**; π_L resta un precio λ por
-prueba; π_ratio divide entre el costo **esperado**.
+π_C y π_R dividen entre el horizonte reservado; π_L resta un precio λ por
+prueba; π_ratio divide entre el costo esperado.
 """)
 
 code(r"""
@@ -140,14 +142,11 @@ plt.tight_layout(); plt.show()
 """)
 
 md(r"""
-**Lectura.** El proyecto del par nunca gasta dos pruebas completas. La brecha
-entre las dos curvas es lo que la densidad cobra de más, y es máxima donde la
-salud es más incierta. En salud rara el plan casi siempre termina con una
-prueba.
+En promedio, el plan del par consume menos de dos pruebas. La rama con conteo 1 sí usa las dos. La diferencia entre costo reservado y esperado es menor cerca de q=0.5 y mayor hacia los extremos. En salud rara, el plan casi siempre termina con una prueba.
 """)
 
 md(r"""
-**Para discutir.** El cociente usa el costo esperado, pero el presupuesto es
+Para discutir. El cociente usa el costo esperado, pero el presupuesto es
 duro en cada rama. ¿Conviene un cuantil del costo en lugar de la media?
 """)
 
@@ -165,9 +164,7 @@ referencia, no como competidor.
 """)
 
 md(r"""
-**Afirmación.** Ninguna regla se mantiene en 1.0 en toda la malla, pero las
-tres con planeación real se quedan muy por encima del clásico. El mínimo por
-regla es su constante empírica en salud rara.
+Ninguna regla alcanza el óptimo en las 36 celdas. Las dos reglas que usan costo esperado, π_L y π_ratio, tienen los mejores mínimos de esta malla. Cada mínimo describe estos casos; no es una constante garantizada.
 """)
 
 code(r"""
@@ -292,14 +289,11 @@ plt.tight_layout(); plt.show()
 """)
 
 md(r"""
-**Lectura.** El greedy clásico se hunde justo donde la salud es más rara, que
-es la familia de la separación. Las reglas con planeación se sostienen, y sus
-mínimos quedan cerca unos de otros. Ninguna alcanza 1.0 en toda la malla, así
-que el candidato a garantía es el de mínimo más alto, no el de mejor media.
+π_L y π_ratio tienen mínimos de 0.9500 y 0.9524. C3 llega a 0.6330; π_M, π_C y π_R comparten un mínimo de 0.5417. Por tanto, incorporar planeación por sí solo no asegura un mínimo alto en esta malla.
 """)
 
 md(r"""
-**Para discutir.** El mínimo se toma sobre una malla homogénea de seis
+Para discutir. El mínimo se toma sobre una malla homogénea de seis
 personas. ¿Qué familia habría que añadir para que el mínimo sea creíble como
 constante?
 """)
@@ -316,9 +310,7 @@ resume en un número: el tamaño del primer pool.
 """)
 
 md(r"""
-**Afirmación.** El clásico abre siempre un singleton en salud rara. Las reglas
-con planeación abren pools, y coinciden con el tamaño del óptimo en la mayoría
-de las celdas.
+En estas 36 celdas, la implementación del greedy inmediato abre una persona. Las reglas con planeación pueden abrir grupos mayores. La comparación siguiente usa una primera acción óptima seleccionada por el solver; no enumera todos los empates óptimos.
 """)
 
 code(r"""
@@ -343,7 +335,7 @@ print(f'\nOK: pi_M abre singleton en las {len(mapa4)} celdas; el óptimo abre '
 """)
 
 code(r"""
-# El tamano depende del tope de pool, no de la prevalencia: se agrupa por G.
+# Se resume por G, promediando sobre los q y B de la malla.
 fig, ax = plt.subplots(figsize=(7.2, 3.2))
 x = np.arange(len(GS)); ancho = 0.14
 series = ['tam_opt'] + ['tam_' + r for r in ('pi_M', 'pi_R', 'C3', 'pi_L',
@@ -362,17 +354,11 @@ plt.tight_layout(); plt.show()
 """)
 
 md(r"""
-**Lectura.** El clásico nunca agrupa: es la decisión subóptima que Francisco
-describió. π_ratio acierta el tamaño del óptimo en el 89% de las celdas. La
-densidad falla de otra forma: elige 1 o el pool máximo, nunca los tamaños
-intermedios que el óptimo prefiere, así que no coincide en ninguna celda. Esa
-es la respuesta concreta al segundo encargo.
+π_ratio coincide con el tamaño de la primera acción elegida por el solver en 32 de 36 celdas. π_C y π_R no coinciden con ese tamaño seleccionado en ninguna. Esta estadística depende del desempate y no basta para decidir si otra primera acción también sería óptima.
 """)
 
 md(r"""
-**Para discutir.** En algunas celdas el óptimo abre un pool mayor que todas
-las reglas. ¿Falta un término que valore abrir grande, o es efecto del
-horizonte corto?
+Para discutir: en el ejemplo de desacuerdo, C3 abre cuatro personas y el óptimo abre dos. ¿Qué parte de la estimación favorece un grupo demasiado grande?
 """)
 
 
@@ -386,8 +372,7 @@ tiene; aquí se extrae la celda con más desacuerdo.
 """)
 
 md(r"""
-**Afirmación.** Existen celdas donde las cinco reglas toman tres decisiones
-distintas, y la razón contra el óptimo las separa por más de veinte puntos.
+En la celda seleccionada, las seis reglas eligen tres tamaños de primera prueba distintos. La diferencia entre sus razones contra el óptimo supera veinte puntos porcentuales.
 """)
 
 code(r"""
@@ -429,13 +414,13 @@ plt.tight_layout(); plt.show()
 """)
 
 md(r"""
-**Lectura.** Las reglas no son variantes de la misma decisión: en esta celda
+Lectura. Las reglas no son variantes de la misma decisión: en esta celda
 abren pools de tamaños distintos y cobran valores distintos. Es el ejemplar
 que Francisco pidió para ver dónde se separan.
 """)
 
 md(r"""
-**Para discutir.** ¿Conviene presentar esta celda como el caso de prueba
+Para discutir. ¿Conviene presentar esta celda como el caso de prueba
 estándar para comparar reglas nuevas?
 """)
 
@@ -450,7 +435,7 @@ el precio que π_L le cobra a cada prueba futura.
 """)
 
 md(r"""
-**Afirmación.** λ ordena las decisiones por tamaño: con precio bajo la
+Afirmación. λ ordena las decisiones por tamaño: con precio bajo la
 política abre pools grandes y explora; al subir el precio deja de explorar y
 termina abriendo singletons, igual que el clásico.
 """)
@@ -500,13 +485,11 @@ plt.tight_layout(); plt.show()
 """)
 
 md(r"""
-**Lectura.** λ funciona como una perilla de exploración. Con precio barato la
-política paga por abrir grande y mirar adelante. Con precio caro solo cobra lo
-inmediato y colapsa a la conducta del clásico.
+En esta instancia, los precios probados de 0.001 a 0.2 abren cuatro personas; 0.4 y 0.8 abren una. La salvaguarda para seguir probando está activada. El barrido no determina el umbral exacto ni demuestra monotonía general.
 """)
 
 md(r"""
-**Para discutir.** Si λ es el precio de las pruebas futuras, ¿el valor
+Para discutir. Si λ es el precio de las pruebas futuras, ¿el valor
 correcto es el dual del presupuesto esperado del Thm 10.2, o basta una regla
 de escala como utilidad sana esperada entre presupuesto?
 """)

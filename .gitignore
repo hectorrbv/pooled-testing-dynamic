@@ -103,3 +103,6 @@ graphify-out/
 augmented/paper/preview_anatomia_del_gap.aux
 augmented/paper/preview_anatomia_del_gap.log
 augmented/paper/preview_anatomia_del_gap.out
+
+# scratch renders (paper pages, draft figures)
+tmp/

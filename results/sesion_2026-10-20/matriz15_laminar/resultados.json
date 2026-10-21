@@ -1,0 +1,419 @@
+{
+  "setup": {
+    "n": 15,
+    "B": 9,
+    "G": 7,
+    "q": "1/2",
+    "u": 1,
+    "clearing": "soft"
+  },
+  "matrix": {
+    "source": "Soderberg and Shapiro (1963), Section 3",
+    "entries": [
+      [
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "row_sizes": [
+      7,
+      5,
+      5,
+      7,
+      5,
+      5,
+      7,
+      5,
+      5
+    ],
+    "profiles": 32768,
+    "distinct_count_vectors": 32768
+  },
+  "general": {
+    "value": "15/2",
+    "normalized": "5/6",
+    "optimal": true,
+    "reason": "Full identification attains total expected healthy utility n/2."
+  },
+  "laminar": {
+    "value": "203479/32768",
+    "decimal": 6.209686279296875,
+    "normalized": "203479/294912",
+    "states": 9310,
+    "seconds": 0.13734629104146734,
+    "first_pool_size": 4,
+    "root_action_values": {
+      "1": "99059/16384",
+      "2": "50399/8192",
+      "3": "12609/2048",
+      "4": "203479/32768",
+      "5": "6321/1024",
+      "6": "203031/32768",
+      "7": "101087/16384"
+    },
+    "method": "Integer Bellman over homogeneous residual atoms; all normal-form actions.",
+    "scope": "Pathwise laminar dynamic counting, soft clearing, hard branchwise budget.",
+    "normal_form_reference": "Companion Theorem 4.1; docs/notes/2026-08-25-mapeo-companion-francisco.md",
+    "reference_float_value": 6.209686279296875,
+    "replay": {
+      "value": "203479/32768",
+      "total_credited": 203479,
+      "profiles": 32768,
+      "max_tests_used": 9,
+      "max_pool_size": 6,
+      "nodes": 21276,
+      "laminar_checked_on_every_path": true
+    }
+  },
+  "individual": "9/2",
+  "general_over_laminar": "245760/203479",
+  "laminar_loss_fraction": "42281/245760",
+  "grid_controls": [
+    {
+      "n": 6,
+      "B": 1,
+      "G": 2,
+      "value": "1/2"
+    },
+    {
+      "n": 6,
+      "B": 2,
+      "G": 2,
+      "value": "5/4"
+    },
+    {
+      "n": 6,
+      "B": 3,
+      "G": 2,
+      "value": "15/8"
+    },
+    {
+      "n": 6,
+      "B": 4,
+      "G": 2,
+      "value": "5/2"
+    },
+    {
+      "n": 6,
+      "B": 1,
+      "G": 3,
+      "value": "1/2"
+    },
+    {
+      "n": 6,
+      "B": 2,
+      "G": 3,
+      "value": "5/4"
+    },
+    {
+      "n": 6,
+      "B": 3,
+      "G": 3,
+      "value": "63/32"
+    },
+    {
+      "n": 6,
+      "B": 4,
+      "G": 3,
+      "value": "5/2"
+    },
+    {
+      "n": 6,
+      "B": 1,
+      "G": 4,
+      "value": "1/2"
+    },
+    {
+      "n": 6,
+      "B": 2,
+      "G": 4,
+      "value": "5/4"
+    },
+    {
+      "n": 6,
+      "B": 3,
+      "G": 4,
+      "value": "63/32"
+    },
+    {
+      "n": 6,
+      "B": 4,
+      "G": 4,
+      "value": "81/32"
+    },
+    {
+      "n": 6,
+      "B": 1,
+      "G": 5,
+      "value": "1/2"
+    },
+    {
+      "n": 6,
+      "B": 2,
+      "G": 5,
+      "value": "5/4"
+    },
+    {
+      "n": 6,
+      "B": 3,
+      "G": 5,
+      "value": "63/32"
+    },
+    {
+      "n": 6,
+      "B": 4,
+      "G": 5,
+      "value": "81/32"
+    },
+    {
+      "n": 7,
+      "B": 1,
+      "G": 2,
+      "value": "1/2"
+    },
+    {
+      "n": 7,
+      "B": 2,
+      "G": 2,
+      "value": "5/4"
+    },
+    {
+      "n": 7,
+      "B": 3,
+      "G": 2,
+      "value": "15/8"
+    },
+    {
+      "n": 7,
+      "B": 4,
+      "G": 2,
+      "value": "41/16"
+    },
+    {
+      "n": 7,
+      "B": 1,
+      "G": 3,
+      "value": "1/2"
+    },
+    {
+      "n": 7,
+      "B": 2,
+      "G": 3,
+      "value": "5/4"
+    },
+    {
+      "n": 7,
+      "B": 3,
+      "G": 3,
+      "value": "63/32"
+    },
+    {
+      "n": 7,
+      "B": 4,
+      "G": 3,
+      "value": "41/16"
+    },
+    {
+      "n": 7,
+      "B": 1,
+      "G": 4,
+      "value": "1/2"
+    },
+    {
+      "n": 7,
+      "B": 2,
+      "G": 4,
+      "value": "5/4"
+    },
+    {
+      "n": 7,
+      "B": 3,
+      "G": 4,
+      "value": "65/32"
+    },
+    {
+      "n": 7,
+      "B": 4,
+      "G": 4,
+      "value": "171/64"
+    },
+    {
+      "n": 7,
+      "B": 1,
+      "G": 5,
+      "value": "1/2"
+    },
+    {
+      "n": 7,
+      "B": 2,
+      "G": 5,
+      "value": "5/4"
+    },
+    {
+      "n": 7,
+      "B": 3,
+      "G": 5,
+      "value": "65/32"
+    },
+    {
+      "n": 7,
+      "B": 4,
+      "G": 5,
+      "value": "171/64"
+    }
+  ],
+  "source_sha256": {
+    "augmented/experimento_matriz15_laminar.py": "c530d32370c85442cffc7fba41887a5dd19d36d1a327f6fe2d1ab3a3b31507d0",
+    "augmented/bellman_tipos.py": "3ad70fa8b0472b38710efcad0a62ad7637d6cad19622d7fa5bb13bc198dc4cc1",
+    "results/precio_q05_G/malla_2026-10-14_completa.csv": "f2f9a817b61c374d42f1989c8f1411d847d53f6f23eb621d9fabdbba3bbbb282"
+  }
+}

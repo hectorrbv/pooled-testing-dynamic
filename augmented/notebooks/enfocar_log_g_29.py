@@ -111,7 +111,7 @@ Dos piezas por demostrar: que toda política laminar obtiene como máximo $CB$, 
 
 Aquí $q_i=1/2$ es la probabilidad de estar sano, $u_i=1$ y los estados son independientes. Usamos conteos y soft clearing. $n$ es la población, $B$ el presupuesto y $G$ el tamaño máximo de pool. «Laminar» permite grupos disjuntos o contenidos uno en otro a lo largo de cada trayectoria; «general» permite cualquier pool de tamaño hasta $G$.
 
-Traemos un ejemplo verificado, un control para la posible prueba y los límites de nuestra evidencia. El crecimiento logarítmico sigue siendo la dirección propuesta, no un resultado demostrado por estos experimentos.
+Traemos un ejemplo verificado y los límites de nuestra evidencia. El crecimiento logarítmico sigue siendo la dirección propuesta, no un resultado demostrado por estos experimentos.
 ''')
     matrix = cell('logg-ejemplo', r'''
 ## 1. Tres pruebas identifican a cuatro personas
@@ -129,23 +129,8 @@ La separación frente a laminar es $2/1.75=8/7$. El ejemplo enseña cómo combin
 Para discutir: ¿cómo se amplía este diseño manteniendo el límite de $G$ integrantes por prueba? Lo que buscamos es identificar más personas por prueba a medida que crece $G$.
 ''')
     matrix.attachments['detector.png'] = deepcopy(detector.attachments['detector.png'])
-    conditional = cell('logg-control', r'''
-## 2. Una dificultad para acotar a todas las políticas laminares
-
-$n=4$, $B=2$, $G=3$. Ya probamos ABC y devolvió 1 infectado. Queda una prueba y todavía no hemos acreditado a nadie.
-
-Probamos A. Si sale sano, acreditamos A. Si sale infectado, acreditamos B y C por inferencia. Esta continuación es laminar.
-
-![Después de ABC=1, probar A da cero con probabilidad dos tercios y acredita A; da uno con probabilidad un tercio y acredita B y C.](attachment:ganancia_condicional.png)
-
-La utilidad adicional esperada es $\frac23(1)+\frac13(2)=\frac43$.
-
-Por tanto, no podemos justificar la cota diciendo «cada prueba laminar cobra como máximo uno en cualquier historial». Esto no refuta una cota global $CB$: también costó llegar a este historial, que ocurre con probabilidad $3/8$.
-
-Para discutir: ¿podemos contabilizar lo que una prueba resuelve ahora y la información que deja para después? Una cantidad que lleve esa cuenta —un potencial— podría permitir una cota sobre toda la política.
-''', 'ganancia_condicional')
     grid = cell('logg-malla', r'''
-## 3. Lo que muestra la malla, y hasta dónde llega
+## 2. Lo que muestra la malla, y hasta dónde llega
 
 $n=7$, $B=4$, $G\in\{2,3,4,5\}$. Este corte usa cuatro de los 32 casos ya calculados.
 
@@ -160,32 +145,32 @@ Este corte no puede mostrar crecimiento indefinido: solo hay 3.5 sanos en promed
 Para discutir: ¿qué familia $(n,B,G)$ propone el argumento de matrices? Esa familia debería orientar el siguiente experimento, en vez de ampliar $G$ con la misma población.
 ''', 'utilidad_por_prueba')
     next_steps = cell('logg-aporte', r'''
-## 4. Qué podemos aportar a la discusión
+## 3. Qué podemos aportar a la discusión
 
 Ya tenemos una ruta para la cota en la otra dirección: ninguna política puede acreditar más de $B\log_2(G+1)$ sanos en promedio bajo estas hipótesis. Como probar individuos es laminar y da $B/2$, el cociente general/laminar es a lo sumo $2\log_2(G+1)$ cuando $B\le n$. La prueba por información está en las notas; falta cerrar su redacción y revisión humana según el plan.
 
 Esto limita cuánto puede crecer la ventaja. Para mostrar que sí alcanza ese orden siguen haciendo falta la construcción general y la cota para toda la clase laminar.
 
-Nuestra aportación inmediata: explicar el ejemplo $2$ frente a $1.75$, llevar el control de $4/3$ para discutir la cota laminar y pedir la familia de parámetros de las matrices para poder verificarla. Un experimento pequeño puede descartar un paso de una prueba; no demuestra por sí solo una afirmación asintótica.
+Nuestra aportación inmediata: explicar el ejemplo $2$ frente a $1.75$ y pedir la familia de parámetros de las matrices para poder verificarla. Un experimento pequeño no demuestra por sí solo una afirmación asintótica.
 
 La búsqueda de Hermeneuta terminó sin mejorar los ejemplos de partida. Los encargos de binario frente a laminar, el par frente a individuales y la comparación greedy/rollout siguen en las notas de estudio, con sus figuras y respuestas para discutir. Responden a preguntas adicionales del plan; no prueban el crecimiento logarítmico.
 ''')
-    presentation.cells = [intro, matrix, conditional, grid, next_steps]
+    presentation.cells = [intro, matrix, grid, next_steps]
     presentation.metadata['research_focus'] = 'log-G-2026-10-16'
     study.cells[0].source = r'''# Estudio y discusión del notebook 29
 
 ## Retomar después de la pausa: 40 minutos
 
 1. Diez minutos: bloque 1. Dibujar ABC, ABD, ACD y reconstruir los conteos si solo C y D están infectados. Explicar qué se ahorra y por qué el valor esperado es 2. Después distinguir este plan del óptimo laminar 1.75.
-2. Diez minutos: bloque 2. Enumerar los tres lugares posibles del único infectado de ABC. Resolver las dos ramas de probar A. Distinguir el 4/3 condicionado a llegar de la utilidad de toda una política.
-3. Diez minutos: bloque 3. Leer un punto de cada curva. Explicar por qué una población fija impide observar crecimiento indefinido, aunque ampliemos G.
-4. Diez minutos: bloques inicial y 4. Formular con palabras las dos piezas pendientes y qué establece la cota de información. Dejar su demostración técnica para una segunda pasada.
+2. Diez minutos: bloques 2 y 3. Leer la malla y distinguir una separación observada de la cota de información.
+3. Diez minutos: bloque 4. Explicar qué mejoró en los diseños y por qué mantener bloques pequeños limita el experimento.
+4. Diez minutos: bloques 5 y 6. Separar la comparación de heurísticas de la pregunta general/laminar y defender el siguiente experimento.
 
 No hace falta dominar antes todo el paper de Nic. Para la discusión sí hace falta distinguir un ejemplo, una evidencia finita y una afirmación sobre todos los tamaños.
 
 ## Guion de cinco minutos
 
-«El diseño pequeño ya ahorra una prueba y supera al óptimo laminar. Para estudiar cuánto puede crecer esa ventaja, necesitamos una familia de matrices y una cota para toda política laminar. Verificamos una dificultad para una prueba simple: en ciertos historiales, una sola prueba laminar puede acreditar más de un sano en promedio. Nuestra malla localiza separaciones, pero mantiene una población tan pequeña que no puede mostrar crecimiento logarítmico.»
+«El diseño pequeño ya ahorra una prueba y supera al óptimo laminar. Para estudiar cuánto puede crecer esa ventaja, necesitamos una familia de matrices y una cota para toda política laminar. Nuestra malla localiza separaciones, pero mantiene una población tan pequeña que no puede mostrar crecimiento logarítmico.»
 
 El material anterior se conserva abajo como consulta. Los bloques binario/laminar y greedy/rollout siguen siendo encargos del plan semanal, aunque ahora el pase principal se centra en la propuesta de Francisco.
 '''

@@ -174,12 +174,12 @@ nb27.metadata = {'kernelspec': {'display_name': 'Python 3', 'language': 'python'
 nb27.cells = [
 md('''# Cuánto cuesta exigir laminaridad
 
-**Anexo de presentación al notebook 26.** Ocho ejemplos elegidos para separar
+Cuaderno de cálculo. Presentación unificada: [27_sesion_francisco.ipynb](27_sesion_francisco.ipynb). Ocho ejemplos elegidos para separar
 la pérdida por una heurística de la pérdida por restringir las pruebas.
 
-Modelo común: prior independiente, conteos exactos de infectados, posterior-zero,
+Modelo común: prior independiente, conteos exactos de infectados, soft clearing,
 utilidades no negativas, a lo sumo G personas por prueba y B pruebas por trayectoria.
-Los ejemplos con historia declaran B como presupuesto **restante**.
+Los ejemplos con historia declaran B como presupuesto restante.
 
 Fuentes: perfiles y árboles en `results/precio_laminar_2026-09-21/resultados.json`.
 Reproducción desde la raíz: `python -m augmented.experimento_precio_laminar`.
@@ -218,9 +218,9 @@ md(r'''## 2. El ejemplo conocido cambia cuando quedan tres pruebas
 
 Cuatro personas, q=0.3, u=1, B=3, G=2. Abrimos AB.
 
-Si R(AB)=1, quedan **dos** pruebas. El laminar puede probar A, cobrar al sano
-del par y usar la última prueba en C: valor de continuación **1.3**.
-El general puede cruzar **AC**:
+Si R(AB)=1, quedan dos pruebas. El laminar puede probar A, cobrar al sano
+del par y usar la última prueba en C: valor de continuación 1.3.
+El general puede cruzar AC:
 
 | R(AC) | Probabilidad condicionada a R(AB)=1 | Última prueba | Utilidad total desde este estado |
 |---|---:|---|---:|
@@ -232,12 +232,12 @@ Su continuación vale $0.15(2.3)+0.50(1.3)+0.35(1.3)=1.45$.
 En la rama intermedia, probar A distingue (A sana, B y C infectadas) de
 (A infectada, B y C sanas). D no queda identificada en esa rama.
 
-**Ejercicio:** ¿por qué la mejora inicial no es 0.15?
+Ejercicio: ¿por qué la mejora inicial no es 0.15?
 
 <details><summary>Respuesta para comprobar después de calcular</summary>
 
 El estado R(AB)=1 se alcanza con probabilidad 0.42. La mejora al inicio es
-0.42 × (1.45 − 1.30) = **0.063**. Por eso 1.074 pasa a **1.137**.
+0.42 × (1.45 − 1.30) = 0.063. Por eso 1.074 pasa a 1.137.
 Los otros dos resultados de AB aportan lo mismo a ambas estrategias.
 
 </details>
@@ -256,10 +256,10 @@ print('Mejora al inicio:', F(63,1000), '= 0.063')
 '''),
 md(r'''## 3. Tres pruebas cruzadas identifican a cuatro personas
 
-Caso nuevo: n=4, q=0.5, u=1, B=3, G=3. Las pruebas **ABC, ABD y ACD**
+Caso nuevo: n=4, q=0.5, u=1, B=3, G=3. Las pruebas ABC, ABD y ACD
 se pueden fijar de antemano. Sus tres conteos distinguen los 16 perfiles posibles.
 Por eso se identifica a toda persona sana y se alcanza la cota máxima
-$\sum_i q_i u_i=2$. Bellman laminar da **1.75**: ratio **0.875**.
+$\sum_i q_i u_i=2$. Bellman laminar da 1.75: ratio 0.875.
 
 Este ejemplo muestra una ventaja de los cruces incluso con ese diseño fijo.
 No es necesario atribuir toda la ganancia a la adaptación.
@@ -283,9 +283,9 @@ md('''## 4. El contraejemplo de seis personas tiene dos comparaciones
 Retomar el árbol del notebook 26. Ambas clases óptimas pueden comenzar con AEF.
 La clase general mejora las continuaciones permitiendo cruces.
 
-- Óptimo laminar: **1.0645140625**.
-- Óptimo general: **1.1104640625**.
-- Laminar/general: **0.958621**. Pérdida relativa por laminaridad: **4.14%**.
+- Óptimo laminar: 1.0645140625.
+- Óptimo general: 1.1104640625.
+- Laminar/general: 0.958621. Pérdida relativa por laminaridad: 4.14%.
 
 El árbol guardado localiza toda la mejora en dos ramas:
 
@@ -294,7 +294,7 @@ El árbol guardado localiza toda la mejora en dos ramas:
 | 1 | E | DE, que cruza AEF | 0.004195 |
 | 2 | F | ADE, que cruza AEF | 0.041755 |
 
-Las ramas 0 y 3 empatan. Las dos ganancias suman **0.045950**.
+Las ramas 0 y 3 empatan. Las dos ganancias suman 0.045950.
 El refinamiento de E que cobra 4 es la elección del óptimo laminar en esa
 rama; al permitir cruces, otra continuación obtiene más utilidad esperada total.
 
@@ -307,18 +307,18 @@ display(pd.DataFrame(datos['lambda_sensitivity'])[
 '''),
 md('''## 5. Qué presentar y qué queda abierto
 
-**Resultado comprobado:** hay ejemplos pequeños con una pérdida estricta por
+Resultado comprobado: hay ejemplos pequeños con una pérdida estricta por
 laminaridad bajo el modelo vigente. La mayor pérdida relativa entre estos ocho
 casos seleccionados es 12.5%; no es una cota general ni una búsqueda exhaustiva.
 
-**Dos preguntas para Francisco:** ¿qué estructura explica la ganancia de cruzar?
+Dos preguntas para Francisco: ¿qué estructura explica la ganancia de cruzar?
 ¿Y qué política laminar puede acercarse a su propio óptimo con menor costo de cálculo?
 
 La sensibilidad a λ forma parte de especificar π_L. Los valores se evaluaron
 sobre todos los perfiles; no son una simulación. Las decisiones de las
 heurísticas usan sus scores numéricos existentes.
 
-Volver a [notebook 26](26_esencial.ipynb) para el ensayo oral. El notebook 24,
+Usar [27_sesion_francisco.ipynb](27_sesion_francisco.ipynb) para presentar. El notebook 24,
 Acto 4, queda como apoyo para explicar por qué no basta invocar submodularidad
 adaptativa: la misma prueba puede valer más después de obtener información.
 '''),

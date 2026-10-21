@@ -1,0 +1,101 @@
+{
+  "model": {
+    "n": 6,
+    "G": [
+      2,
+      3
+    ],
+    "B": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "q": "healthy probability",
+    "u": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "independent_priors": true,
+    "homogeneous_q": true,
+    "history": [],
+    "observation": "exact infection count",
+    "clearing": "soft",
+    "grouping_policy_class": "unrestricted dynamic; crossing pools allowed",
+    "laminar": "nested or disjoint along every realized trajectory"
+  },
+  "metrics": {
+    "laminar_gain_percent": "100*(laminar/individual - 1)",
+    "crossing_loss_percent": "100*(1 - laminar/general)"
+  },
+  "summary": {
+    "cases": 228,
+    "laminar_beats_individuals": 170,
+    "laminar_ties_individuals": 58,
+    "general_beats_laminar": 110,
+    "general_ties_laminar": 118,
+    "worst_laminar_case": {
+      "n": 6,
+      "B": 4,
+      "G": 3,
+      "q": "1/2",
+      "q_decimal": 0.5,
+      "individual": "2",
+      "laminar": "5/2",
+      "general": "3",
+      "laminar_gain": "1/2",
+      "crossing_gain": "1/2",
+      "laminar_gain_percent": 25.0,
+      "crossing_loss_percent": 16.666666666666668,
+      "retained_ratio": "5/6",
+      "independent_profile_check": true,
+      "profiles": 64,
+      "certificate": "profile Bellman and independent atom solver agree"
+    },
+    "by_budget": {
+      "1": {
+        "cases": 38,
+        "general_beats_laminar": 0,
+        "max_loss_percent": 0.0
+      },
+      "2": {
+        "cases": 38,
+        "general_beats_laminar": 0,
+        "max_loss_percent": 0.0
+      },
+      "3": {
+        "cases": 38,
+        "general_beats_laminar": 34,
+        "max_loss_percent": 13.951637638749576
+      },
+      "4": {
+        "cases": 38,
+        "general_beats_laminar": 38,
+        "max_loss_percent": 16.666666666666668
+      },
+      "5": {
+        "cases": 38,
+        "general_beats_laminar": 38,
+        "max_loss_percent": 4.166666666666667
+      },
+      "6": {
+        "cases": 38,
+        "general_beats_laminar": 0,
+        "max_loss_percent": 0.0
+      }
+    }
+  },
+  "audit": {
+    "profile_and_atom_solver_agreements": 190,
+    "full_budget_certificates": 38,
+    "independent_laminar_policy_evaluations": 228,
+    "profiles_per_policy": 64,
+    "monotonicity_checked": true
+  }
+}

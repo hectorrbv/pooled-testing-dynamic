@@ -1,4 +1,4 @@
-"""Build the five-screen talk from saved evidence, without rerunning solvers."""
+"""Build the short talk from saved evidence, without rerunning solvers."""
 
 import base64
 import csv
@@ -154,7 +154,7 @@ ax.scatter(xs, ys, s=46, color=AZUL, zorder=3)
 ax.scatter([float(best["lambda_value"])], [best_ratio], s=90, color=VERDE, zorder=4)
 ax.axhline(1, color="#667085", lw=1, ls="--")
 ax.annotate("0.9307", xy=(float(best["lambda_value"]), best_ratio),
-            xytext=(0.8, 0.97), fontsize=15, fontweight="bold", color=VERDE,
+            xytext=(0.8, 0.97), fontsize=15, color=VERDE,
             arrowprops={"arrowstyle": "-", "color": VERDE})
 ax.text(3.55, 1.005, "Óptimo laminar", ha="right", va="bottom", fontsize=10, color="#475467")
 ax.set(xlim=(-0.08, 3.65), ylim=(0.75, 1.035), xlabel="λ: penalización por prueba",
@@ -164,13 +164,14 @@ ax.grid(axis="y", color="#E4E7EC", lw=0.7)
 keep_plot("lambda", fig)
 
 
-def screen(text, seconds, notes, figure, **extra):
+def screen(text, seconds, notes, figure=None, **extra):
     cell = nbf.v4.new_markdown_cell(
         text.strip(),
         metadata={"slideshow": {"slide_type": "slide"}, "talk_seconds": seconds,
                   "speaker_notes": notes, **extra},
     )
-    cell.attachments = {f"{figure}.png": {"image/png": base64.b64encode(figures[figure]).decode()}}
+    if figure is not None:
+        cell.attachments = {f"{figure}.png": {"image/png": base64.b64encode(figures[figure]).decode()}}
     if figure in diagram_sources:
         cell.metadata["graphviz_source"] = diagram_sources[figure]
     return cell
@@ -180,73 +181,114 @@ cells = [
     screen(r"""
 # 1. El contraejemplo con una prueba restante
 
-**Queda una prueba.** AB ya dio un infectado; C y D siguen sin probar.
-Priors independientes: $q=0.3$ sano y utilidad 1 por persona.
-Usamos *posterior-zero*: cobramos al identificar a alguien sano con certeza.
+$n=4$ (A, B, C y D)  
+$B=2$ (total), $b=1$ (restante)  
+$G=2$  
+$p_i=0.7$, $q_i=0.3$, $u_i=1$ para cada persona  
+Historial: $R(AB)=1$  
+Soft clearing.
+
+Las probabilidades son las iniciales, con estados independientes.
+Después de probar AB, sabemos que uno está sano y el otro infectado, pero no quién es quién.
 
 ![Árboles de las dos alternativas: probar A acredita una unidad en ambas ramas; probar CD solo acredita dos si R es cero.](attachment:una_prueba.png)
 
-V prefiere CD porque $0.6>0.5$. Sin embargo, probar A cobra **1** en promedio
-y probar CD cobra solo $2\times0.09=\mathbf{0.18}$.
-""", 90, "V suma utilidad sana esperada dentro del grupo. En CD, R=1 deja un sano sin identificar. No hace falta usar una prueba redundante para mostrar el fallo.", "una_prueba"),
-    screen(rf"""
-## 2. El caso de seis personas
+Si probamos A, cualquiera de los dos resultados nos permite identificar al sano de AB. Cobramos 1 seguro.
 
-Tenemos **3 pruebas** y grupos de hasta **4 personas**, con posterior-zero.
+Si probamos CD, cobramos 2 solo cuando ambos están sanos. Eso ocurre el 9% de las veces, así que cobramos 0.18 en promedio.
+
+V cuenta los sanos esperados dentro del grupo: 0.5 en A y 0.6 en CD.
+Por eso elige CD, aunque con la última prueba conviene A.
+""", 90, "V suma utilidad sana esperada dentro del grupo. En CD, R=1 deja un sano sin identificar. No hace falta usar una prueba redundante para mostrar el fallo.", "una_prueba"),
+    screen(r"""
+## 2. Las cuatro reglas que comparamos
+
+Probamos cuatro formas de elegir qué grupo analizar.
+
+La regla $\pi_M$ elige la prueba que permite cobrar más en promedio en ese momento.
+
+La regla $\pi_C$ compara planes por su utilidad esperada por prueba reservada. Se queda con el mejor y le asigna ese bloque de pruebas, aunque termine antes.
+
+La regla $\pi_R$ usa el mismo criterio que $\pi_C$, pero hace una sola prueba y vuelve a decidir con el resultado que acaba de observar.
+
+La regla C3 estima cuánto podría cobrar ahora y después, teniendo en cuenta las pruebas que quedan y las personas que deja sin probar.
+
+En el siguiente ejemplo, las cuatro se quedan por debajo del óptimo.
+""", 80, "Correspondencia con el código: cobrar ahora = π_M; reservar pruebas para un grupo = π_C; reconsiderar después de cada prueba = π_R; estimar el cobro futuro = C3. Las dos reglas intermedias maximizan H_c/c. La segunda descuenta todo c aunque el plan local termine antes. C3 es una fórmula aproximada experimental, no una continuación óptima. El primer contraejemplo se refiere a V; el siguiente evalúa estas cuatro políticas completas.",
+           source_files=["augmented/densidad_companion.py", "docs/notes/2026-09-01-mision-vhat-C3.md"]),
+    screen(rf"""
+## 3. El caso de seis personas
+
+$B=3$  
+$G=4$  
+Soft clearing.
 
 En orden A–F: $p_{{\rm infectado}}=(.9,.825,.875,.8,.95,.85)$; $u=(2,1,1,1,4,2)$.
 
-$\pi_M$, $\pi_C$, $\pi_R$ y C3 obtienen alrededor de **0.70** de utilidad esperada.
-El óptimo laminar obtiene **{opt:.4f}** y comienza así:
+Con cualquiera de las cuatro reglas cobramos alrededor de 0.70 en promedio.
+La mejor estrategia laminar alcanza {opt:.4f} y empieza probando AEF:
 
 ![Primera prueba del óptimo laminar: AEF. Según el conteo, continúa con BD, E, F o BD.](attachment:primera_prueba.png)
 
-El árbol muestra solo la primera prueba y la siguiente decisión.
-**El resultado del conteo determina dónde conviene continuar.**
-""", 110, "π_M, π_C y π_R valen 0.7000; C3 vale 0.69904125. 0.70 son unidades de utilidad promedio. Bellman calcula el mejor valor dentro de la clase laminar. El cobro de AEF completamente sano ocurre con probabilidad 0.00075.", "primera_prueba"),
+Aquí mostramos la primera prueba y qué haríamos después de cada resultado.
+""", 100, "π_M, π_C y π_R valen 0.7000; C3 vale 0.69904125. 0.70 son unidades de utilidad promedio. Bellman calcula el mejor valor dentro de la clase laminar. El cobro de AEF completamente sano ocurre con probabilidad 0.00075.", "primera_prueba"),
     screen(r"""
-## 3. La rama con un infectado
+## 4. La rama con un infectado
 
-AEF dio **un infectado** y quedan dos pruebas.
-Las utilidades son $u_A=2$, $u_E=4$ y $u_F=2$.
+$n=6$ (A, B, C, D, E y F)  
+$B=3$ (total), $b=2$ (restante)  
+$G=4$  
+$p=(0.9,\,0.825,\,0.875,\,0.8,\,0.95,\,0.85)$, $q_i=1-p_i$  
+$u=(2,\,1,\,1,\,1,\,4,\,2)$  
+Historial: $R(AEF)=1$  
+Soft clearing.
+
+Los vectores siguen el orden A–F. Las probabilidades son las iniciales, con estados independientes.
+Ya sabemos que AEF contiene exactamente un infectado.
 
 ![Subárbol completo después de R(AEF)=1: se prueba E y luego A o D según el resultado. Los nodos indican el nuevo cobro.](attachment:rama_un_infectado.png)
 
-**Probar E acredita 4 en ambos resultados.** Si E está infectado, deducimos
-que A y F están sanos. Cada **+** indica utilidad nueva cobrada en esa rama.
-""", 120, "Este es el subárbol condicional, no el valor promedio de la política completa. Los cobros totales de las cuatro hojas son 6, 6, 5 y 4. Si AEF hubiera dado tres infectados se cambia de grupo.", "rama_un_infectado"),
+Al probar E cobramos 4 en ambos casos: si está sano, cobramos su utilidad;
+si está infectado, sabemos que A y F están sanos y cobramos 2 por cada uno.
+Los signos + indican lo que cobramos en cada paso.
+""", 110, "Este es el subárbol condicional, no el valor promedio de la política completa. Los cobros totales de las cuatro hojas son 6, 6, 5 y 4. Si AEF hubiera dado tres infectados se cambia de grupo.", "rama_un_infectado"),
     screen(rf"""
-## 4. $\pi_L$: utilidad y pruebas consumidas
+## 5. Cobro menos costo de las pruebas
 
-Compara planes locales usando
+Esta regla, que llamamos $\pi_L$, compara planes restando a la utilidad esperada un costo por las pruebas que consumen:
 
 $$\mathbb{{E}}[U]-\lambda\,\mathbb{{E}}[T].$$
 
-$U$ es la utilidad acreditada y $T$ las pruebas realmente consumidas.
-$\lambda$ pone un costo a cada prueba. El plan puede abandonar un grupo.
+$U$ es la utilidad que cobramos y $T$ el número de pruebas que usamos.
+$\lambda$ fija la penalización por prueba. Podemos dejar un grupo si no conviene seguir con él.
 
 ![Gráfica de barras: la mejor de las cuatro reglas alcanza 65.8% del óptimo laminar y pi L alcanza 96.4%.](attachment:comparacion.png)
 
-En este caso, con $\lambda=0.001$, $\pi_L$ cobra **{policies['π_L']['value']:.4f}**:
-el **96.4% del óptimo laminar**. La gráfica compara utilidad sin penalizar.
-""", 140, "π significa política: una regla que decide según el historial. Configuración reproducida: horizonte 3 y no-parálisis activada. λ sirve para elegir acciones; el rendimiento se mide como utilidad bruta esperada.",
+Con $\lambda=0.001$, esta regla obtiene {policies['π_L']['value']:.4f}, un 96.4% del óptimo laminar.
+En la gráfica comparamos lo que cobramos, sin restar la penalización.
+""", 110, "π significa política: una regla que decide según el historial. Configuración reproducida: horizonte 3 y no-parálisis activada. λ sirve para elegir acciones; el rendimiento se mide como utilidad bruta esperada.",
            "comparacion",
            experiment_config={"horizon": 3, "lambda": 0.001, "no_paralisis": True}),
     screen(rf"""
-## 5. La elección de $\lambda$ y el 0.9307
+## 6. La elección de $\lambda$ y el 0.9307
 
-**Otra instancia: siete personas, 3 pruebas, grupos de hasta 4.**
-Cada punto muestra un $\lambda$ evaluado para $\pi_L$.
+Otro caso:
+
+$n=7$  
+$B=3$  
+$G=4$
+
+Probamos varios valores de $\lambda$ para ver cómo cambia el resultado.
 
 ![Utilidad relativa para los quince valores de lambda evaluados. El máximo observado es 0.9307.](attachment:lambda.png)
 
-Mejor resultado de esta malla: $\lambda={float(best['lambda_value']):.6f}$,
-$\mathbb{{E}}[U]={float(best['value']):.4f}$ y óptimo laminar ${float(best['opt_laminar']):.4f}$.
+Con $\lambda={float(best['lambda_value']):.6f}$ obtenemos uno de los mejores resultados de los valores probados:
+${float(best['value']):.4f}$ de utilidad, frente a ${float(best['opt_laminar']):.4f}$ del óptimo laminar.
 
-**0.9307 es el cociente en esta candidata. La garantía general sigue abierta.**
+Al dividirlos sale 0.9307. Este resultado corresponde a este caso. Todavía queda por demostrar una garantía general.
 
-Para discutir: **¿qué regla para elegir $\lambda$ fijamos antes de buscar una garantía?**
-""", 140, "Hay empate en el mejor valor para λ=1.238469 y 1.733857. Se elige λ antes de observar resultados, maximizando la utilidad esperada de la política en la malla declarada. Esta candidata usa el estado inicial histórico BM17 registrado en el archivo de evidencia; no es un mínimo certificado sobre 7000 casos.",
+La pregunta para discutir es cómo elegir $\lambda$ antes de buscar esa garantía.
+""", 110, "Hay empate en el mejor valor para λ=1.238469 y 1.733857. Se elige λ antes de observar resultados, maximizando la utilidad esperada de la política en la malla declarada. Esta candidata usa el estado inicial histórico BM17 registrado en el archivo de evidencia; no es un mínimo certificado sobre 7000 casos.",
            "lambda",
            experiment_config=params),
 ]
@@ -262,12 +304,12 @@ nb = nbf.v4.new_notebook(cells=cells, metadata={
     },
 })
 nbf.validate(nb)
-assert len(nb.cells) == 5 and all(c.cell_type == "markdown" for c in nb.cells)
+assert len(nb.cells) == 6 and all(c.cell_type == "markdown" for c in nb.cells)
 assert sum(c.metadata.talk_seconds for c in nb.cells) == 600
 assert all("|" not in c.source for c in nb.cells)
 dest = Path(__file__).with_name("26_presentacion_corta.ipynb")
 nbf.write(nb, dest)
-print(f"{dest}: 5 pantallas, 3 diagramas de árboles, 2 gráficas, sin tablas.")
+print(f"{dest}: 6 pantallas, 3 diagramas de árboles, 2 gráficas, sin tablas.")
 
 if __name__ == "__main__":
     import sys
