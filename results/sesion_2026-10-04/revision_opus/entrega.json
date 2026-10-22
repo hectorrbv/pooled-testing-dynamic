@@ -1,0 +1,20 @@
+{
+  "review_model": "claude-opus-5-5",
+  "review_passes": 2,
+  "notebook_valid": true,
+  "main_slides": 4,
+  "path_replay_cases": 6,
+  "atom_checks": {
+    "n": 4,
+    "max_tests": 3,
+    "families": 276,
+    "histories": 2332,
+    "legal_refinements": 2460,
+    "static_laminar_bound_checks": 276
+  },
+  "hashes": {
+    "augmented/notebooks/28_pooling_y_precio_laminar.ipynb": "34f8d9a2adc809a7d9664cdc4aa15f0a2b5a20d9ecbbd3c401c91fb3e58db6e9",
+    "augmented/notebooks/build_28_sesion.py": "89e3f026e8a73916ee22b8483cd5a097a25f8d7e6ad945773091009583ae0f85",
+    "docs/notes/2026-10-04-revision-y-direccion-prueba.md": "71e01c41245fa5883674f1cb3bcdd7bf5730d6c3f3b73282d7c591815bbaef7a"
+  }
+}

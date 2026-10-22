@@ -1,0 +1,66 @@
+[
+  {
+    "n": 2,
+    "B": 1,
+    "G": 2,
+    "q": "1/2",
+    "exact_laminar": "1/2",
+    "unrestricted": "1/2"
+  },
+  {
+    "n": 2,
+    "B": 2,
+    "G": 2,
+    "q": "1/2",
+    "exact_laminar": "1",
+    "unrestricted": "1"
+  },
+  {
+    "n": 3,
+    "B": 1,
+    "G": 2,
+    "q": "1/2",
+    "exact_laminar": "1/2",
+    "unrestricted": "1/2"
+  },
+  {
+    "n": 3,
+    "B": 2,
+    "G": 2,
+    "q": "1/2",
+    "exact_laminar": "5/4",
+    "unrestricted": "5/4"
+  },
+  {
+    "n": 3,
+    "B": 3,
+    "G": 2,
+    "q": "1/2",
+    "exact_laminar": "3/2",
+    "unrestricted": "3/2"
+  },
+  {
+    "n": 3,
+    "B": 1,
+    "G": 3,
+    "q": "1/2",
+    "exact_laminar": "1/2",
+    "unrestricted": "1/2"
+  },
+  {
+    "n": 3,
+    "B": 2,
+    "G": 3,
+    "q": "1/2",
+    "exact_laminar": "5/4",
+    "unrestricted": "5/4"
+  },
+  {
+    "n": 3,
+    "B": 3,
+    "G": 3,
+    "q": "1/2",
+    "exact_laminar": "3/2",
+    "unrestricted": "3/2"
+  }
+]

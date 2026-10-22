@@ -1,0 +1,130 @@
+El usuario pide añadir a las secciones «Para discutir» de su notebook una respuesta propia, después de contrastarla contigo (Claude Opus). Eres revisor matemático y pedagógico. No edites archivos ni uses herramientas: todo el material está debajo. Responde en español natural, conciso, sin negritas. No es una revisión del diseño ni una búsqueda nueva: solo evaluar estas respuestas y sus límites.
+Convenciones: q=sano, p=infectado, independencia inicial, conteos de infectados, soft clearing para aumentado; binario hard clearing; laminar por trayectoria. El usuario no domina las pruebas, quiere defender ideas frente a Francisco. No confundir una hipótesis con un resultado. No inventes un mecanismo de una heurística sin ramas observadas.
+Respuestas que propongo:
+1) Par: con G>=2, 2<=B<n, independencia, priors interiores y utilidades positivas, el intercambio gana estrictamente. Ganancia (q_A q_B+p_A p_B)q_C u_C; no pierde utilidad de AB y aprovecha C en extremos. Son hipótesis suficientes, no todas necesarias. No hay que exigir q<1/2.
+2) Binario/laminar: la familia certificada n4, B=G2, q=(s,.5,.5,s), u=(1,3,3,2), .95<=s<1 tiene BIN=2.5s(1+s),LAM=3+1.5s² y razón que tiende a10/9. Esto muestra lo alcanzable, no un techo. La cota publicada combinada da BIN/LAM<=4 en las hipótesis de nuestra nota; no sabemos cerrarla. Como búsqueda, perturbar probabilidades y utilidades alrededor de la familia, sin tomar s=1.
+4) Log G: ruta candidata de matrices detectoras en bloques de G personas con O(G/logG) pruebas por bloque, tamaño máximo G. Resolver todos da G/2 sanos esperados por bloque en q=.5. Para derivar brecha Omega(logG), también se necesita LAM<=KB con K uniforme. Ambas justificaciones pendientes; nuestra cota de información es solo superior. Evitar afirmar que ya tenemos esa construcción/proof.
+5) Jerarquía: empezaría mejorando la jerarquía EN ESTE testigo. n7 B4 G5: óptimo laminar171/64, óptimo jerarquía41/16, rollout81/32. De brecha9/64,7/64 esjerarquía y2/64decisión. Con G4 una jerarquíalegal paraG5 yaalcanza171/64. Propuesta: conservarjerarquíaG4 comoopción; no unirgruposdedistintasjerarquíasporqueuniónpuedenoserl aminar. Unsolotestigono permiteordenarglobal prioridades.
+Consultas preservadas: cotaBIN/LAM4 vs10/9, siLAM<=KB, decisión decontinuación en controln5 B3 G4 q=.95: aúnnohemoslocalizadorama. Noatribuirlatodavíaacostosesperados/desempate etc. Podemosresponderhonestamente pendientesyproponer compararmismohistorial.
+Información adicional: la malla nueva tiene32casos n6,7 B1..4 G2..5 q=.5 ui1. Máx pérdida LAM/GEN21.15% en n7B4G3; rollout conserva>=94.74%delóptimolaminar. Son reglas nuevasgreedy/rollout,no piL/piratio. La gráficaantigua consulta tieneotrasreglas.
+Necesito: (a) errores o matices de mis respuestas; (b) una respuesta sugerida de 35–65 palabras para cada una de las siete preguntas de los textos; (c) pregunta concreta que aún valdría discutir con Francisco, evitando alargar el notebook. No des bibliografía no verificada ni nuevos resultados numéricos.
+
+
+NOTEBOOK 29_tres_clases_y_contraejemplo, CELL 1:
+## 1. El par ya supera a individuales
+
+$n=6$, $B=2$, $G=2$, $q_i=0.3$, $u_i=1$.
+
+Probamos AB. Si $R=1$, probar A identifica al sano de AB. Si $R=0$ o $R=2$, dedicamos la última prueba a C.
+
+![Árbol del par; al pie, utilidad final esperada condicionada a cada rama.](attachment:par.png)
+
+Las cifras al pie son la utilidad final esperada de cada rama, incluido lo ya cobrado.
+
+$$V_{\rm par}=0.09(2.3)+0.42(1)+0.49(0.3)=0.774>0.6=V_{\rm individuales}.$$
+
+La mejora viene de resolver AB con una sola prueba en las ramas extremas y aprovechar C. Es el ejemplo que quedó pendiente de enviar.
+
+El intercambio general ya está escrito en [la nota de la proposición](../paper/proposicion_individuales_construccion.md). Para discutir: ¿qué hipótesis permiten que la ganancia sea estrictamente positiva?
+
+NOTEBOOK 29_tres_clases_y_contraejemplo, CELL 2:
+## 2. El binario puede ganar: basta con tres personas
+
+$n=3$, $B=2$, $G=2$, $(q_A,q_B,q_C)=(0.95,0.80,0.80)$, $u_i=1$.
+
+Ambas políticas óptimas empiezan por AB. Si sale negativo, prueban C. Después de un positivo, el binario puede probar AC; AB y AC no forman una familia laminar.
+
+![Políticas óptimas binaria y laminar, con probabilidades de las ramas y valores finales condicionados.](attachment:binario_laminar.png)
+
+Las cifras al pie son utilidades finales esperadas condicionadas a cada rama. En la rama positiva binaria, AC sale negativo con probabilidad $19/30$: cobra 2 o cobra 0, con media $19/15\approx1.2667$.
+
+$$V_{\rm bin}=0.76(2.8)+0.24(19/15)=2.432,$$
+$$V_{\rm lam}=0.76(2.8)+0.23(1)+0.01(0.8)=2.366.$$
+
+A sigue siendo suficientemente probable sano como para volver a incluirlo con C. Esa libertad compensa aquí la menor información del binario. El general conserva ambas ventajas y obtiene $2.448$.
+
+Verificado sobre los 8 perfiles y todas las primeras pruebas laminares. La diferencia es $0.066$; este ejemplo demuestra existencia, no la mayor brecha posible.
+
+La búsqueda posterior encontró una familia de cuatro personas cuya ventaja binaria se aproxima al 11.11%. La construcción y sus límites están en [los resultados actualizados](../../docs/notes/2026-10-12-encargos-6-oct.md#4-actualización-de-héctor-14-oct). Para discutir: ¿qué limita cuánto puede crecer esta ventaja?
+
+NOTEBOOK 29_tres_clases_y_contraejemplo, CELL 4:
+## 4. ¿Por qué aparece log G?
+
+$q_i=1/2$, $u_i=1$, estados independientes y $1\le B\le n$.
+
+Una prueba de tamaño máximo $G$ tiene como mucho $G+1$ resultados. Con $B$ pruebas, la información obtenida está limitada por $B\log_2(G+1)$. Identificar a una persona sana fija uno de los bits del perfil.
+
+El argumento da $V_{\rm aug}\le B\log_2(G+1)$. Como las individuales son laminares y obtienen $B/2$:
+
+$$\frac{V_{\rm aug}}{V_{\rm lam}}\le 2\log_2(G+1).$$
+
+Es el argumento que Vlad debe revisar y escribir para la proposición. Las 32 celdas respetan la cota; la demostración requiere el paso sobre información, explicado en las notas.
+
+Para discutir: ¿qué construcción consigue una separación del mismo orden? Esa es la otra mitad de la dirección propuesta por Francisco.
+
+NOTEBOOK 29_tres_clases_y_contraejemplo, CELL 5:
+## 5. Rollout mejora las decisiones, pero la jerarquía también cuesta
+
+Los mismos 32 casos. Greedy elige el mayor cobro inmediato; en los empates de esta malla empieza por individuales. Rollout compara cada prueba suponiendo que después seguirá greedy; ejecuta una y vuelve a comparar.
+
+Ambos usan la misma jerarquía de grupos, fijada al inicio, y soft clearing. Cada celda muestra la mayor pérdida frente al óptimo laminar entre $n=6$ y $n=7$.
+
+![Pérdida de greedy y rollout frente al óptimo laminar, con la misma escala. Cada celda toma el peor de n=6 y n=7.](attachment:greedy_rollout_G.png)
+
+Rollout pierde como máximo 5.26% en esta malla. No toda la pérdida viene de sus decisiones: también restringimos los grupos a una jerarquía concreta.
+
+En $n=7,B=4$, pasar de $G=4$ a $G=5$ deja el óptimo laminar en 2.671875, pero rollout baja de 2.671875 a 2.53125. La construcción automática cambia la jerarquía y empeora el resultado.
+
+Para discutir: ¿conviene mejorar la elección de la jerarquía antes de complicar la regla de planificación?
+
+NOTEBOOK 29_notas_de_estudio, CELL 7:
+## Consulta conservada
+
+## 2. Las cotas no ordenan binario y laminar
+
+Con independencia inicial, $0<q_i<1$ y utilidades no negativas:
+
+$$V_{\rm bin}\le V_{\rm aug}\le G\,V_{\rm bin},\qquad
+\frac14V_{\rm bin}\le V_{\rm lam}\le V_{\rm aug}.$$
+
+El general puede reproducir una política binaria. La cota $G$ limita cuánto puede ganar al contar. La cota $1/4$ combina los dos factores dos de la comparación binaria dinámica → estática → disjunta; véase [introducción y §5 del paper de Nic](https://arxiv.org/html/2601.22419v2).
+
+Todavía permite que el binario supere al laminar. Encontrar ese ejemplo era una pregunta de la reunión.
+
+Para discutir: ¿cuánto puede crecer esa separación? $1/4$ es una garantía, no un ejemplo que la alcance.
+
+NOTEBOOK 29_notas_de_estudio, CELL 8:
+## Consulta conservada
+
+## 4. En $q=1/2$, varias ecuaciones pueden resolverlo todo
+
+$n=4$, $B=3$, $G=3$, $q_i=1/2$, $u_i=1$.
+
+El plan fijo ABC, ABD, ACD produce una firma distinta para cada uno de los 16 perfiles. Por ejemplo:
+
+![Tres conteos 1, 1, 2 identifican A y B sanos.](attachment:detector.png)
+
+Identifica a todos con tres pruebas. Por eso alcanza toda la utilidad disponible en promedio:
+
+$$V_{\rm bin}=1.5,\qquad V_{\rm lam}=1.75,\qquad V_{\rm aug}=n/2=2.$$
+
+Este ejemplo retoma la ruta de matrices detectoras que propuso Francisco. Su valor es orientar una prueba: falta acotar cuánto puede obtener cualquier política dinámica laminar.
+
+Para discutir: ¿se puede demostrar $V_{\rm lam}\le K B$ con $K$ independiente de $n,B,G$? Junto con diseños admisibles de $B=O(n/\log n)$, descartaría una garantía laminar constante independiente de $G$. Ambas piezas deben justificarse para esa conclusión.
+
+NOTEBOOK 29_notas_de_estudio, CELL 9:
+## Consulta conservada
+
+## 5. Separar el costo de la restricción del costo de la regla
+
+$\pi_L$ compara planes locales con $E[U]-0.01E[T]$; $\pi_{\rm ratio}$, con $E[U]/E[T]$. Consideran hasta tres pruebas, o las que queden, hacen la primera y vuelven a decidir.
+
+En los tres ejemplos anteriores, ambas alcanzan el óptimo laminar. En el bloque 3, mejorar la elección dentro de la clase laminar no puede cerrar la diferencia frente al binario.
+
+Como control homogéneo: $n=5$, $B=3$, $G=4$, $q_i=0.95$, $u_i=1$.
+
+![Utilidades del general, laminar y las dos heurísticas en el control homogéneo.](attachment:heuristicas.png)
+
+Aquí sí aparecen dos pérdidas: aproximadamente $0.0945$ por laminaridad y $0.0772$ adicionales al usar cualquiera de las dos reglas. No hay evidencia en estos cuatro casos para declarar una ganadora general entre ellas.
+
+Para discutir: ¿qué decisión de continuación explica la pérdida de las heurísticas en este control?

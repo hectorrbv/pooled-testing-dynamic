@@ -1,0 +1,2 @@
+mission	ratio_min	status	n	B	G	q	u	laminar	other	tried	skipped_lambda_le_1	invalid	seconds	generator_sha	description
+precio	0.8333333333333334	ok	6	4	3	['1/2', '1/2', '1/2', '1/2', '1/2', '1/2']	['1', '1', '1', '1', '1', '1']	5/2	3	1	0	0	22.8	b98c4dcb04	Smoke test: existing q=1/2 seed; not an overnight run

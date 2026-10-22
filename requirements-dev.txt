@@ -1,0 +1,3 @@
+# Desarrollo: correr la suite (plan maestro §22).
+-r requirements.txt
+pytest>=7.0

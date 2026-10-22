@@ -1,0 +1,12 @@
+workspace_ref	media_train	peor_train	media_heldout	peor_heldout	n_train	violations	runtime_seconds	tests_status	status	description
+fc20c6b	0.849224	0.687679	0.792384	0.658819	48	0	0.902	pass	baseline	semilla s0_inmediato
+fc20c6b	0.877973	0.465116	0.800468	0.479972	48	0	0.063	pass	baseline	semilla presupuesto_magico
+fc20c6b	0.805732	0.646705	0.717947	0.658819	48	0	0.036	pass	baseline	semilla densidad_magica
+fc20c6b	0.805732	0.646705	0.717947	0.658819	48	0	0.035	pass	baseline	semilla valor_por_biseccion
+fc20c6b	0.805732	0.646705	0.717947	0.658819	48	0	1.386	pass	candidate	semilla inicial re-corrida como candidate (sanity del runner)
+fc20c6b	0.857445	0.687679	0.834625	0.658819	48	0	1.402	pass	candidate	C1 inmediato + credito resto deducido (hipergeometrica G0)
+fc20c6b	0.997137	0.930233	0.991698	0.966791	48	0	1.377	pass	candidate	C2 = C1 + promesa (v_magico-inmediato) con factibilidad min(1,(b-1)/ceil(log2 tam))
+dc1ec2e	0.999265	0.964731	1.000000	1.000000	48	0	1.347	pass	candidate	C3 = C2 + reserva de virgenes (oportunidad de virgenes no consumidos, min(b-1,virg)*sano_medio*u_medio)
+dc1ec2e	0.842586	0.687679	0.774378	0.658819	48	0	1.345	pass	candidate	C4 = C3 con reserva descontando el costo de cobro (b-1-c_extra si hay promesa)
+dc1ec2e	0.999265	0.964731	1.000000	1.000000	48	0	1.362	pass	candidate	KEEP-CANDIDATO FINAL: C3 restaurado (inmediato G0 + promesa factible + reserva de virgenes) — pendiente revision humana
+dc1ec2e	0.999265	0.964731	1.000000	1.000000	48	0	1.357	pass	candidate	verificacion independiente del coordinador (re-corrida de C3)

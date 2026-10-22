@@ -1,0 +1,89 @@
+{
+  "artifact": "regimenes_politicas.csv",
+  "columns": [
+    "q",
+    "G",
+    "B",
+    "n",
+    "opt",
+    "tam_opt",
+    "pi_M",
+    "tam_pi_M",
+    "pi_C",
+    "tam_pi_C",
+    "pi_R",
+    "tam_pi_R",
+    "pi_L",
+    "tam_pi_L",
+    "pi_ratio",
+    "tam_pi_ratio",
+    "C3",
+    "tam_C3",
+    "decisiones"
+  ],
+  "generated_utc": "2026-09-29T15:04:52+00:00",
+  "generator": "augmented.experimento_regimenes_presentacion",
+  "git": {
+    "commit": "d968be9fd4087adf835fe10c7d767a9f180e5328",
+    "dirty": true
+  },
+  "params": {
+    "B": [
+      2,
+      3
+    ],
+    "G": [
+      2,
+      3,
+      4
+    ],
+    "alpha": 1,
+    "clearing": "soft",
+    "history": "empty",
+    "independent_priors": true,
+    "lambda": 0.01,
+    "method": "exact finite-state evaluation, no sampling",
+    "n": 6,
+    "planning_limit": 3,
+    "q": [
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95
+    ],
+    "score_and_evaluator_sha256": "3c0ea27d5763cc51b46b4292aacda455a5a508365773909ed0fa074b725f3df4",
+    "source_sha256": {
+      "augmented/bm17_toy_solver.py": "a404709f36982775a6ff7dc299167470a2daaa6a1087ceff831d3780db51073f",
+      "augmented/densidad_companion.py": "657b808cf4e8cc975607f348d17837bee80823c56292856bb7fa172c38e91336",
+      "augmented/evolucion_scores.py": "819fe867be3bfec09e2a5ef0fbd9ab4eb32fe27f153f2093a742a31712fd0538",
+      "augmented/indice_lagrangiano.py": "90bba5314f58220a3d8d46387ca4b73c091ae65da720b035d3bbacb59da6770d",
+      "augmented/politica_ratio.py": "9cfb24ac3a35339c5ce06b09a65f166710bbb0ffbc59131a70840d52eaec861d"
+    },
+    "u": 1
+  },
+  "rows": 114,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.3",
+    "pandas": "3.0.1",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.18.0"
+  }
+}

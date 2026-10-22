@@ -1,0 +1,352 @@
+{
+  "design_sha256": "694fc32231bfdb89e77821e67856220b2fc903ddd543e642ca0855296415bc50",
+  "method": "independent full-profile leaf enumeration",
+  "scope": "value of the fixed design; no unrestricted optimality claim",
+  "targets": [
+    {
+      "value": "11/4",
+      "value_per_B": 0.6875,
+      "leaves": 54,
+      "nodes": 94,
+      "max_tests": 4,
+      "max_pool": 2,
+      "max_connected_component": 4,
+      "nonlaminar_history": [
+        [
+          [
+            0,
+            1
+          ],
+          0
+        ],
+        [
+          [
+            4,
+            5
+          ],
+          1
+        ],
+        [
+          [
+            4,
+            6
+          ],
+          0
+        ],
+        [
+          [
+            7
+          ],
+          0
+        ]
+      ],
+      "n": 16,
+      "B": 4,
+      "G": 2,
+      "seconds": 0.533,
+      "expected": "11/4",
+      "difference": "0",
+      "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B4_G2.json.gz"
+    },
+    {
+      "value": "107/32",
+      "value_per_B": 0.8359375,
+      "leaves": 150,
+      "nodes": 239,
+      "max_tests": 4,
+      "max_pool": 4,
+      "max_connected_component": 6,
+      "nonlaminar_history": [
+        [
+          [
+            0,
+            1,
+            2
+          ],
+          0
+        ],
+        [
+          [
+            6,
+            7,
+            8,
+            9
+          ],
+          1
+        ],
+        [
+          [
+            6,
+            7,
+            10
+          ],
+          0
+        ],
+        [
+          [
+            8
+          ],
+          0
+        ]
+      ],
+      "n": 16,
+      "B": 4,
+      "G": 4,
+      "seconds": 7.894,
+      "expected": "107/32",
+      "difference": "0",
+      "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B4_G4.json.gz"
+    },
+    {
+      "value": "3459/1024",
+      "value_per_B": 0.844482421875,
+      "leaves": 192,
+      "nodes": 308,
+      "max_tests": 4,
+      "max_pool": 5,
+      "max_connected_component": 6,
+      "nonlaminar_history": [
+        [
+          [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          0
+        ],
+        [
+          [
+            6,
+            7,
+            8,
+            9
+          ],
+          1
+        ],
+        [
+          [
+            6,
+            7,
+            10
+          ],
+          0
+        ],
+        [
+          [
+            8
+          ],
+          0
+        ]
+      ],
+      "n": 16,
+      "B": 4,
+      "G": 8,
+      "seconds": 9.457,
+      "expected": "3459/1024",
+      "difference": "0",
+      "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B4_G8.json.gz"
+    },
+    {
+      "value": "3459/1024",
+      "value_per_B": 0.844482421875,
+      "leaves": 192,
+      "nodes": 308,
+      "max_tests": 4,
+      "max_pool": 5,
+      "max_connected_component": 6,
+      "nonlaminar_history": [
+        [
+          [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          0
+        ],
+        [
+          [
+            6,
+            7,
+            8,
+            9
+          ],
+          1
+        ],
+        [
+          [
+            6,
+            7,
+            10
+          ],
+          0
+        ],
+        [
+          [
+            8
+          ],
+          0
+        ]
+      ],
+      "n": 16,
+      "B": 4,
+      "G": 16,
+      "seconds": 0.161,
+      "expected": "3459/1024",
+      "difference": "0",
+      "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B4_G16.json.gz"
+    },
+    {
+      "value": "6769/1024",
+      "value_per_B": 0.8262939453125,
+      "leaves": 13380,
+      "nodes": 22851,
+      "max_tests": 8,
+      "max_pool": 5,
+      "max_connected_component": 6,
+      "nonlaminar_history": [
+        [
+          [
+            0,
+            1,
+            2
+          ],
+          0
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          0
+        ],
+        [
+          [
+            6,
+            7,
+            8
+          ],
+          0
+        ],
+        [
+          [
+            9,
+            10
+          ],
+          0
+        ],
+        [
+          [
+            11
+          ],
+          0
+        ],
+        [
+          [
+            12,
+            13
+          ],
+          1
+        ],
+        [
+          [
+            12,
+            14
+          ],
+          0
+        ],
+        [
+          [
+            15
+          ],
+          0
+        ]
+      ],
+      "n": 16,
+      "B": 8,
+      "G": 8,
+      "seconds": 164.363,
+      "expected": "6769/1024",
+      "difference": "0",
+      "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B8_G8.json.gz"
+    },
+    {
+      "value": "6769/1024",
+      "value_per_B": 0.8262939453125,
+      "leaves": 13380,
+      "nodes": 22851,
+      "max_tests": 8,
+      "max_pool": 5,
+      "max_connected_component": 6,
+      "nonlaminar_history": [
+        [
+          [
+            0,
+            1,
+            2
+          ],
+          0
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          0
+        ],
+        [
+          [
+            6,
+            7,
+            8
+          ],
+          0
+        ],
+        [
+          [
+            9,
+            10
+          ],
+          0
+        ],
+        [
+          [
+            11
+          ],
+          0
+        ],
+        [
+          [
+            12,
+            13
+          ],
+          1
+        ],
+        [
+          [
+            12,
+            14
+          ],
+          0
+        ],
+        [
+          [
+            15
+          ],
+          0
+        ]
+      ],
+      "n": 16,
+      "B": 8,
+      "G": 16,
+      "seconds": 0.442,
+      "expected": "6769/1024",
+      "difference": "0",
+      "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B8_G16.json.gz"
+    }
+  ],
+  "complete": true
+}

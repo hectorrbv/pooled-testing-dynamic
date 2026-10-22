@@ -1,0 +1,47 @@
+{
+  "artifact": "showcase_regions.csv",
+  "columns": [
+    "region",
+    "instances",
+    "share_greedy_beats_static",
+    "share_greedy_ties_static",
+    "share_greedy_loses_static",
+    "share_rollout_beats_static",
+    "share_rollout_ties_static",
+    "share_rollout_loses_static",
+    "best_gain_rollout_static",
+    "best_instance",
+    "best_p",
+    "best_n",
+    "best_B",
+    "best_G",
+    "best_rate_mode",
+    "best_utility_mode",
+    "best_V_rollout",
+    "best_V_static",
+    "best_ratio_laminar_opt"
+  ],
+  "generated_utc": "2026-09-21T17:57:45+00:00",
+  "generator": "augmented.experiments_laminar_week.run_showcase",
+  "git": {
+    "commit": "619cb6e409ee607612e381b285b600b29fd51327",
+    "dirty": true
+  },
+  "params": {
+    "generator_sha256": "9614dffa494f84371ff0d3aabb18781aaf95569798a20bcf3b573a2a90e40c60",
+    "input": "augmented/data/laminar_week/atlas_instances.csv",
+    "input_sha256": "786f6cec51665caf7babdf092128aa70068a7b3bbd8b1b9c4827138e1cd52e8f",
+    "ratio_tolerance": 1e-09,
+    "scope": "reaggregate the historical atlas; no policy rerun or clearing-convention migration"
+  },
+  "rows": 8,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.3",
+    "pandas": "3.0.1",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.18.0"
+  }
+}

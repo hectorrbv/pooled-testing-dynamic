@@ -1,0 +1,54 @@
+{
+  "parameters": {
+    "n": 7,
+    "B": 4,
+    "G": 2,
+    "seed": 63,
+    "iterations": 350,
+    "restarts": 5,
+    "mode": "weighted",
+    "seconds": 80.0,
+    "out": "results/sesion_2026-10-12/brecha_ampliada/dag_n7_b4_g2_weighted_63"
+  },
+  "created_utc": "2026-10-12T13:30:16.224737+00:00",
+  "calls": 67636,
+  "seconds": 80.05734895799833,
+  "preparation_seconds": 0.7134034580085427,
+  "binary_states": 34330,
+  "laminar_states": 64716,
+  "best": {
+    "n": 7,
+    "B": 4,
+    "G": 2,
+    "mode": "weighted",
+    "q": [
+      0.611187383703255,
+      0.9960377392652541,
+      0.6116939728697892,
+      0.9997995107446995,
+      0.9845081529838653,
+      0.20880727634500335,
+      0.9991020501876888
+    ],
+    "u": [
+      0.30844108470494835,
+      0.3210645744094585,
+      0.30824514437817274,
+      0.34354833723539596,
+      0.32922766986324026,
+      1.0,
+      0.04753281014080119
+    ],
+    "binary": 1.5674711184036885,
+    "laminar": 1.5199003258172332,
+    "ratio": 1.0312986264812312,
+    "calls": 37040,
+    "seconds": 44.10443895799108
+  },
+  "status": "floating search candidate, requires rational certification",
+  "source_sha256": {
+    "augmented/busqueda_brecha_compilada.py": "187c392c37c75388226b1b672f313c496de6ba9d9ad37aed88d10ae4b6942a11",
+    "augmented/bellman_binario_exacto.py": "18ee2c5550024cdf087f4428581bec4d94452134a9bde6878405fafcd1b83731",
+    "augmented/bellman_perfiles.py": "9498dde3806b35f998b428b5f21a66c84ac189db57dda0df6a9476b0593782a1"
+  }
+}

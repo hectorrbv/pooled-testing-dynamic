@@ -1,0 +1,11 @@
+Revisión final de solo lectura de una presentación científica en español. Usa solo Read y las cuatro rutas listadas. El usuario Héctor pidió restaurar las gráficas del notebook28 con nuestro criterio y el de Claude, conservar intuición visual y separar claramente las comparaciones al presentar ante Francisco. Una revisión previa de Opus recomendó recuperar árbol del par y dos mapas, separar referencias, mismo n=6, puente individuales2/laminar2.5/general3. Ya implementado. No necesitamos otro rediseño: señala únicamente fallos importantes de claridad, fidelidad o legibilidad; máximo300palabras.
+
+Convenciones: n6, individuos independientes, q=sano p=infectado, ui1, Rconteo, soft clearing. Malla228instancias B1..6 G2/3 q.05..95. Laminarvsindividuales170mejoras58empates, B2..5todaslas152mejoran, B1q>.5mejora B6empate. Generalvslaminar110separaciones118empates, B1/2/6iguales, B3separa34/38 B4/5todas38. CasoB2G2q.3:ind.6,lam=general.774; casoB4G3q.5 ind2lam2.5gen3. Experimento de conversión pendiente. No se demuestra garantía5/6 y se retiró del texto principal. El paper y n4 quedan en notas. El árbol combinaR0/R2 porque la siguiente acción es la misma; NO cobraigual deAB enambas. El texto da el total .6 de AB y .58*.3 extraC. Las imágenes se acompañan del setup en el notebook; no son figuras independientes para publicar.
+
+Leer:
+results/sesion_2026-10-06/restauracion_visual/presentacion_restaurada.md
+results/sesion_2026-10-06/figures/par_libera_prueba.png
+results/sesion_2026-10-06/figures/laminar_vs_individuales.png
+results/sesion_2026-10-06/figures/general_vs_laminar.png
+
+Entrega: ¿presentable sin confundir referencias? Máximo3correcciones necesarias (si no hay, dilo) y una frase breve sobre claridad visual. No inventes errores para completar cupo. No ejecutas herramientas de escritura ni shell.

@@ -1,0 +1,6 @@
+N=50 B=5 G=5 instancias=24 sorteos=12 bloques_intactos=3 tiempo=3372s
+greedy     22.302  vs greedy +0.0000 (se 0.0000) [+0.00%]
+rollout    23.462  vs greedy +1.1597 (se 0.2434) [+5.20%]
+lookahead  23.542  vs greedy +1.2396 (se 0.2534) [+5.56%]
+lookahead vs rollout +0.0799 (se 0.1528) [+0.34%]
+segundos por instancia (media): greedy 0.1, rollout 95.0, lookahead 918.5

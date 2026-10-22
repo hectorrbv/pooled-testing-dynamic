@@ -46,12 +46,13 @@ def test_pool_solvers_records_backend():
     p = [0.1] * 6
     u = [1.0] * 6
     ps.mosek_best_pool(p, u, G=2, n=6, cleared_mask=0)
-    # After any call, LAST_BACKEND must say what actually ran
+    # After any call, LAST_BACKEND must say what actually ran.
+    # La version anterior exigia "heuristic" porque la licencia de MOSEK
+    # estaba vencida; ya no lo esta y el solver corre de verdad.  Se aplica
+    # la relajacion que el propio test dejaba documentada: lo que importa es
+    # que el backend reportado sea el que efectivamente se ejecuto, no cual
+    # de los dos toco.
     assert ps.LAST_BACKEND in ("mosek", "heuristic")
-    # In this environment the license is expired -> heuristic
-    # (if the license gets renewed this assertion should be relaxed to the
-    #  membership check above; keep both lines documented)
-    assert ps.LAST_BACKEND == "heuristic"
 
 
 # -------------------------------------------------------------------
