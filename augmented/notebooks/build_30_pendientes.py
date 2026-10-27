@@ -250,6 +250,10 @@ Semilla 20261026, 30 s, $n\le6$, $B\le4$, $G\le4$: {instancias} instancias, `fai
 
 Falta la firma: correr los 934 tests y escribir la fila en la nota de encargos.
 ''')]
+    # Section 5 comes verbatim from the protected base of notebook 29 (loop 1 design, n=16).
+    base = nb.read(HERE / '29_tres_clases_y_contraejemplo.ipynb', as_version=4)
+    loop1 = next(c for c in base.cells if c.id == 'logg-loop1')
+    cells.append(nb.v4.new_markdown_cell(loop1.source.strip(), id='p30-loop1', attachments=loop1.attachments))
     book = nb.v4.new_notebook(cells=cells)
     book.metadata.update(language_info={'name': 'python'}, generator='build_30_pendientes.py')
     nb.validate(book)
