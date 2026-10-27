@@ -136,8 +136,7 @@ def disenos():
     fig, ax = plt.subplots(figsize=(7.2, 3.4))
     fig.subplots_adjust(left=.12, right=.97, bottom=.18, top=.95)
     for r in table:
-        color = WARM if r['n'] >= 15 else BLUE
-        ax.plot(r['G'], r['razon'], 'o', color=color, markersize=6)
+        ax.plot(r['G'], r['razon'], 'o', color=BLUE, markersize=6)
         ax.annotate(f"n={r['n']}, B={r['B']}", (r['G'], r['razon']), textcoords='offset points',
                     xytext=(7, 0), fontsize=9, color=GRAY, va='center')
     ax.axhline(1, color=GRAY, linestyle=':', lw=1)
