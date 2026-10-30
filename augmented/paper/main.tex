@@ -1,0 +1,121 @@
+% main.tex -- Dynamic augmented pooled testing: laminar policies. Paper skeleton v0 (2026-09-28).
+% Purpose: the paper exists as a document; every statement we already have sits in its section with a status tag.
+% Compile: tectonic augmented/paper/main.tex  (or pdflatex). *.tex is gitignored: git add -f.
+% Status tags follow the master plan §25: DEMOSTRADO / VERIFICADO n<=X / DERIVACION CONDICIONAL / CONJETURA / PREGUNTA / PENDIENTE.
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\status}[1]{\textcolor{blue!60!black}{\textsf{\small [#1]}}}
+\newcommand{\todo}[1]{\textcolor{red!70!black}{\textsf{\small TODO: #1}}}
+\newcommand{\OPT}{\mathrm{OPT}}
+\newcommand{\Lam}{\mathcal L}
+\newcommand{\pz}{\mathrm{pz}}
+\newcommand{\str}{\mathrm{str}}
+
+\title{Dynamic Augmented Pooled Testing with Laminar Policies\\ \large Paper skeleton v0: statements in place, prose to come}
+\author{Vladimir R.\ (A) \and H\'ector B.\ V.\ (B) \and (Francisco M.-C., pending agreement on scope)}
+\date{2026-09-28}
+
+\begin{document}
+\maketitle
+
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+Section & What exists & What is missing \\
+\midrule
+2 Model & definitions closed (gate G0); Lemma~A factorization & prose; Lemma~A (ii)--(iii) closure \\
+3 Separation & numbers verified; CBS bound; classical bound (proof in progress) & proof of Lemma~\ref{lem:classical} (Harris) \\
+4 Exact algorithm & solver validated two ways; types version to $n=500$ & prose citing the companion \\
+5 Convention gap & Proposition proved, verified; PDF exists & B's cross-review of Part 2 \\
+6 Policies and evidence & five policies, counterexample, portfolio, Map~1, Map~3 & Map~4 (ratios in the rare-health regime) \\
+7 Towards a guarantee & program only & the theorem, or its honest characterization \\
+8 Price of laminarity & small numerics ($n\le6$) & by types \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Introduction}
+\todo{prose.} Setting: a population with independent health probabilities, a hard budget of tests, tests on pools that return the exact number of infected (augmented counts), decisions taken sequentially, utility collected when a person is proven healthy. Two questions organize the paper (Francisco, 2026-09-22): \textbf{Q1} is there an efficient policy within the laminar class that is approximately optimal within the class? \textbf{Q2} how much is lost by imposing laminarity?
+
+\paragraph{Contributions (target list).} (i) A model in which exact optimization is possible: laminar histories, atoms, posterior-zero accreditation (Section~\ref{sec:model}). (ii) An unbounded separation between augmented laminar policies and the best non-augmented dynamic policy, with a self-contained proof of the classical side (Section~\ref{sec:sep}). (iii) An exact Bellman algorithm with a types compression that reaches $n=500$ (Section~\ref{sec:exact}). (iv) The convention gap: soft versus hard clearing changes the optimal policy, not only the value; the overhead of hard clearing is bounded (Section~\ref{sec:gap}). (v) Planning greedies, counterexamples, and a portfolio with empirical constant $\approx0.93$ (Section~\ref{sec:policies}). (vi) A guarantee in a restricted regime, or the characterization of why none exists (Section~\ref{sec:guarantee}). \status{(i)--(v) exist in some form; (vi) is the open work}
+
+\section{Model}\label{sec:model}
+\todo{prose from \texttt{docs/notes/2026-08-31-diseno-BM17.md} and master plan §5--§6.}
+People $[n]$; person $i$ is healthy with probability $q_i$, infected with $p_i=1-q_i$, independently; utility $u_i\ge0$ collected once, when $i$ is accredited healthy. A test on a pool $T$, $|T|\le G$, returns $R(T)=$ number of infected in $T$. Budget $B$, hard on every path. A history $h$ is the sequence of $(T,R(T))$. \textbf{Laminar class $\Lam$:} every new pool is disjoint from all tested pools (fresh) or a strict subset of a residual atom. \textbf{Posterior-zero accreditation:} $i$ is accredited when $\Pr(i\text{ infected}\mid h)=0$. Values: $\OPT^{\Lam}(B)$ (laminar, augmented), $\OPT^{D}_{\rm aug}(B)$ (unrestricted pools, augmented), $\OPT^{D}_{\rm bin}(B)$ (non-augmented: tests return only whether $R(T)>0$), $\OPT^{S}_{\rm bin}(B)$ (non-augmented static). Comparators: $\OPT^{S}_{\rm bin}\le\OPT^{D}_{\rm bin}\le\OPT^{D}_{\rm aug}$ and $\OPT^{\Lam}\le\OPT^{D}_{\rm aug}$.
+
+\begin{lemma}[Lemma A: posterior factorizes over atoms]\label{lem:A}
+Under a laminar history the posterior of the infection profile factorizes over the residual atoms, each atom's factor being the prior restricted to the atom conditioned on its count; the count of every atom is determined by $h$. \status{DEMOSTRADO (i); (ii)--(iii) and coherence pending; \texttt{lemma\_A\_laminar\_inference.tex}}
+\end{lemma}
+
+\section{Separation: augmented laminar versus the classical model}\label{sec:sep}
+
+\begin{lemma}[Classical bound in the rare-health regime]\label{lem:classical}
+In the non-augmented model with homogeneous $q\le\tfrac12$ and $u\equiv1$, every dynamic policy with $B$ tests collects at most $Bq$ in expectation, and $B$ individual tests collect exactly $Bq$: $\OPT^{D}_{\rm bin}(B)=\OPT^{S}_{\rm bin}(B)=Bq$.
+\end{lemma}
+\begin{proof}[Proof sketch] \status{PENDIENTE: A writes it (28--29 Sep); = companion Thm 7.1, validated}
+A test on $m$ not-yet-accredited people accredits them all iff it reads negative, so without history it yields $m\,q^m\le q$ for $q\le\tfrac12$ (equality at $m=1$, and at $m=2$ when $q=\tfrac12$). History cannot help: negative results accredit and remove their people; the remaining results are positive, i.e.\ decreasing events in the health indicators, so by Harris' inequality $\Pr(\text{all of }T\text{ healthy}\mid h)\le q^{m}$. Summing over $B$ tests gives $Bq$.
+\end{proof}
+
+\begin{proposition}[Cover-then-bisect lower bound]\label{prop:cbs}
+For homogeneous $q$, $u\equiv1$, $n\ge kG$ with $k=B-\lceil\log_2 G\rceil\ge1$, under posterior-zero accreditation $\OPT^{\Lam}(B)\ge 1-(1-q)^{kG}$. Under strict accreditation the same plan gives $1-(1-q)^{(k-1)G}$. \status{DEMOSTRADO (master plan §16, arithmetic verified); the plan is not optimal (Map 3)}
+\end{proposition}
+
+\begin{theorem}[Unbounded separation]\label{thm:sep}
+For $q\le\tfrac12$, $\displaystyle \frac{\OPT^{\Lam}(B)}{\OPT^{D}_{\rm bin}(B)}\ \ge\ \frac{1-(1-q)^{(B-\lceil\log_2G\rceil)G}}{Bq}$. Along $G=2^j$, $B=j+1$, $q=c/G$ the right-hand side is $\gtrsim (1-e^{-c})\,G/(c\,(\log_2G+1))\to\infty$. \status{follows from Lemma~\ref{lem:classical} + Proposition~\ref{prop:cbs}; DEMOSTRADO once the lemma is written}
+\end{theorem}
+
+\paragraph{Numbers at the anchor.} $(q,G,B)=(0.05,16,7)$, $n=48$: classical optimum $0.35$; laminar $\ge0.9147$ (CBS) and $\ge1.1233$ (exact optimum restricted to $G\le8$, Map~3): factors $2.61$ and $3.21$ against the true classical optimum. Frontier $(0.05,8,6)$, $n=24$: exact laminar $0.8654$ against $0.30$, factor $2.88$. \status{VERIFICADO; \texttt{results/mapa\_homogeneo\_3.csv}}
+
+\begin{remark}[Certificate without computing the optimum]
+For populations where Lemma~\ref{lem:classical} does not apply, the factor-2 adaptivity bound of the non-augmented model (Francisco, in preparation) gives $\OPT^{D}_{\rm bin}\le 2\,\OPT^{S}_{\rm bin}$: any augmented laminar policy worth more than twice the static non-overlapping optimum provably beats every non-augmented dynamic policy. \status{DERIVACION CONDICIONAL to that paper}
+\end{remark}
+
+\section{Exact optimization within the laminar class}\label{sec:exact}
+\todo{prose; cite the companion for the recursion and the types compression.}
+State $(U,\mathcal A,b)$: untested people, residual atoms with counts, remaining budget. Actions: a fresh pool $S\subseteq U$ or a refinement $S\subsetneq A$ of an interior atom. Transition by the Poisson-binomial coefficients $Z(A,r)$ of Lemma~\ref{lem:A}; recursion 5.5 of the companion. \status{implemented: \texttt{bm17\_toy\_solver.py}; validated against two independent profile enumerators, 626 exact tests, $n\le5$, $B\le3$}
+\begin{proposition}[Types compression]
+With $M$ types the state is a vector of counts per type; homogeneous populations of $n=500$ solve in seconds; the wall is exponential in $B$ ($B=10\approx33$\,s). \status{implemented: \texttt{bellman\_tipos.py}; companion Prop 6.2}
+\end{proposition}
+
+\section{The convention gap: strict versus posterior-zero clearing}\label{sec:gap}
+Full statement and proofs in \texttt{proposicion\_brecha\_convencion.tex} (to be merged here).
+\begin{proposition}[Convention gap]
+(1) $C_{\str}(h)\subseteq C_{\pz}(h)$ for every history, hence $\OPT_{\str}(B)\le\OPT_{\pz}(B)$. (2) Every posterior-zero policy is replicated under strict clearing with at most $B-1$ additional tests, one per deduced-clean piece: $\OPT_{\pz}(B)\le\OPT_{\str}(2B-1)$. (3) Sharpness: with $n\ge3$, $G=2$, $B=2$, $u\equiv1$, the pair-first policy is worth $2q+q(q^2+p^2)$ under posterior-zero and $2q+q^2(2q-1)$ under strict, against $2q$ for two singletons; the gap $pq$ comes from one branch. \status{(1),(3) DEMOSTRADO, VERIFICADO $n=4$; (2) DEMOSTRADO, cross-review by B pending}
+\end{proposition}
+\begin{corollary}
+In the two-test game strict clearing reproduces the threshold $q=\tfrac12$ of the non-augmented model (singletons optimal below it); under posterior-zero there is no threshold. The convention flips the optimal first move. Francisco (2026-09-22) states the mechanism of (2) independently: ``the cost of going from soft to hard clearing is one more test per group, not necessarily laminar''.
+\end{corollary}
+
+\section{Efficient laminar policies and evidence}\label{sec:policies}
+\todo{prose; every number from the claims register (master plan §9) or a sidecar.}
+Policies: immediate greedy $\pi_M$; density greedies $\pi_C$ (committed), $\pi_R$ (receding); Lagrangian index $\pi_L$ ($I_\lambda=\sup_{\pi\ \mathrm{local}}\mathbb E[U-\lambda T]$); the team's $C3$; and $\pi_{\rm ratio}$ ($\mathbb E[U]/\mathbb E[T]$ over local projects, suggested 2026-09-22) \status{$\pi_{\rm ratio}$ PENDIENTE}.
+\begin{itemize}
+\item Universal counterexample: $n=6$, $B=3$, $G=4$, heterogeneous; $\pi_M,\pi_C,\pi_R$ and $C3$ all at $0.6576$ of the laminar optimum; $\pi_L$ reaches $0.9641$. \status{VERIFICADO}
+\item Portfolio best-of-5: ratio $\ge0.9307$ on $\approx7{,}000$ instances, $n\le8$, $G\le4$, $B\le5$; $\lambda$ is part of the specification. \status{empirical, no guarantee}
+\item Map 1: in $665/665$ homogeneous cells ($q\in\{0.05,\dots,0.95\}$, $G\in\{2,3,4,5,8\}$, $B\in\{2,\dots,8\}$, $n=BG$) the optimal first action is a group. \status{VERIFICADO}
+\item Map 4 (in progress): in the rare-health regime $q\le\tfrac12$, ratio value/optimum and first action of each planning policy, exact or Monte Carlo. Question: does any policy keep a uniform constant there? \status{PENDIENTE, B, 28--29 Sep}
+\end{itemize}
+
+\section{Towards a guarantee within the laminar class (Q1)}\label{sec:guarantee}
+Program: pick the candidate from Map 4; prove a constant-factor guarantee against $\OPT^{\Lam}$ in the rare-health family first, where the optimum has known structure (cover-then-bisect-like plans, Map 3), then extend or characterize the obstruction. Known: the immediate greedy has factor $G$ against $\OPT^{D}_{\rm aug}$ (companion Thm 8.2, \status{SIN VALIDAR}) and is not the candidate (Francisco, 2026-09-22); density greedies have limit fractions $1/\log G$ and $\to1$ in the rare-health family (companion Thm 9.3, \status{SIN VALIDAR; a missing leftover-budget term is suspected}). Open: (26) which planning policy is the theorem candidate; (23) where the profile/antiprofile coupling of the non-augmented analysis breaks with counts.
+
+\section{The price of laminarity (Q2)}\label{sec:price}
+Small exact comparisons $\OPT^{\Lam}$ vs $\OPT^{D}_{\rm aug}$ for $n\le6$ exist (\texttt{results/precio\_laminar\_2026-09-21/}). \status{PENDIENTE: by types, and a statement}
+
+\appendix
+\section{Verification}
+Two independent profile enumerators (\texttt{pathwise\_enum.py}, \texttt{enumerador\_historias.py}) agree exactly with the Bellman solver on every optimum and every forced first action, $n\le5$, $B\le3$, both conventions; the bound of Section~\ref{sec:gap}(2) holds on the whole grid. Suites: \texttt{tests\_bm17.py}, \texttt{tests\_brecha\_convencion.py}.
+\end{document}

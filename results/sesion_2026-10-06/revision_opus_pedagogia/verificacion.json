@@ -1,0 +1,14 @@
+{
+  "screen_count": 4,
+  "screen_words_without_image_alt": 245,
+  "map_cells_unchanged": 228,
+  "highlight": {
+    "B": 4,
+    "G": 3,
+    "q": 0.5
+  },
+  "ratio_bound_from_verified_case": "5/6",
+  "bound_scope": "upper bound on any uniform admissible conversion guarantee, not an attained lower guarantee",
+  "numeric_experiments_rerun": false,
+  "human_style_terms_checked": true
+}

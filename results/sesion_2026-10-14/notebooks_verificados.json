@@ -1,0 +1,22 @@
+{
+  "augmented/notebooks/27_sesion_francisco.ipynb": {
+    "cells": 5,
+    "valid_images": 4
+  },
+  "augmented/notebooks/28_pooling_y_precio_laminar.ipynb": {
+    "cells": 5,
+    "valid_images": 5
+  },
+  "augmented/notebooks/28_notas_de_estudio.ipynb": {
+    "cells": 16,
+    "valid_images": 9
+  },
+  "augmented/notebooks/29_tres_clases_y_contraejemplo.ipynb": {
+    "cells": 6,
+    "valid_images": 4
+  },
+  "augmented/notebooks/29_notas_de_estudio.ipynb": {
+    "cells": 5,
+    "valid_images": 1
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "artifact": "verificacion_constante_093.csv",
+  "columns": [
+    "policy",
+    "lambda_value",
+    "value",
+    "opt_laminar",
+    "ratio"
+  ],
+  "generated_utc": "2026-09-21T17:54:22+00:00",
+  "generator": "augmented.verificar_constante_093.run",
+  "git": {
+    "commit": "619cb6e409ee607612e381b285b600b29fd51327",
+    "dirty": true
+  },
+  "params": {
+    "B": 3,
+    "G": 4,
+    "convention": "posterior_zero",
+    "grid_factor": 1.4,
+    "horizon": 3,
+    "initial_state": "BM17 historical harness: all 7 people virgin, no atoms",
+    "lambdas": [
+      0.001,
+      0.042816,
+      0.059942,
+      0.083919,
+      0.117487,
+      0.164481,
+      0.230274,
+      0.322384,
+      0.451337,
+      0.631872,
+      0.884621,
+      1.238469,
+      1.733857,
+      2.427399,
+      3.398359
+    ],
+    "no_paralisis": true,
+    "opt_exact": "124522661010435279/20000000000000000",
+    "p_infection": [
+      "0",
+      ".02722",
+      "0",
+      ".975",
+      ".975",
+      ".975",
+      ".51236"
+    ],
+    "scope": "one registered candidate; not a minimum over 7000 cases",
+    "selection": "maximize policy expected value before execution, independently of OPT",
+    "source_sha256": {
+      "augmented/bm17_toy_solver.py": "a404709f36982775a6ff7dc299167470a2daaa6a1087ceff831d3780db51073f",
+      "augmented/densidad_companion.py": "657b808cf4e8cc975607f348d17837bee80823c56292856bb7fa172c38e91336",
+      "augmented/evolucion_scores.py": "819fe867be3bfec09e2a5ef0fbd9ab4eb32fe27f153f2093a742a31712fd0538",
+      "augmented/indice_lagrangiano.py": "90bba5314f58220a3d8d46387ca4b73c091ae65da720b035d3bbacb59da6770d",
+      "augmented/verificar_constante_093.py": "e168aa2c98346bd3aa05f80549d25fcf52e84ec4ad0bb2a2bef1bf290467a7f1",
+      "docs/notes/2026-09-01-mision-vhat-C3.md": "7c6947b21ab16b8bc5d3242dadc018eebc82ffd7f88190a5fa89f3765da41dff"
+    },
+    "u": [
+      "1.0457",
+      ".9536",
+      ".9588",
+      "38.6689",
+      "40",
+      "39.8024",
+      "1.0837"
+    ]
+  },
+  "rows": 19,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.3",
+    "pandas": "3.0.1",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.18.0"
+  }
+}

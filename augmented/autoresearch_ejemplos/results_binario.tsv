@@ -1,0 +1,3 @@
+mission	ratio_min	status	n	B	G	q	u	laminar	other	tried	skipped_lambda_le_1	invalid	seconds	generator_sha	description
+binario	0.900000750000975	ok	4	2	2	['999999/1000000', '1/2', '1/2', '999999/1000000']	['1', '3', '3', '2']	8999994000003/2000000000000	1999997000001/400000000000	10	0	0	11.5	b98c4dcb04	Smoke test: start from certified 10/9 family; not a new discovery
+binario	0.900000750000975	ok	4	2	2	['999999/1000000', '1/2', '1/2', '999999/1000000']	['1', '3', '3', '2']	8999994000003/2000000000000	1999997000001/400000000000	10	0	0	11.6	2250c52bdc	Final generator smoke: distinct perturbations after the certified 10/9 seed; no new discovery

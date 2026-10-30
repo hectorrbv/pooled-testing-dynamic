@@ -1,0 +1,62 @@
+{
+  "verified_utc": "2026-09-29T14:12:57.029791+00:00",
+  "setup": {
+    "n": 6,
+    "B": 3,
+    "G": 4,
+    "p_infectado": [
+      "9/10",
+      "33/40",
+      "7/8",
+      "4/5",
+      "19/20",
+      "17/20"
+    ],
+    "q_sano": [
+      "1/10",
+      "7/40",
+      "1/8",
+      "1/5",
+      "1/20",
+      "3/20"
+    ],
+    "u": [
+      2,
+      1,
+      1,
+      1,
+      4,
+      2
+    ],
+    "clearing": "soft",
+    "initial_history": []
+  },
+  "pi_ratio": {
+    "value_fraction": "675209/640000",
+    "value": 1.0550140625,
+    "ratio_laminar": 0.9910757402512003,
+    "first_pool": "AEF",
+    "alpha": 1,
+    "max_planned_tests": 3,
+    "no_paralysis": true
+  },
+  "pi_L": {
+    "value": 1.026265,
+    "ratio_laminar": 0.9640689927475711,
+    "lambda": 0.001,
+    "max_planned_tests": 3,
+    "no_paralysis": true
+  },
+  "opt_laminar": 1.0645140625,
+  "opt_general": 1.1104640625,
+  "verification": {
+    "method": "64 independent initial profiles; credits computed by filtering all profiles compatible with each observed count",
+    "profiles": 64,
+    "difference": 2.220446049250313e-16
+  },
+  "source_sha256": {
+    "augmented/politica_ratio.py": "9cfb24ac3a35339c5ce06b09a65f166710bbb0ffbc59131a70840d52eaec861d",
+    "augmented/bm17_toy_solver.py": "a404709f36982775a6ff7dc299167470a2daaa6a1087ceff831d3780db51073f",
+    "augmented/indice_lagrangiano.py": "90bba5314f58220a3d8d46387ca4b73c091ae65da720b035d3bbacb59da6770d"
+  }
+}

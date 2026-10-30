@@ -1,0 +1,4 @@
+opcion,score_exacto,score_fraccion,rango_por_score,cobrada_esperada_t1,cobrada_esperada_t2,cobrada_esperada_t3,cobrada_esperada_t4,cobrada_esperada_t5,cobrada_esperada_t6
+individual A,0.5,1/2,3,0.498,1.082,1.169,1.169,1.169,1.169
+par virgen CD,0.6,3/5,2,0.179,0.179,0.179,0.179,0.179,0.179
+retest AB,1.0,1,1,0.0,0.0,0.0,0.0,0.0,0.0

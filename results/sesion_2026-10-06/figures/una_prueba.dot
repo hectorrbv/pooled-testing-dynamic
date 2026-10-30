@@ -1,0 +1,35 @@
+digraph una_prueba {
+	bgcolor=white dpi=140 nodesep=.35 ordering=out pad=.15 rankdir=TB ranksep=.5
+	node [fontcolor="#262626" fontname=Helvetica fontsize=14 margin=".08,.08" shape=plaintext]
+	edge [arrowhead=none color="#777777" fontcolor="#777777" fontname=Helvetica fontsize=12 penwidth=.8]
+	subgraph cluster_a {
+		color=white fontcolor="#262626" fontname=Helvetica fontsize=18 label="Probar A"
+		A [label="Individual A
+E[U] = 0.90"]
+		A0 [label="A sano
+Cobramos 1"]
+		A1 [label="A infectado
+Cobramos 0"]
+		A -> A0 [label="R = 0
+90%"]
+		A -> A1 [label="R = 1
+10%"]
+	}
+	subgraph cluster_ab {
+		color=white fontcolor="#262626" fontname=Helvetica fontsize=18 label="Probar AB"
+		AB [label="Grupo AB
+E[U] = 0.18" color="#262626"]
+		AB0 [label="Ambos sanos
+Cobramos 2" color="#262626"]
+		AB -> AB0 [label="R = 0
+9%"]
+		AB1 [label="Un sano, sin saber cuál
+Cobramos 0" color="#262626"]
+		AB -> AB1 [label="R = 1
+82%"]
+		AB2 [label="Ambos infectados
+Cobramos 0" color="#262626"]
+		AB -> AB2 [label="R = 2
+9%"]
+	}
+}
