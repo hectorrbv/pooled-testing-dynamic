@@ -1,0 +1,224 @@
+{
+  "setup": {
+    "n": 6,
+    "B": 4,
+    "G": 3,
+    "q": "1/2",
+    "p": "1/2",
+    "u": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "clearing": "soft",
+    "independent": true,
+    "history": [],
+    "labels": "ABCDEF"
+  },
+  "root_branches": [
+    {
+      "R_AB": 0,
+      "probability": "1/4",
+      "general": "4",
+      "laminar": "15/4",
+      "general_next": [
+        2,
+        3
+      ],
+      "laminar_next": [
+        2
+      ],
+      "gap_contribution": "1/16"
+    },
+    {
+      "R_AB": 1,
+      "probability": "1/2",
+      "general": "3",
+      "laminar": "9/4",
+      "general_next": [
+        0,
+        2,
+        3
+      ],
+      "laminar_next": [
+        0
+      ],
+      "gap_contribution": "3/8"
+    },
+    {
+      "R_AB": 2,
+      "probability": "1/4",
+      "general": "2",
+      "laminar": "7/4",
+      "general_next": [
+        2,
+        3
+      ],
+      "laminar_next": [
+        2
+      ],
+      "gap_contribution": "1/16"
+    }
+  ],
+  "witness": {
+    "infection_profile": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      0
+    ],
+    "infected": [
+      "B",
+      "D"
+    ],
+    "probability": "1/64",
+    "policies": {
+      "general": {
+        "steps": [
+          {
+            "pool": [
+              0,
+              1
+            ],
+            "R": 1,
+            "conditional_probability": "1/2",
+            "healthy_after": [],
+            "newly_healthy": []
+          },
+          {
+            "pool": [
+              0,
+              2,
+              3
+            ],
+            "R": 1,
+            "conditional_probability": "3/8",
+            "healthy_after": [],
+            "newly_healthy": []
+          },
+          {
+            "pool": [
+              1,
+              2,
+              4
+            ],
+            "R": 1,
+            "conditional_probability": "1/3",
+            "healthy_after": [
+              2
+            ],
+            "newly_healthy": [
+              2
+            ]
+          },
+          {
+            "pool": [
+              0,
+              4,
+              5
+            ],
+            "R": 0,
+            "conditional_probability": "1/4",
+            "healthy_after": [
+              0,
+              2,
+              4,
+              5
+            ],
+            "newly_healthy": [
+              0,
+              4,
+              5
+            ]
+          }
+        ],
+        "healthy": [
+          0,
+          2,
+          4,
+          5
+        ],
+        "utility": "4"
+      },
+      "laminar": {
+        "steps": [
+          {
+            "pool": [
+              0,
+              1
+            ],
+            "R": 1,
+            "conditional_probability": "1/2",
+            "healthy_after": [],
+            "newly_healthy": []
+          },
+          {
+            "pool": [
+              0
+            ],
+            "R": 0,
+            "conditional_probability": "1/2",
+            "healthy_after": [
+              0
+            ],
+            "newly_healthy": [
+              0
+            ]
+          },
+          {
+            "pool": [
+              2,
+              3
+            ],
+            "R": 1,
+            "conditional_probability": "1/2",
+            "healthy_after": [
+              0
+            ],
+            "newly_healthy": []
+          },
+          {
+            "pool": [
+              2
+            ],
+            "R": 0,
+            "conditional_probability": "1/2",
+            "healthy_after": [
+              0,
+              2
+            ],
+            "newly_healthy": [
+              2
+            ]
+          }
+        ],
+        "healthy": [
+          0,
+          2
+        ],
+        "utility": "2"
+      }
+    },
+    "scope": "One illustrative realization, not the expected-value comparison."
+  },
+  "audit": {
+    "independent_profiles_per_policy": 64,
+    "all_nodes_checked": true,
+    "independent_laminar_atom_check": true,
+    "root_gap": "1/2",
+    "mixed_branch_contribution": "3/8",
+    "mixed_share_of_gap": "3/4"
+  },
+  "source_sha256": {
+    "augmented/extrae_separacion_28.py": "57ddf226905dad3a41516b359285ed7c749358a6ec37d2983dcc27eb17de6e42",
+    "augmented/bellman_perfiles.py": "9498dde3806b35f998b428b5f21a66c84ac189db57dda0df6a9476b0593782a1",
+    "augmented/bm17_toy_solver.py": "a404709f36982775a6ff7dc299167470a2daaa6a1087ceff831d3780db51073f",
+    "augmented/experimento_sesion_28.py": "bc45980dd6f502c484d6d37d966c19a4cf486ee7e3cc346eda3ccc8cdfafcf42",
+    "augmented/experimento_mapa_laminar_28.py": "81397dd07dcb21c2128e42319b0c26c9a78fa8d2f4e67b311200bb74031718ef"
+  }
+}

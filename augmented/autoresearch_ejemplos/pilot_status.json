@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-14",
+  "overnight_started": false,
+  "precio_n7_fixed_judge": {
+    "status": "limited",
+    "exit_code": 124,
+    "requested_search_seconds": 1,
+    "hard_seconds": 60,
+    "memory_mb": 1536,
+    "reason": "Pilot wrapper reported time or memory limit without distinguishing them",
+    "seed_ratio": "41/52",
+    "independent_verification": "results/precio_q05_G/testigos_verificados.json",
+    "pending": "Completion with the fixed night judge under the production resource limits"
+  },
+  "generator_validation": {
+    "valid_distinct_candidates_per_mission": 200,
+    "missions": ["binario", "precio"],
+    "seed": 20261014,
+    "note": "Candidate validity and uniqueness, not solver evaluation of these 400 cases"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "setup": {
+    "n": 6,
+    "B": 2,
+    "G": 4,
+    "q_sano": 0.1,
+    "p_infectado": 0.9,
+    "u": 1
+  },
+  "pi_3": {
+    "value": 0.17852,
+    "first_pool": "ABCD",
+    "last_pool_by_count": {
+      "0": "E",
+      "1": "AB",
+      "2": "AB",
+      "3": "A",
+      "4": "E"
+    }
+  },
+  "pair_policy": {
+    "value": 0.282,
+    "branches": [
+      {
+        "R": 0,
+        "probability": 0.01,
+        "last_pool": "C",
+        "branch_expected_utility": 2.1
+      },
+      {
+        "R": 1,
+        "probability": 0.18,
+        "last_pool": "A",
+        "branch_expected_utility": 1
+      },
+      {
+        "R": 2,
+        "probability": 0.81,
+        "last_pool": "C",
+        "branch_expected_utility": 0.1
+      }
+    ]
+  },
+  "individual_policy": {
+    "value": 0.2,
+    "pools": [
+      "A",
+      "B"
+    ]
+  },
+  "quad_count_3": {
+    "probability": 0.2916,
+    "last_pool": "A",
+    "chance_identify_healthy": 0.25,
+    "branch_expected_utility": 0.25
+  },
+  "score_source_sha256": "f1656572f968e7369d5f2cfc72c8b8d9cd085e457a1a3160671d05e448ec3f03",
+  "verified_utc": "2026-09-29T14:18:30.240022+00:00"
+}

@@ -1,0 +1,14 @@
+Gracias. Dos matices antes de fijar las respuestas:
+1. «B=O(n/log n) solo si G>=n» es demasiado fuerte: si log G=Theta(log n), bloques de tamaño G también pueden dar ese orden con G<n. Usaré la formulación condicionada por bloques G y no afirmaré una construcción ya probada.
+2. Sí conocemos el mecanismo de la familia de cuatro: binario BD, negativo→AC, positivo→AD; laminar BC, R1→B, R0/R2→AD. Está certificado en .95<=s<1. No añadiré que desconocemos ese mecanismo.
+Además acabo de localizar el fallo del control q=.95, n5,B3,G4. Las trazas guardadas de ambas heurísticas abren ABCD; el óptimo laminar abre AB. Bellman condicional Y enumeración independiente directa de las dos pruebas restantes coinciden:
+- óptimo laminar371697/80000=4.6462125.
+- forzar primeraABCD y continuar óptimamente731063/160000=4.56914375.
+- pérdida yainevitablealabrirABCD12331/160000=.07706875.
+- piL3655239/800000=4.56904875, pérdida adicional continuación .000095.
+- piratio1827477/400000=4.5686925, pérdida adicional continuación .00045125.
+EnR2ABC D,prob1083/80000, pi_ratio pruebaE; óptimo pruebaAB. Condicional97/60 vs33/20; pérdida ponderada361/800000.
+EnR3ABCD,prob19/40000, piL pruebaAB; mejor probarA (tambiénE óptimo por empate). Condicional1 vs6/5; pérdida ponderada19/200000.
+Por tanto cambiaré pregunta«qué decisión de continuación»por«qué decisión explica lapérdida» y responderé: «La mayor parte se pierde ya al abrir cuatro personas, frente al par del óptimo. Incluso continuando de forma óptima después de esa apertura, quedaríamos en4.56914 frentea4.64621. Las decisiones posteriores añaden una pérdida mucho menor. Elprimerexperimentoseríacomparar aperturasconelmismocriteriodecontinuación».
+EnQ1nuevo diré«Enestetestigoempezaríaporjerarquía,7/64de9/64;compararjerarquíascompletasyconservarG4comoopciónlegalG5,escogidaantesprimeraprueba. Noafirmarqueunirbibliotecasmantienelaminaridad».
+¿Ves algún fallo matemático o de alcance en estas correcciones? Responde máximo 350 palabras. No repitas las siete respuestas, solo objeciones/correcciones y confirmación de las descomposiciones numéricas.

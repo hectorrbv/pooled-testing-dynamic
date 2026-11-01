@@ -1,0 +1,92 @@
+{
+  "map_rows": 36,
+  "max_abs_error": 1.1102230246251565e-16,
+  "lambda_rows": 7,
+  "selected": {
+    "q": 0.1,
+    "G": 4.0,
+    "B": 2.0,
+    "n": 6.0,
+    "opt": 0.282,
+    "tam_opt": 2.0,
+    "pi_M": 0.7092198581560283,
+    "tam_pi_M": 1.0,
+    "pi_C": 0.7092198581560283,
+    "tam_pi_C": 1.0,
+    "pi_R": 0.7092198581560283,
+    "tam_pi_R": 1.0,
+    "pi_L": 1.0000000000000002,
+    "tam_pi_L": 2.0,
+    "pi_ratio": 0.9999999999999998,
+    "tam_pi_ratio": 2.0,
+    "C3": 0.633049645390071,
+    "tam_C3": 4.0,
+    "decisiones": 3.0,
+    "dispersion": 0.3669503546099292
+  },
+  "minima": {
+    "pi_M": 0.5416592376597618,
+    "pi_C": 0.5416592376597618,
+    "pi_R": 0.5416592376597618,
+    "C3": 0.633049645390071,
+    "pi_L": 0.95,
+    "pi_ratio": 0.9523809523809523
+  },
+  "verified_utc": "2026-09-29T10:00:32.295338+00:00",
+  "presentation": "augmented/notebooks/27_sesion_francisco.ipynb",
+  "presentation_cells": 9,
+  "presentation_images": 6,
+  "render": "Six embedded PNGs valid, unchanged from prior visual verification; six image sources resolved in HTML; builder matches saved notebook.",
+  "evidence_sha256": {
+    "results/mapa4_razones.csv": "8605f37e3c73fbdb454ab6afa06e8ef9cb4f987710289837c5a2156823067291",
+    "results/mapa4_lambda.csv": "f75682d4ec4603ad14c00c1aac4b1c03efad3ab249f5393dca8d6f569196db30",
+    "results/precio_laminar_2026-09-21/resultados.json": "4410dba87045d85c565d5dddee75057cb523e55b3d6a3422df485d812af0fbb7",
+    "results/mapa_homogeneo_3.csv": "44eaba5d020aadaf4309628ccd175a855379d0e68b9b72452610528abdb1f7ef",
+    "results/sesion_2026-09-29/comparacion_candidatas.json": "0fda9b9fc5888f931727cc1d65f2d802b2e5d574a98c99f711ddeceaef64c605"
+  },
+  "policy_source_sha256": {
+    "augmented/politica_ratio.py": "9cfb24ac3a35339c5ce06b09a65f166710bbb0ffbc59131a70840d52eaec861d",
+    "augmented/densidad_companion.py": "657b808cf4e8cc975607f348d17837bee80823c56292856bb7fa172c38e91336",
+    "augmented/indice_lagrangiano.py": "90bba5314f58220a3d8d46387ca4b73c091ae65da720b035d3bbacb59da6770d",
+    "augmented/bm17_toy_solver.py": "a404709f36982775a6ff7dc299167470a2daaa6a1087ceff831d3780db51073f",
+    "augmented/evolucion_scores.py": "819fe867be3bfec09e2a5ef0fbd9ab4eb32fe27f153f2093a742a31712fd0538"
+  },
+  "laminar_evidence_source_hashes_match": true,
+  "papers": {
+    "v1": {
+      "url": "https://arxiv.org/html/2601.22419v1",
+      "html_sha256": "09ec5138a16a5b893833b52885d9c09058830d639319d7c0006865b64bda1235"
+    },
+    "v2": {
+      "url": "https://arxiv.org/html/2601.22419v2",
+      "html_sha256": "eb3cae3366e5e316b969c9f9598102017e99a32bcdfcb59003f122b790f399ff"
+    }
+  },
+  "corrections": [
+    "binary outcome means at least one infected, not healthy",
+    "expected pair cost versus pathwise cost distinguished",
+    "gap of reserved minus expected cost is smallest near q=.5",
+    "planning policies do not all share a high empirical minimum",
+    "selected optimal first action distinguished from all possible ties",
+    "lambda transition stated only for evaluated grid",
+    "old notebooks marked as computational backing for unified presentation"
+  ],
+  "presentation_revision_utc": "2026-09-29T14:30:13.105217+00:00",
+  "presentation_revision": "Opus review applied: policies defined before use, conditional branch labelled, expected branch values clarified, repeated text cut, definitions retained in backup; research evidence hashes unchanged.",
+  "new_ratio_verification": "64 independent profiles; 675209/640000; 99.107574% of laminar optimum",
+  "presentation_render_verified_utc": "2026-09-29T14:49:08.191867+00:00",
+  "pedagogical_review_model": "claude-opus-5-5",
+  "pedagogical_review_file": "results/sesion_2026-09-29/revision_opus.json",
+  "presentation_front_words": 597,
+  "presentation_scope": "Six research presentation screens numbered 1–6; three consultation cells; paper in separate discussion notes.",
+  "presentation_heading_numbers": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "presentation_minutes": 8.5,
+  "intro_removal_permanent_in_builder": true
+}

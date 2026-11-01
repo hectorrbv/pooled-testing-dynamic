@@ -1,0 +1,33 @@
+status	worst_ratio	mean_ratio	exact_cells	cells	worst_cell	scorer_calls	scorer_sha	seconds	description	error
+ok	0.7203572972194209	0.8730539440270499	31	125	q0.3:6,3,3	1223	452bda3de3	2.2	baseline on Hermeneuta: myopic greedy	
+ok	0.7203572972194209	0.9382852818511929	65	125	q0.3:6,3,3	1455	ead8453e71	3.6	2-step lookahead on top-3 greedy pools	
+ok	0.9230769230769231	0.9928609968577412	97	125	q05:7,3,4	1743	5d12a7cafd	13.8	2-step lookahead on all pools (K=all)	
+ok	0.8596263746818422	0.9886890803088287	92	125	q0.3:6,3,3	1707	ecd23fed0a	5.4	2-step lookahead top-8 pools	
+ok	0.9494983000248777	0.9980960195264985	115	125	q0.3:5,4,3	1653	d48c50b6be	202.1	depth-3 exhaustive lookahead, greedy-style leaf	
+ok	0.9494983000248777	0.9974313265979271	109	125	q0.3:5,4,3	1720	dc5b73dee9	182.9	depth-3 at opening move only, depth 2 afterwards	
+ok	0.9494983000248777	0.9980380823621229	114	125	q0.3:5,4,3	1663	a7ed6de4da	63.7	depth-3 lookahead, inner levels pruned to top-6 by gain, leaf=greedy	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1641	16b27c1941	130.7	depth-4 lookahead, inner levels top-4, greedy leaf	
+ok	0.982906976744186	0.9995232191247285	119	125	q0.3:6,4,3	1648	2981294a05	87.9	depth-5 lookahead, inner levels top-3, greedy leaf	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1640	670e798a31	183.7	depth-4 lookahead, inner levels top-5	
+ok	0.982906976744186	0.9995232191247285	119	125	q0.3:6,4,3	1648	93ff1bfc76	88.3	depth-4 lookahead, inner levels top-3	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1634	4e4db8cdcf	242.5	depth-4, widest inner at top level of lookahead: top-8 at depth3, top-4 at depth2	
+ok	0.982906976744186	0.9993444957204732	118	125	q0.3:6,4,3	1657	824a1d3ac8	133.1	inner ranking ties broken toward larger pools	
+ok	0.9494983000248777	0.9994592422141525	123	125	q0.3:5,4,3	1656	37918ac9a5	211.6	inner top-4 by gain plus the max-entropy remaining pool	
+ok	0.9494983000248777	0.9994592422141525	123	125	q0.3:5,4,3	1656	838968cac0	210.4	inner top-4 by gain plus the 2 max-entropy remaining pools	
+ok	0.9494983000248777	0.9991629459178563	120	125	q0.3:5,4,3	1632	37e9459d74	173.7	entropy extra pool only at first inner level (depth>2)	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1640	849fac2e28	197.5	inner top-4 by gain plus best gain-per-person remaining pool	
+ok	0.982906976744186	0.9994077515344266	119	125	q0.3:6,4,3	1636	a48bee5e60	205.9	top-8 at second inner level (depth2), top-4 at depth3	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1641	19129cc039	94.2	top-4 at depth3, top-2 at depth2 (cheap)	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1646	c84f99bc35	132.9	top-6 at depth3, top-2 at depth2	
+ok	0.9494983000248777	0.9991192055249275	118	125	q0.3:5,4,3	1894	8026affcc7	90.1	root ties toward larger pools (>=), top-4/top-2 inner	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1738	f9e073d312	94.3	root ties broken by higher immediate gain, top-4/top-2 inner	
+ok	0.97715373631604	0.9993617256110016	119	125	q0.7:5,3,3	1641	196e6f772f	83.7	memoise inner values across root candidates, top-4/top-2 inner (same rule, cheaper)	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1641	5d5164ea99	82.7	memoise inner values keyed by inst object (fix stale id reuse), top-4/top-2	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1641	2bf4840c6b	85.8	memo, depth-5, top-4 first inner then top-2	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1641	2eca4e2054	67.0	memo, top-4 first inner then pure greedy rollout (top-1)	
+ok	0.982906976744186	0.9995444957204732	120	125	q0.3:6,4,3	1646	1cb4db6225	130.2	memo, top-6 first inner then top-3	
+ok	0.982906976744186	0.9995232191247285	119	125	q0.3:6,4,3	1646	f939aeee6e	55.8	memo, top-3 first inner then greedy	
+ok	0.982906976744186	0.999386474938682	118	125	q0.3:6,4,3	1644	d9378638a6	44.9	memo, top-2 first inner then greedy	
+ok	0.9876543209876543	0.9996214952880917	119	125	q0.5:6,4,4	1617	76ced4e526	88.7	memo, first inner level: top-4 plus best-gain pool of each other size, greedy below	
+ok	0.9971920253519997	0.999977536202816	124	125	q0.7:6,3,4	1653	cc6dae29d4	149.6	size-diverse extras at every inner level >1 (greedy below depth-2 leaf)	
+ok	0.9971920253519997	0.999977536202816	124	125	q0.7:6,3,4	1653	ca18200a7b	107.0	size-diverse at every inner level, top-1 base (only best per size)	

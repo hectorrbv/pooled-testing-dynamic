@@ -1,0 +1,16 @@
+{
+  "unrestricted_optimum_cases_checked": 114,
+  "max_difference": "0",
+  "implementation": "standard library; no project solver or evaluator imports",
+  "static_laminar_families_checked": 44,
+  "best_static_laminar_q03_B2": "3/5",
+  "static_general_families_checked": 56,
+  "best_static_general_q03_B2": "627/1000",
+  "AB_A": "3/5",
+  "AB_C": "12/25",
+  "sampled_path": "663/1250",
+  "trimmed": "3/2",
+  "replanned_as_drawn": "7/4",
+  "crossing_plan": "2",
+  "scope": "Finite numerical verification; no general approximation theorem."
+}

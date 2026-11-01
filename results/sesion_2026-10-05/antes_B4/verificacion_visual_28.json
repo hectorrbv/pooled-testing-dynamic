@@ -1,0 +1,19 @@
+{
+  "notebook_valid": true,
+  "main_slides": 4,
+  "consultations": 6,
+  "embedded_pngs_verified": 7,
+  "talk_seconds": 490,
+  "main_words": 307,
+  "preview": "/tmp/groupcount-notebook28-simple.html",
+  "hashes": {
+    "augmented/notebooks/28_pooling_y_precio_laminar.ipynb": "efe96d4227842b6288813c0df6da1cf15533a9be58ca105296d11aeaa7f75640",
+    "augmented/notebooks/build_28_sesion.py": "e11ae0d12cec2dc77196ade14edd02cca2ad5eded9b07c9c3a819cf863ce6df2",
+    "augmented/notebooks/figuras_28.py": "caec92826f1ac2e59b2c779dca84393612fb4a430e856db04f8a9e9eb5315ee6",
+    "augmented/experimento_mapa_laminar_28.py": "bc80285e4da8734d0d714e359a0be151644525c52279f14ac9106bfd0460fc1b",
+    "results/sesion_2026-10-05/mapa_laminar_28.json": "6649e9987869862bce58715b9e2ee18a5f2f2fb2028c169d950b7cd1ad7c98bd"
+  },
+  "visual_style": "plain trees, thin lines, grayscale with one blue accent",
+  "figures_visually_inspected": true,
+  "evidence_unchanged": true
+}

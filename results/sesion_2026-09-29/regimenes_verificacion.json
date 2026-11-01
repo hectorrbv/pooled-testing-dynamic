@@ -1,0 +1,19 @@
+{
+  "rows": 114,
+  "reproduced_old_rows": 36,
+  "max_old_grid_error": 1.1102230246251565e-16,
+  "runtime_seconds": 6.186107873916626,
+  "optimal_cases": {
+    "pi_M": 31,
+    "pi_C": 31,
+    "pi_R": 36,
+    "C3": 77,
+    "pi_L": 90,
+    "pi_ratio": 93
+  },
+  "ratio_vs_L": {
+    "ratio_wins": 13,
+    "L_wins": 10,
+    "ties": 91
+  }
+}

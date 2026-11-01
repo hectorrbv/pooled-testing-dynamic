@@ -1,0 +1,498 @@
+{
+  "loop1": {
+    "design_sha256": "694fc32231bfdb89e77821e67856220b2fc903ddd543e642ca0855296415bc50",
+    "method": "independent full-profile leaf enumeration",
+    "scope": "value of the fixed design; no unrestricted optimality claim",
+    "targets": [
+      {
+        "value": "11/4",
+        "value_per_B": 0.6875,
+        "leaves": 54,
+        "nodes": 94,
+        "max_tests": 4,
+        "max_pool": 2,
+        "max_connected_component": 4,
+        "nonlaminar_history": [
+          [
+            [
+              0,
+              1
+            ],
+            0
+          ],
+          [
+            [
+              4,
+              5
+            ],
+            1
+          ],
+          [
+            [
+              4,
+              6
+            ],
+            0
+          ],
+          [
+            [
+              7
+            ],
+            0
+          ]
+        ],
+        "n": 16,
+        "B": 4,
+        "G": 2,
+        "seconds": 0.533,
+        "expected": "11/4",
+        "difference": "0",
+        "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B4_G2.json.gz"
+      },
+      {
+        "value": "107/32",
+        "value_per_B": 0.8359375,
+        "leaves": 150,
+        "nodes": 239,
+        "max_tests": 4,
+        "max_pool": 4,
+        "max_connected_component": 6,
+        "nonlaminar_history": [
+          [
+            [
+              0,
+              1,
+              2
+            ],
+            0
+          ],
+          [
+            [
+              6,
+              7,
+              8,
+              9
+            ],
+            1
+          ],
+          [
+            [
+              6,
+              7,
+              10
+            ],
+            0
+          ],
+          [
+            [
+              8
+            ],
+            0
+          ]
+        ],
+        "n": 16,
+        "B": 4,
+        "G": 4,
+        "seconds": 7.894,
+        "expected": "107/32",
+        "difference": "0",
+        "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B4_G4.json.gz"
+      },
+      {
+        "value": "3459/1024",
+        "value_per_B": 0.844482421875,
+        "leaves": 192,
+        "nodes": 308,
+        "max_tests": 4,
+        "max_pool": 5,
+        "max_connected_component": 6,
+        "nonlaminar_history": [
+          [
+            [
+              0,
+              1,
+              2,
+              3,
+              4
+            ],
+            0
+          ],
+          [
+            [
+              6,
+              7,
+              8,
+              9
+            ],
+            1
+          ],
+          [
+            [
+              6,
+              7,
+              10
+            ],
+            0
+          ],
+          [
+            [
+              8
+            ],
+            0
+          ]
+        ],
+        "n": 16,
+        "B": 4,
+        "G": 8,
+        "seconds": 9.457,
+        "expected": "3459/1024",
+        "difference": "0",
+        "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B4_G8.json.gz"
+      },
+      {
+        "value": "3459/1024",
+        "value_per_B": 0.844482421875,
+        "leaves": 192,
+        "nodes": 308,
+        "max_tests": 4,
+        "max_pool": 5,
+        "max_connected_component": 6,
+        "nonlaminar_history": [
+          [
+            [
+              0,
+              1,
+              2,
+              3,
+              4
+            ],
+            0
+          ],
+          [
+            [
+              6,
+              7,
+              8,
+              9
+            ],
+            1
+          ],
+          [
+            [
+              6,
+              7,
+              10
+            ],
+            0
+          ],
+          [
+            [
+              8
+            ],
+            0
+          ]
+        ],
+        "n": 16,
+        "B": 4,
+        "G": 16,
+        "seconds": 0.161,
+        "expected": "3459/1024",
+        "difference": "0",
+        "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B4_G16.json.gz"
+      },
+      {
+        "value": "6769/1024",
+        "value_per_B": 0.8262939453125,
+        "leaves": 13380,
+        "nodes": 22851,
+        "max_tests": 8,
+        "max_pool": 5,
+        "max_connected_component": 6,
+        "nonlaminar_history": [
+          [
+            [
+              0,
+              1,
+              2
+            ],
+            0
+          ],
+          [
+            [
+              3,
+              4
+            ],
+            0
+          ],
+          [
+            [
+              6,
+              7,
+              8
+            ],
+            0
+          ],
+          [
+            [
+              9,
+              10
+            ],
+            0
+          ],
+          [
+            [
+              11
+            ],
+            0
+          ],
+          [
+            [
+              12,
+              13
+            ],
+            1
+          ],
+          [
+            [
+              12,
+              14
+            ],
+            0
+          ],
+          [
+            [
+              15
+            ],
+            0
+          ]
+        ],
+        "n": 16,
+        "B": 8,
+        "G": 8,
+        "seconds": 164.363,
+        "expected": "6769/1024",
+        "difference": "0",
+        "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B8_G8.json.gz"
+      },
+      {
+        "value": "6769/1024",
+        "value_per_B": 0.8262939453125,
+        "leaves": 13380,
+        "nodes": 22851,
+        "max_tests": 8,
+        "max_pool": 5,
+        "max_connected_component": 6,
+        "nonlaminar_history": [
+          [
+            [
+              0,
+              1,
+              2
+            ],
+            0
+          ],
+          [
+            [
+              3,
+              4
+            ],
+            0
+          ],
+          [
+            [
+              6,
+              7,
+              8
+            ],
+            0
+          ],
+          [
+            [
+              9,
+              10
+            ],
+            0
+          ],
+          [
+            [
+              11
+            ],
+            0
+          ],
+          [
+            [
+              12,
+              13
+            ],
+            1
+          ],
+          [
+            [
+              12,
+              14
+            ],
+            0
+          ],
+          [
+            [
+              15
+            ],
+            0
+          ]
+        ],
+        "n": 16,
+        "B": 8,
+        "G": 16,
+        "seconds": 0.442,
+        "expected": "6769/1024",
+        "difference": "0",
+        "tree": "results/sesion_2026-10-20/loops_revision/tree_n16_B8_G16.json.gz"
+      }
+    ],
+    "complete": true
+  },
+  "loop1_baseline": {
+    "status": "ok",
+    "score": "3.625",
+    "design_sha": "9f6e29d52c",
+    "value_n16_B4_G2": "2",
+    "per_test_n16_B4_G2": "0.5",
+    "bits_n16_B4_G2": "0.31546487678572877",
+    "tests_used_n16_B4_G2": "4",
+    "value_n16_B4_G4": "5/2",
+    "per_test_n16_B4_G4": "0.625",
+    "bits_n16_B4_G4": "0.26917284879587067",
+    "tests_used_n16_B4_G4": "4",
+    "value_n16_B4_G8": "5/2",
+    "per_test_n16_B4_G8": "0.625",
+    "bits_n16_B4_G8": "0.19716554799108046",
+    "tests_used_n16_B4_G8": "4",
+    "value_n16_B4_G16": "5/2",
+    "per_test_n16_B4_G16": "0.625",
+    "bits_n16_B4_G16": "0.15290658882389127",
+    "tests_used_n16_B4_G16": "4",
+    "value_n16_B8_G8": "5",
+    "per_test_n16_B8_G8": "0.625",
+    "bits_n16_B8_G8": "0.19716554799108046",
+    "tests_used_n16_B8_G8": "8",
+    "value_n16_B8_G16": "5",
+    "per_test_n16_B8_G16": "0.625",
+    "bits_n16_B8_G16": "0.15290658882389127",
+    "tests_used_n16_B8_G16": "8",
+    "seconds": "15.9",
+    "description": "baseline: detector blocks of four plus individuals",
+    "error": ""
+  },
+  "loop2_selected": {
+    "status": "ok",
+    "worst_ratio": "0.9971920253519997",
+    "mean_ratio": "0.999977536202816",
+    "exact_cells": "124",
+    "cells": "125",
+    "worst_cell": "q0.7:6,3,4",
+    "scorer_calls": "1653",
+    "scorer_sha": "cc6dae29d4",
+    "seconds": "149.6",
+    "description": "size-diverse extras at every inner level >1 (greedy below depth-2 leaf)",
+    "error": ""
+  },
+  "scorer_sha256": "cc6dae29d4b854b351d4b11609ee9aead19f4967f683211cca25081abf90a0cc",
+  "n50": [
+    {
+      "G": 3,
+      "n": 50,
+      "B": 5,
+      "instances": 48,
+      "draws": 24,
+      "comparisons": {
+        "rollout_vs_greedy": {
+          "difference": 0.4010416666666669,
+          "se": 0.08456740823251883,
+          "percent": 2.0110564575806396,
+          "se_percent": 0.42407023150594914,
+          "scaled_difference_ci95": [
+            1.1579371921933606,
+            2.864175722967918
+          ]
+        },
+        "lookahead_vs_greedy": {
+          "difference": 0.4340277777777779,
+          "se": 0.07920314316644374,
+          "percent": 2.176468027684674,
+          "se_percent": 0.3971706826611378,
+          "scaled_difference_ci95": [
+            1.377463674509555,
+            2.975472380859793
+          ]
+        },
+        "lookahead_vs_rollout": {
+          "difference": 0.03298611111111097,
+          "se": 0.027320360249348644,
+          "percent": 0.1621506294004687,
+          "se_percent": 0.13429935996266115,
+          "scaled_difference_ci95": [
+            -0.10802483400439392,
+            0.43232609280533135
+          ]
+        }
+      },
+      "seconds": {
+        "greedy": 0.10625000000000001,
+        "rollout": 4.791666666666667,
+        "lookahead": 18.2875
+      },
+      "cost_ratio": 3.816521739130435,
+      "source": "results/sesion_2026-10-19/q1_n50/q1_n50_G3_B5.csv",
+      "source_sha256": "e59dbd66becc83d7130208d402581bc1cdbfb3d255ebc9451bcc51f8c47787cd"
+    },
+    {
+      "G": 5,
+      "n": 50,
+      "B": 5,
+      "instances": 24,
+      "draws": 12,
+      "comparisons": {
+        "rollout_vs_greedy": {
+          "difference": 1.159722222222222,
+          "se": 0.24341760474663782,
+          "percent": 5.200062276194924,
+          "se_percent": 1.0914567984902956,
+          "scaled_difference_ci95": [
+            2.942211863554373,
+            7.457912688835476
+          ]
+        },
+        "lookahead_vs_greedy": {
+          "difference": 1.239583333333333,
+          "se": 0.2534143107690971,
+          "percent": 5.558150397010741,
+          "se_percent": 1.1362808890160356,
+          "scaled_difference_ci95": [
+            3.207574288374006,
+            7.9087265056474765
+          ]
+        },
+        "lookahead_vs_rollout": {
+          "difference": 0.07986111111111101,
+          "se": 0.15284466860206525,
+          "percent": 0.340387746041142,
+          "se_percent": 0.651461662829581,
+          "scaled_difference_ci95": [
+            -1.0072633806675138,
+            1.6880388727497977
+          ]
+        }
+      },
+      "seconds": {
+        "greedy": 0.09583333333333334,
+        "rollout": 95.04166666666667,
+        "lookahead": 918.525
+      },
+      "cost_ratio": 9.664445418676019,
+      "source": "results/sesion_2026-10-19/q1_n50/q1_n50_G5_B5.csv",
+      "source_sha256": "5c98b47262162dc3a4e65ead29afc37ae965b1c61e2d7f822e234a0b8217db94"
+    }
+  ],
+  "interval_method": "Student-t interval on per-instance paired differences, scaled by observed mean comparator welfare; approximate, not an exact ratio CI.",
+  "time_unit": "Seconds per instance for all draws in that G setting, with cache reuse."
+}

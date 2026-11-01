@@ -1,0 +1,318 @@
+digraph general {
+	bgcolor=white nodesep=.12 ordering=out pad=.15 rankdir=TB ranksep=.48
+	node [fontname=Helvetica fontsize=12 margin=".1,.08" shape=box style=rounded]
+	edge [arrowsize=.5 fontname=Helvetica fontsize=10]
+	fontname=Helvetica fontsize=18 label="General · n=6, B=4, G=3, q=0.5 · E[U]=3
+Ruta resaltada: B y D infectados" labelloc=t
+	n0 [label="AB
+b = 4 · E[U] = 3" color="#986347" fontcolor="#262626" penwidth=1.6]
+	n1 [label="CD
+b = 3 · E[U] = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n2 [label="E
+b = 2 · E[U] = 5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n3 [label="F
+b = 1 · E[U] = 5.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n4 [label="Sanos: ABCDEF
+U = 6" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n3 -> n4 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n5 [label="Sanos: ABCDE
+U = 5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n3 -> n5 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n2 -> n3 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n6 [label="F
+b = 1 · E[U] = 4.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n7 [label="Sanos: ABCDF
+U = 5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n6 -> n7 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n8 [label="Sanos: ABCD
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n6 -> n8 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n2 -> n6 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n1 -> n2 [label="R=0 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n9 [label="CE
+b = 2 · E[U] = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n10 [label="F
+b = 1 · E[U] = 4.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n11 [label="Sanos: ABCEF
+U = 5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n10 -> n11 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n12 [label="Sanos: ABCE
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n10 -> n12 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n9 -> n10 [label="R=0 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n13 [label="DEF
+b = 1 · E[U] = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n14 [label="Sanos: ABDEF
+U = 5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n13 -> n14 [label="R=0 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n15 [label="Sanos: ABDE
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n13 -> n15 [label="R=1 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n16 [label="Sanos: ABCF
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n13 -> n16 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n17 [label="Sanos: ABC
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n13 -> n17 [label="R=3 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n9 -> n13 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n18 [label="F
+b = 1 · E[U] = 3.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n19 [label="Sanos: ABDF
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n18 -> n19 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n20 [label="Sanos: ABD
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n18 -> n20 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n9 -> n18 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n1 -> n9 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n21 [label="E
+b = 2 · E[U] = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n22 [label="F
+b = 1 · E[U] = 3.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n23 [label="Sanos: ABEF
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n22 -> n23 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n24 [label="Sanos: ABE
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n22 -> n24 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n21 -> n22 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n25 [label="F
+b = 1 · E[U] = 2.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n26 [label="Sanos: ABF
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n25 -> n26 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n27 [label="Sanos: AB
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n25 -> n27 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n21 -> n25 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n1 -> n21 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n0 -> n1 [label="R=0 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n28 [label="ACD
+b = 3 · E[U] = 3" color="#986347" fontcolor="#262626" penwidth=1.6]
+	n29 [label="E
+b = 2 · E[U] = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n30 [label="F
+b = 1 · E[U] = 4.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n31 [label="Sanos: ACDEF
+U = 5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n30 -> n31 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n32 [label="Sanos: ACDE
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n30 -> n32 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n29 -> n30 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n33 [label="F
+b = 1 · E[U] = 3.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n34 [label="Sanos: ACDF
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n33 -> n34 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n35 [label="Sanos: ACD
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n33 -> n35 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n29 -> n33 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n28 -> n29 [label="R=0 · P=1/8" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n36 [label="BCE
+b = 2 · E[U] = 3.33333" color="#986347" fontcolor="#262626" penwidth=1.6]
+	n37 [label="F
+b = 1 · E[U] = 4.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n38 [label="Sanos: BCDEF
+U = 5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n37 -> n38 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n39 [label="Sanos: BCDE
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n37 -> n39 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n36 -> n37 [label="R=0 · P=1/6" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n40 [label="AEF
+b = 1 · E[U] = 3.5" color="#986347" fontcolor="#262626" penwidth=1.6]
+	n41 [label="Sanos: ACEF
+U = 4" color="#986347" fontcolor="#262626" penwidth=1.6]
+	n40 -> n41 [label="R=0 · P=1/4" color="#986347" fontcolor="#986347" penwidth=1.8]
+	n42 [label="Sanos: ACE
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n40 -> n42 [label="R=1 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n43 [label="Sanos: BCDF
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n40 -> n43 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n44 [label="Sanos: BCD
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n40 -> n44 [label="R=3 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n36 -> n40 [label="R=1 · P=1/3" color="#986347" fontcolor="#986347" penwidth=1.8]
+	n45 [label="DEF
+b = 1 · E[U] = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n46 [label="Sanos: ADEF
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n45 -> n46 [label="R=0 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n47 [label="Sanos: ADE
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n45 -> n47 [label="R=1 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n48 [label="Sanos: ACF
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n45 -> n48 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n49 [label="Sanos: AC
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n45 -> n49 [label="R=3 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n36 -> n45 [label="R=2 · P=1/3" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n50 [label="F
+b = 1 · E[U] = 2.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n51 [label="Sanos: ADF
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n50 -> n51 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n52 [label="Sanos: AD
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n50 -> n52 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n36 -> n50 [label="R=3 · P=1/6" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n28 -> n36 [label="R=1 · P=3/8" color="#986347" fontcolor="#986347" penwidth=1.8]
+	n53 [label="BCE
+b = 2 · E[U] = 2.66667" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n54 [label="F
+b = 1 · E[U] = 3.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n55 [label="Sanos: BCEF
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n54 -> n55 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n56 [label="Sanos: BCE
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n54 -> n56 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n53 -> n54 [label="R=0 · P=1/6" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n57 [label="DEF
+b = 1 · E[U] = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n58 [label="Sanos: BDEF
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n57 -> n58 [label="R=0 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n59 [label="Sanos: BDE
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n57 -> n59 [label="R=1 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n60 [label="Sanos: BCF
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n57 -> n60 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n61 [label="Sanos: BC
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n57 -> n61 [label="R=3 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n53 -> n57 [label="R=1 · P=1/3" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n62 [label="AEF
+b = 1 · E[U] = 2.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n63 [label="Sanos: AEF
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n62 -> n63 [label="R=0 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n64 [label="Sanos: AE
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n62 -> n64 [label="R=1 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n65 [label="Sanos: BDF
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n62 -> n65 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n66 [label="Sanos: BD
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n62 -> n66 [label="R=3 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n53 -> n62 [label="R=2 · P=1/3" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n67 [label="F
+b = 1 · E[U] = 1.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n68 [label="Sanos: AF
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n67 -> n68 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n69 [label="Sanos: A
+U = 1" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n67 -> n69 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n53 -> n67 [label="R=3 · P=1/6" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n28 -> n53 [label="R=2 · P=3/8" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n70 [label="E
+b = 2 · E[U] = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n71 [label="F
+b = 1 · E[U] = 2.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n72 [label="Sanos: BEF
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n71 -> n72 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n73 [label="Sanos: BE
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n71 -> n73 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n70 -> n71 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n74 [label="F
+b = 1 · E[U] = 1.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n75 [label="Sanos: BF
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n74 -> n75 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n76 [label="Sanos: B
+U = 1" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n74 -> n76 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n70 -> n74 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n28 -> n70 [label="R=3 · P=1/8" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n0 -> n28 [label="R=1 · P=1/2" color="#986347" fontcolor="#986347" penwidth=1.8]
+	n77 [label="CD
+b = 3 · E[U] = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n78 [label="E
+b = 2 · E[U] = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n79 [label="F
+b = 1 · E[U] = 3.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n80 [label="Sanos: CDEF
+U = 4" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n79 -> n80 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n81 [label="Sanos: CDE
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n79 -> n81 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n78 -> n79 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n82 [label="F
+b = 1 · E[U] = 2.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n83 [label="Sanos: CDF
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n82 -> n83 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n84 [label="Sanos: CD
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n82 -> n84 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n78 -> n82 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n77 -> n78 [label="R=0 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n85 [label="CE
+b = 2 · E[U] = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n86 [label="F
+b = 1 · E[U] = 2.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n87 [label="Sanos: CEF
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n86 -> n87 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n88 [label="Sanos: CE
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n86 -> n88 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n85 -> n86 [label="R=0 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n89 [label="DEF
+b = 1 · E[U] = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n90 [label="Sanos: DEF
+U = 3" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n89 -> n90 [label="R=0 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n91 [label="Sanos: DE
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n89 -> n91 [label="R=1 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n92 [label="Sanos: CF
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n89 -> n92 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n93 [label="Sanos: C
+U = 1" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n89 -> n93 [label="R=3 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n85 -> n89 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n94 [label="F
+b = 1 · E[U] = 1.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n95 [label="Sanos: DF
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n94 -> n95 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n96 [label="Sanos: D
+U = 1" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n94 -> n96 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n85 -> n94 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n77 -> n85 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n97 [label="E
+b = 2 · E[U] = 1" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n98 [label="F
+b = 1 · E[U] = 1.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n99 [label="Sanos: EF
+U = 2" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n98 -> n99 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n100 [label="Sanos: E
+U = 1" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n98 -> n100 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n97 -> n98 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n101 [label="F
+b = 1 · E[U] = 0.5" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n102 [label="Sanos: F
+U = 1" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n101 -> n102 [label="R=0 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n103 [label="Sanos: ninguno
+U = 0" color="#a7a7a7" fontcolor="#777777" penwidth=.7]
+	n101 -> n103 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n97 -> n101 [label="R=1 · P=1/2" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n77 -> n97 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+	n0 -> n77 [label="R=2 · P=1/4" color="#c6c6c6" fontcolor="#777777" penwidth=.6]
+}

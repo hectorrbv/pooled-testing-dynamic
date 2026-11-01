@@ -1,0 +1,9 @@
+Revisa solo lectura estas dos nuevas figuras y el texto de presentación de Héctor para Francisco. Usuario quiere un árbol bonito y claro que explique la separación óptimo general3 vs laminar2.5, con punto de divergencia y mecanismo, no solo valores. Se reutilizó el estilo de árboles verticales con camino resaltado de sesiones anteriores. Español natural, sin negritas. No edites, no shell; usa Read únicamente en estas rutas:
+results/sesion_2026-10-06/separacion_3_2_5/texto_revision.md
+results/sesion_2026-10-06/separacion_3_2_5/resumen_revision.json
+results/sesion_2026-10-06/figures/separacion_arbol_resumen.png
+results/sesion_2026-10-06/figures/separacion_ruta_comparada.png
+
+Setup n6B4G3q=p=.5ui1, conteos soft clearing, priors independientes historial inicial vacío. Dos árboles óptimos extraídos y evaluados independientemente sobre64perfiles; todos los nodos auditados por filtrado y el óptimo laminar también por solver de átomos. Ambos abren AB. R=0,1,2 con prob1/4,1/2,1/4. Valores finales completos por rama general4,3,2 ylaminar3.75,2.25,1.75. R1generalACD vs lamA. La brecha promedio .5 tiene contribuciones1/16,3/8,1/16. Gráfico1colapsa las continuaciones después de mostrar segundaacción y lo indica. Figura2es una realización ilustrativa (infectadosBD) de esos mismos árboles, no el promedio ni un límite para toda políticalaminar eneseperfil. GenAB1,ACD1,BCE1,AEF0 sanaACEF4; lamAB1,A0,CD1,C0 sanaAC2. Ambascuatropruebas. C se infiere traslostres1: C=1implicaA=D=0yB=E=0, contradiceAB1.
+
+Revisa si el mecanismo se entiende y si se mezclan valores condicionados/realización/óptimos o la laminaridad. No tenemos que imponer un árbol completo en pantalla; quedan SVGs completos en notas. Hasta300palabras: veredicto, máximo3correcciones necesarias, y una frase que el presentador pueda decir sobre el hallazgo. Señala errores reales y concretos; no busques cambios cosméticos por completarel cupo.

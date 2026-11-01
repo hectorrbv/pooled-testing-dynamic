@@ -1,0 +1,30 @@
+{
+  "artifact": "mapa4_lambda.csv",
+  "columns": [
+    "lambda",
+    "primer pool",
+    "razón"
+  ],
+  "generated_utc": "2026-09-28T14:36:18+00:00",
+  "generator": "augmented/notebooks/build_mapa4_notebook.py",
+  "git": {
+    "commit": "41390d9e0338b9216b96c1adff06d430027790d6",
+    "dirty": true
+  },
+  "params": {
+    "clase": "pathwise",
+    "convencion": "posterior_zero",
+    "estatuto": "diagnostico §25; encargo de lambda (D 36:16)",
+    "instancia": "n=6 homogeneo q=0.2 G=4 B=3"
+  },
+  "rows": 7,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.1",
+    "pandas": "2.3.3",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.16.3"
+  }
+}

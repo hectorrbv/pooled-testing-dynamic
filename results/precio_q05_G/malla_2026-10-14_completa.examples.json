@@ -1,0 +1,1850 @@
+[
+  {
+    "name": "vlad_n3",
+    "values": {
+      "n": 3,
+      "q": "heterogeneous",
+      "B": 2,
+      "G": 3,
+      "clearing": "soft",
+      "laminar_scope": "pathwise",
+      "hierarchy": "fixed_balanced",
+      "exact_laminar": "1031/500",
+      "unrestricted": "2121/1000",
+      "greedy_laminar": 2.02,
+      "rollout_laminar": 2.02,
+      "hierarchy_optimum": 2.02,
+      "ratio": 0.9721829325789721,
+      "greedy_ratio": 0.979631425800194,
+      "rollout_ratio": 0.979631425800194,
+      "hierarchy_ratio": 0.979631425800194,
+      "information_lower_bound": "",
+      "information_check": "",
+      "laminar_status": "exact",
+      "general_status": "exact",
+      "policy_status": "evaluated",
+      "laminar_states": 20,
+      "general_states": 49,
+      "general_method": "all_root_pools",
+      "sec": 0.012
+    },
+    "audit": {
+      "q": [
+        "9/10",
+        "7/10",
+        "7/10"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 2,
+      "G": 3,
+      "checks": {
+        "greedy": {
+          "value": "101/50",
+          "decimal": 2.02,
+          "max_tests": 2,
+          "profiles": 8,
+          "traces": [
+            {
+              "profile": [
+                0,
+                0,
+                0
+              ],
+              "probability": "441/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  0
+                ],
+                [
+                  [
+                    0
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                0,
+                0,
+                1
+              ],
+              "probability": "189/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                0
+              ],
+              "probability": "189/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                1
+              ],
+              "probability": "81/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                0
+              ],
+              "probability": "49/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                1
+              ],
+              "probability": "21/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                0
+              ],
+              "probability": "21/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                1
+              ],
+              "probability": "9/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  3
+                ],
+                [
+                  [
+                    0
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            }
+          ]
+        },
+        "rollout": {
+          "value": "101/50",
+          "decimal": 2.02,
+          "max_tests": 2,
+          "profiles": 8,
+          "traces": [
+            {
+              "profile": [
+                0,
+                0,
+                0
+              ],
+              "probability": "441/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  0
+                ],
+                [
+                  [
+                    0
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                0,
+                0,
+                1
+              ],
+              "probability": "189/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                0
+              ],
+              "probability": "189/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                1
+              ],
+              "probability": "81/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                0
+              ],
+              "probability": "49/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                1
+              ],
+              "probability": "21/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                0
+              ],
+              "probability": "21/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                1
+              ],
+              "probability": "9/1000",
+              "history": [
+                [
+                  [
+                    0,
+                    1,
+                    2
+                  ],
+                  3
+                ],
+                [
+                  [
+                    0
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            }
+          ]
+        },
+        "independent_laminar": "1031/500"
+      },
+      "library": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    }
+  },
+  {
+    "name": "notebook_n3",
+    "values": {
+      "n": 3,
+      "q": "heterogeneous",
+      "B": 2,
+      "G": 2,
+      "clearing": "soft",
+      "laminar_scope": "pathwise",
+      "hierarchy": "fixed_balanced",
+      "exact_laminar": "1183/500",
+      "unrestricted": "306/125",
+      "greedy_laminar": 2.3659999999999997,
+      "rollout_laminar": 2.3659999999999997,
+      "hierarchy_optimum": 2.3659999999999997,
+      "ratio": 0.9665032679738562,
+      "greedy_ratio": 0.9999999999999998,
+      "rollout_ratio": 0.9999999999999998,
+      "hierarchy_ratio": 0.9999999999999998,
+      "information_lower_bound": "",
+      "information_check": "",
+      "laminar_status": "exact",
+      "general_status": "exact",
+      "policy_status": "evaluated",
+      "laminar_states": 17,
+      "general_states": 45,
+      "general_method": "all_root_pools",
+      "sec": 0.009
+    },
+    "audit": {
+      "q": [
+        "19/20",
+        "4/5",
+        "4/5"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 2,
+      "G": 2,
+      "checks": {
+        "greedy": {
+          "value": "1183/500",
+          "decimal": 2.366,
+          "max_tests": 2,
+          "profiles": 8,
+          "traces": [
+            {
+              "profile": [
+                0,
+                0,
+                0
+              ],
+              "probability": "76/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  0
+                ],
+                [
+                  [
+                    2
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                0,
+                0,
+                1
+              ],
+              "probability": "19/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  0
+                ],
+                [
+                  [
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                0
+              ],
+              "probability": "19/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  1
+                ],
+                [
+                  [
+                    0
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                1
+              ],
+              "probability": "19/500",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  1
+                ],
+                [
+                  [
+                    0
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                0
+              ],
+              "probability": "4/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  1
+                ],
+                [
+                  [
+                    0
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                1
+              ],
+              "probability": "1/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  1
+                ],
+                [
+                  [
+                    0
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                0
+              ],
+              "probability": "1/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  2
+                ],
+                [
+                  [
+                    2
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                1
+              ],
+              "probability": "1/500",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  2
+                ],
+                [
+                  [
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            }
+          ]
+        },
+        "rollout": {
+          "value": "1183/500",
+          "decimal": 2.366,
+          "max_tests": 2,
+          "profiles": 8,
+          "traces": [
+            {
+              "profile": [
+                0,
+                0,
+                0
+              ],
+              "probability": "76/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  0
+                ],
+                [
+                  [
+                    2
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                0,
+                0,
+                1
+              ],
+              "probability": "19/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  0
+                ],
+                [
+                  [
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                0
+              ],
+              "probability": "19/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  1
+                ],
+                [
+                  [
+                    0
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                1
+              ],
+              "probability": "19/500",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  1
+                ],
+                [
+                  [
+                    0
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                0
+              ],
+              "probability": "4/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  1
+                ],
+                [
+                  [
+                    0
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                1
+              ],
+              "probability": "1/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  1
+                ],
+                [
+                  [
+                    0
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                0
+              ],
+              "probability": "1/125",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  2
+                ],
+                [
+                  [
+                    2
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "1"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                1
+              ],
+              "probability": "1/500",
+              "history": [
+                [
+                  [
+                    0,
+                    1
+                  ],
+                  2
+                ],
+                [
+                  [
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            }
+          ]
+        },
+        "independent_laminar": "1183/500"
+      },
+      "library": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          2
+        ]
+      ]
+    }
+  },
+  {
+    "name": "family_10_9",
+    "values": {
+      "n": 4,
+      "q": "heterogeneous",
+      "B": 2,
+      "G": 2,
+      "clearing": "soft",
+      "laminar_scope": "pathwise",
+      "hierarchy": "fixed_balanced",
+      "exact_laminar": "8999994000003/2000000000000",
+      "unrestricted": "4999993500003/1000000000000",
+      "greedy_laminar": 4.499997,
+      "rollout_laminar": 4.499997,
+      "hierarchy_optimum": 4.499997,
+      "ratio": 0.900000570000501,
+      "greedy_ratio": 0.9999999999996666,
+      "rollout_ratio": 0.9999999999996666,
+      "hierarchy_ratio": 0.9999999999996666,
+      "information_lower_bound": "",
+      "information_check": "",
+      "laminar_status": "exact",
+      "general_status": "exact",
+      "policy_status": "evaluated",
+      "laminar_states": 49,
+      "general_states": 142,
+      "general_method": "all_root_pools",
+      "sec": 0.013
+    },
+    "audit": {
+      "q": [
+        "999999/1000000",
+        "1/2",
+        "1/2",
+        "999999/1000000"
+      ],
+      "u": [
+        "1",
+        "3",
+        "3",
+        "2"
+      ],
+      "B": 2,
+      "G": 2,
+      "checks": {
+        "greedy": {
+          "value": "4499997/1000000",
+          "decimal": 4.499997,
+          "max_tests": 2,
+          "profiles": 16,
+          "traces": [
+            {
+              "profile": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "probability": "999998000001/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  0
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "9"
+            },
+            {
+              "profile": [
+                0,
+                0,
+                0,
+                1
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                0,
+                0,
+                1,
+                0
+              ],
+              "probability": "999998000001/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  0
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "5"
+            },
+            {
+              "profile": [
+                0,
+                0,
+                1,
+                1
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                0,
+                0
+              ],
+              "probability": "999998000001/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                0,
+                1
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "4"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                1,
+                0
+              ],
+              "probability": "999998000001/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                1,
+                1
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                0,
+                0
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  0
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "5"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                0,
+                1
+              ],
+              "probability": "1/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                1,
+                0
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  0
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  2
+                ]
+              ],
+              "credited_utility": "5"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                1,
+                1
+              ],
+              "probability": "1/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                0,
+                0
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                0,
+                1
+              ],
+              "probability": "1/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                1,
+                0
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "probability": "1/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  2
+                ]
+              ],
+              "credited_utility": "0"
+            }
+          ]
+        },
+        "rollout": {
+          "value": "4499997/1000000",
+          "decimal": 4.499997,
+          "max_tests": 2,
+          "profiles": 16,
+          "traces": [
+            {
+              "profile": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "probability": "999998000001/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  0
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "9"
+            },
+            {
+              "profile": [
+                0,
+                0,
+                0,
+                1
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                0,
+                0,
+                1,
+                0
+              ],
+              "probability": "999998000001/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  0
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "5"
+            },
+            {
+              "profile": [
+                0,
+                0,
+                1,
+                1
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                0,
+                0
+              ],
+              "probability": "999998000001/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                0,
+                1
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "4"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                1,
+                0
+              ],
+              "probability": "999998000001/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                0,
+                1,
+                1,
+                1
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                0,
+                0
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  0
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "5"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                0,
+                1
+              ],
+              "probability": "1/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                1,
+                0
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  0
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  2
+                ]
+              ],
+              "credited_utility": "5"
+            },
+            {
+              "profile": [
+                1,
+                0,
+                1,
+                1
+              ],
+              "probability": "1/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  0
+                ]
+              ],
+              "credited_utility": "3"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                0,
+                0
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                0,
+                1
+              ],
+              "probability": "1/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "0"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                1,
+                0
+              ],
+              "probability": "999999/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  1
+                ],
+                [
+                  [
+                    1
+                  ],
+                  1
+                ]
+              ],
+              "credited_utility": "2"
+            },
+            {
+              "profile": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "probability": "1/4000000000000",
+              "history": [
+                [
+                  [
+                    1,
+                    3
+                  ],
+                  2
+                ],
+                [
+                  [
+                    0,
+                    2
+                  ],
+                  2
+                ]
+              ],
+              "credited_utility": "0"
+            }
+          ]
+        },
+        "independent_laminar": "8999994000003/2000000000000"
+      },
+      "library": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          3
+        ],
+        [
+          1,
+          3
+        ]
+      ]
+    }
+  }
+]

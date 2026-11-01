@@ -1,0 +1,2708 @@
+{
+  "created_utc": "2026-10-04T14:05:28.392664+00:00",
+  "model": {
+    "q": "healthy probability",
+    "p": "infection probability",
+    "observation": "exact infection count",
+    "clearing": "soft",
+    "independent_priors": true,
+    "laminar": "pathwise, every earlier pool"
+  },
+  "arithmetic": "exact rational enumeration; two laminar solvers agree",
+  "source_sha256": {
+    "augmented/bellman_perfiles.py": "9498dde3806b35f998b428b5f21a66c84ac189db57dda0df6a9476b0593782a1",
+    "augmented/bm17_toy_solver.py": "a404709f36982775a6ff7dc299167470a2daaa6a1087ceff831d3780db51073f",
+    "augmented/politica_ratio.py": "9cfb24ac3a35339c5ce06b09a65f166710bbb0ffbc59131a70840d52eaec861d",
+    "augmented/experimento_sesion_28.py": "bc45980dd6f502c484d6d37d966c19a4cf486ee7e3cc346eda3ccc8cdfafcf42"
+  },
+  "counterexample": {
+    "q": [
+      "9/10",
+      "1/10"
+    ],
+    "u": [
+      "1",
+      "1"
+    ],
+    "B": 1,
+    "G": 2,
+    "policies": {
+      "A": {
+        "value": "9/10",
+        "decimal": 0.9,
+        "max_tests": 1,
+        "profiles": 4,
+        "traces": [
+          {
+            "profile": [
+              0,
+              0
+            ],
+            "probability": "9/100",
+            "history": [
+              [
+                [
+                  0
+                ],
+                0
+              ]
+            ],
+            "credited_utility": "1"
+          },
+          {
+            "profile": [
+              0,
+              1
+            ],
+            "probability": "81/100",
+            "history": [
+              [
+                [
+                  0
+                ],
+                0
+              ]
+            ],
+            "credited_utility": "1"
+          },
+          {
+            "profile": [
+              1,
+              0
+            ],
+            "probability": "1/100",
+            "history": [
+              [
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            "credited_utility": "0"
+          },
+          {
+            "profile": [
+              1,
+              1
+            ],
+            "probability": "9/100",
+            "history": [
+              [
+                [
+                  0
+                ],
+                1
+              ]
+            ],
+            "credited_utility": "0"
+          }
+        ]
+      },
+      "B": {
+        "value": "1/10",
+        "decimal": 0.1,
+        "max_tests": 1,
+        "profiles": 4,
+        "traces": [
+          {
+            "profile": [
+              0,
+              0
+            ],
+            "probability": "9/100",
+            "history": [
+              [
+                [
+                  1
+                ],
+                0
+              ]
+            ],
+            "credited_utility": "1"
+          },
+          {
+            "profile": [
+              0,
+              1
+            ],
+            "probability": "81/100",
+            "history": [
+              [
+                [
+                  1
+                ],
+                1
+              ]
+            ],
+            "credited_utility": "0"
+          },
+          {
+            "profile": [
+              1,
+              0
+            ],
+            "probability": "1/100",
+            "history": [
+              [
+                [
+                  1
+                ],
+                0
+              ]
+            ],
+            "credited_utility": "1"
+          },
+          {
+            "profile": [
+              1,
+              1
+            ],
+            "probability": "9/100",
+            "history": [
+              [
+                [
+                  1
+                ],
+                1
+              ]
+            ],
+            "credited_utility": "0"
+          }
+        ]
+      },
+      "AB": {
+        "value": "9/50",
+        "decimal": 0.18,
+        "max_tests": 1,
+        "profiles": 4,
+        "traces": [
+          {
+            "profile": [
+              0,
+              0
+            ],
+            "probability": "9/100",
+            "history": [
+              [
+                [
+                  0,
+                  1
+                ],
+                0
+              ]
+            ],
+            "credited_utility": "2"
+          },
+          {
+            "profile": [
+              0,
+              1
+            ],
+            "probability": "81/100",
+            "history": [
+              [
+                [
+                  0,
+                  1
+                ],
+                1
+              ]
+            ],
+            "credited_utility": "0"
+          },
+          {
+            "profile": [
+              1,
+              0
+            ],
+            "probability": "1/100",
+            "history": [
+              [
+                [
+                  0,
+                  1
+                ],
+                1
+              ]
+            ],
+            "credited_utility": "0"
+          },
+          {
+            "profile": [
+              1,
+              1
+            ],
+            "probability": "9/100",
+            "history": [
+              [
+                [
+                  0,
+                  1
+                ],
+                2
+              ]
+            ],
+            "credited_utility": "0"
+          }
+        ]
+      }
+    }
+  },
+  "crossing_pilot": {
+    "q": [
+      "1/2",
+      "1/2",
+      "1/2",
+      "1/2"
+    ],
+    "u": [
+      "1",
+      "1",
+      "1",
+      "1"
+    ],
+    "B": 3,
+    "G": 3,
+    "original_pools": [
+      [
+        0,
+        1,
+        2
+      ],
+      [
+        0,
+        1,
+        3
+      ],
+      [
+        0,
+        2,
+        3
+      ]
+    ],
+    "trimmed_pools": [
+      [
+        0,
+        1,
+        2
+      ],
+      [
+        3
+      ]
+    ],
+    "distinct_signatures": 16,
+    "original": {
+      "value": "2",
+      "decimal": 2.0,
+      "max_tests": 3,
+      "profiles": 16,
+      "traces": [
+        {
+          "profile": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              0
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              0
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "4"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              0
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "3"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              0
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "3"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              2
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "3"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              2
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "3"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              2
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              2
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              3
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              3
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              2
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              3
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              2
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              2
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              3
+            ],
+            [
+              [
+                0,
+                1,
+                3
+              ],
+              3
+            ],
+            [
+              [
+                0,
+                2,
+                3
+              ],
+              3
+            ]
+          ],
+          "credited_utility": "0"
+        }
+      ]
+    },
+    "trimmed_without_reuse": {
+      "value": "7/8",
+      "decimal": 0.875,
+      "max_tests": 2,
+      "profiles": 16,
+      "traces": [
+        {
+          "profile": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              0
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "4"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              0
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "3"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              3
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              3
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        }
+      ]
+    },
+    "trimmed_with_reuse": {
+      "value": "3/2",
+      "decimal": 1.5,
+      "max_tests": 3,
+      "profiles": 16,
+      "traces": [
+        {
+          "profile": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              0
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "4"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              0
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "3"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "3"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              3
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              3
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        }
+      ]
+    },
+    "first_pool_then_ratio": {
+      "value": "7/4",
+      "decimal": 1.75,
+      "max_tests": 3,
+      "profiles": 16,
+      "traces": [
+        {
+          "profile": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              0
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "4"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              0
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "3"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ],
+            [
+              [
+                1
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ],
+            [
+              [
+                1
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ],
+            [
+              [
+                1
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ],
+            [
+              [
+                1
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            0,
+            1,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0
+              ],
+              0
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "3"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              1
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "2"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ],
+            [
+              [
+                1
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            0,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ],
+            [
+              [
+                1
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ],
+            [
+              [
+                1
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              2
+            ],
+            [
+              [
+                0
+              ],
+              1
+            ],
+            [
+              [
+                1
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            1,
+            0
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              3
+            ],
+            [
+              [
+                3
+              ],
+              0
+            ]
+          ],
+          "credited_utility": "1"
+        },
+        {
+          "profile": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "probability": "1/16",
+          "history": [
+            [
+              [
+                0,
+                1,
+                2
+              ],
+              3
+            ],
+            [
+              [
+                3
+              ],
+              1
+            ]
+          ],
+          "credited_utility": "0"
+        }
+      ]
+    },
+    "optima": {
+      "general": {
+        "value": "2",
+        "replay": {
+          "value": "2",
+          "positive_profiles": 16,
+          "max_tests_used": 3,
+          "profiles_with_crossing": 8
+        },
+        "first_pool": [
+          0,
+          1
+        ],
+        "states": 333
+      },
+      "laminar": {
+        "value": "7/4",
+        "replay": {
+          "value": "7/4",
+          "positive_profiles": 16,
+          "max_tests_used": 3,
+          "profiles_with_crossing": 0
+        },
+        "first_pool": [
+          0
+        ],
+        "states": 994
+      }
+    },
+    "ratio_repair_to_general": "3/4",
+    "ratio_laminar_to_general": "7/8",
+    "scope": "One pilot on a fixed crossing plan; no approximation guarantee"
+  },
+  "half_thinning": {
+    "path": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        2
+      ]
+    ],
+    "nonlaminar_probability": "1/16",
+    "outcomes": [
+      {
+        "coins": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "pools": [],
+        "laminar": true
+      },
+      {
+        "coins": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "pools": [
+          [
+            2
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          0,
+          0,
+          1,
+          0
+        ],
+        "pools": [
+          [
+            0
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "pools": [
+          [
+            0,
+            2
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          0,
+          1,
+          0,
+          0
+        ],
+        "pools": [
+          [
+            1
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          0,
+          1,
+          0,
+          1
+        ],
+        "pools": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          0,
+          1,
+          1,
+          0
+        ],
+        "pools": [
+          [
+            1
+          ],
+          [
+            0
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "pools": [
+          [
+            1
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          1,
+          0,
+          0,
+          0
+        ],
+        "pools": [
+          [
+            0
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "pools": [
+          [
+            0
+          ],
+          [
+            2
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          1,
+          0,
+          1,
+          0
+        ],
+        "pools": [
+          [
+            0
+          ],
+          [
+            0
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          1,
+          0,
+          1,
+          1
+        ],
+        "pools": [
+          [
+            0
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          1,
+          1,
+          0,
+          0
+        ],
+        "pools": [
+          [
+            0,
+            1
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          1,
+          1,
+          0,
+          1
+        ],
+        "pools": [
+          [
+            0,
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          1,
+          1,
+          1,
+          0
+        ],
+        "pools": [
+          [
+            0,
+            1
+          ],
+          [
+            0
+          ]
+        ],
+        "laminar": true
+      },
+      {
+        "coins": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "pools": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "laminar": false
+      }
+    ]
+  },
+  "pair_replacement_checks": [
+    {
+      "q": [
+        "9/10",
+        "1/10",
+        "1/5",
+        "3/10"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 2,
+      "best_all_individual": "6/5",
+      "pair_policy": "317/250",
+      "gain": "17/250"
+    },
+    {
+      "q": [
+        "9/10",
+        "1/10",
+        "1/5",
+        "3/10"
+      ],
+      "u": [
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "B": 3,
+      "best_all_individual": "7/5",
+      "pair_policy": "717/500",
+      "gain": "17/500"
+    },
+    {
+      "q": [
+        "1/5",
+        "1/5",
+        "1/5",
+        "1/5"
+      ],
+      "u": [
+        "5",
+        "1",
+        "2",
+        "3"
+      ],
+      "B": 2,
+      "best_all_individual": "8/5",
+      "pair_policy": "234/125",
+      "gain": "34/125"
+    },
+    {
+      "q": [
+        "1/5",
+        "1/5",
+        "1/5",
+        "1/5"
+      ],
+      "u": [
+        "5",
+        "1",
+        "2",
+        "3"
+      ],
+      "B": 3,
+      "best_all_individual": "2",
+      "pair_policy": "267/125",
+      "gain": "17/125"
+    },
+    {
+      "q": [
+        "9/10",
+        "4/5",
+        "7/10",
+        "3/5"
+      ],
+      "u": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "B": 2,
+      "best_all_individual": "9/2",
+      "pair_policy": "1341/250",
+      "gain": "108/125"
+    },
+    {
+      "q": [
+        "9/10",
+        "4/5",
+        "7/10",
+        "3/5"
+      ],
+      "u": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "B": 3,
+      "best_all_individual": "61/10",
+      "pair_policy": "3293/500",
+      "gain": "243/500"
+    }
+  ]
+}

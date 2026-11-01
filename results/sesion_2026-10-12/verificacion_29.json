@@ -1,0 +1,30 @@
+{
+  "search_source_snapshots_verified": true,
+  "note": "After the broad search, the standalone binary replay was corrected to skip zero-probability profiles. The Bellman optimizer was unchanged. Search priors were strictly interior; all displayed cases were re-evaluated with the current version.",
+  "source_snapshots": {
+    "results/sesion_2026-10-12/busqueda/sources/bellman_perfiles.py": "9498dde3806b35f998b428b5f21a66c84ac189db57dda0df6a9476b0593782a1",
+    "results/sesion_2026-10-12/busqueda/sources/bellman_binario_exacto.py": "b63f6978462d3c44b00f53d8b4ce7f49a8b84262c598e5bace8aaa128473e600",
+    "results/sesion_2026-10-12/busqueda/sources/busca_binario_vs_laminar.py": "e1c32e542876b23e9ca40a7573746cb249b5fb674340ba2fb178a0d7ed23d38b"
+  },
+  "figures_visually_reviewed": [
+    "par",
+    "binario_laminar",
+    "detector",
+    "heuristicas",
+    "regimen_local"
+  ],
+  "solver_tests_passed": 18,
+  "notebooks": {
+    "29_tres_clases_y_contraejemplo": {
+      "cells": 6,
+      "embedded_images": 4,
+      "sha256": "1623ed0f65ce7e200d15ce75fa0cd5f71668e27b0614f1fe10e7b1dcfc0d12b3"
+    },
+    "29_notas_de_estudio": {
+      "cells": 5,
+      "embedded_images": 1,
+      "sha256": "742dd98359bb582d70c361a8ac23d94499afd3275f4ce906d11652aeabdb6541"
+    }
+  },
+  "evidence_sha256": "9db203e03962ef6a0dbf061e0e1d3ac3d5329bed95de8fa5855d30247dae15a3"
+}

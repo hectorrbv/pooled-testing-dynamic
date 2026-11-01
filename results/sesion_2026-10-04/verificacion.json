@@ -1,0 +1,28 @@
+{
+  "verified_utc": "2026-10-04T14:09:28.875717+00:00",
+  "notebook": "augmented/notebooks/28_pooling_y_precio_laminar.ipynb",
+  "main_screens": 4,
+  "consultation_cells": 3,
+  "minutes": 7.666666666666667,
+  "main_words": 302,
+  "figures": [
+    "una_prueba.png",
+    "tres_cruces.png",
+    "dos_transformaciones.png",
+    "piloto_conversion.png"
+  ],
+  "render": "Four PNGs visually inspected; embedded attachments equal saved figures; HTML images resolved.",
+  "source_summary_sha256": "f0272194c860738c6292d8cab5875039ff319008e61240b8ddf7114392470d6c",
+  "source_status": "Fathom automatic summary, not a verbatim transcript",
+  "counterexample_profiles": 4,
+  "conversion_profiles_per_method": 16,
+  "optima_match_previous_evidence": true,
+  "laminar_solvers_agree": true,
+  "pair_identity_cases": 6,
+  "thinning_outcomes": 16,
+  "paper": "https://arxiv.org/html/2601.22419v2#S5",
+  "evidence_sha256": {
+    "results/sesion_2026-10-04/evidencia_28.json": "ff328f650565c8e8a998aede1d3a08cf0539ddc596f825e753a4b0b1f7bb2993"
+  },
+  "scope": "Four-person conversion pilot; no universal approximation or efficiency claim."
+}

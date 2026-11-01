@@ -1,0 +1,13 @@
+workspace_ref	ratio_portafolio	ganadora	ratio_pi_M	ratio_pi_C	ratio_pi_R	ratio_C3	ratio_pi_L	lambda	opt	n	B	G	violations	runtime_seconds	tests_status	status	description
+20f498f	0.964069	pi_L	0.657577	0.657577	0.657577	0.656676	0.964069	0.001	1.064514	6	3	4	0	0.53	pass	baseline	contraejemplo de la mision anterior (mataba a 4 de 5)
+20f498f	1.000000	C3	0.775194	0.775194	0.775194	1.000000	1.000000	0.001	0.774000	4	2	2	0	0.01	pass	baseline	B-M16 no-reentrada
+20f498f	0.999926	C3	0.508727	0.635859	0.997605	0.999926	0.997629	0.001	0.078628	8	4	4	0	14.66	pass	baseline	rare-health G=4 (regimen de separacion)
+20f498f	0.950002	pi_L	0.905359	0.899071	0.905359	0.819853	0.950002	0.230625	3.578692	6	4	4	0	32.97	pass	candidate	dos bloques de regimen opuesto: A(3, inf 0.25, u1) pide pool, B(3, inf 0.94, u8) pide individuales; n6 B4 G4
+20f498f	0.870990	pi_L	0.838463	0.839252	0.839252	0.697432	0.870990	0.01	5.417058	6	3	4	0	65.82	pass	candidate	contraste extremo A(3, inf 0.05, u1) vs B(3, inf 0.94, u16), B=3 G=4: mezcla de bloques en el pool para deducir por complemento
+20f498f	0.844360	pi_L	0.840160	0.840160	0.840160	0.672338	0.844360	0.001	5.951250	6	3	4	0	181.61	pass	candidate	bloque seguro (3 sanas u1) vs loteria (3 casi infectadas u40), B=3 G=4: el optimo sondea la loteria primero; los indices locales toman el pool seguro
+20f498f	0.796554	pi_L	0.782705	0.782705	0.782705	0.638998	0.796554	0.001	6.257173	7	3	4	0	29.85	pass	candidate	tres niveles n=7 B=3 G=4: seguro(3,u1) + loteria(3, p.975, u40) + mediano(p.52,u1.1); ascenso local desde la familia seguro-vs-loteria
+20f498f	0.863440	pi_L	0.677124	0.677124	0.677124	0.611043	0.863440	1.41673	8.031508	7	3	4	0	76.30	pass	candidate	relleno grande (p .54 u 3) para que el optimo cobre en la rama mala: hunde pi_M/pi_C/pi_R a 0.68 pero pi_L empieza a sondear la loteria
+20f498f	0.942073	pi_L	0.791491	0.791491	0.791491	0.633392	0.942073	1.083333	6.317188	7	3	4	0	40.56	pass	candidate	version perfectamente simetrica del campeon n=7: la rejilla de lambda SI cae en la ventana buena y pi_L sube a 0.94 (el hallazgo es filo de navaja en lambda)
+20f498f	0.794040	pi_L	0.787024	0.787024	0.787024	0.642576	0.794040	0.001	6.226133	7	3	4	0	79.86	pass	keep	MEJOR: seguro(3,u~1)+loteria(3,p.975,u~40)+relleno(p.51,u1.08), n7 B3 G4; el optimo sondea la loteria primero. Infimo empirico de la mision
+20f498f	0.794040	pi_L	0.787024	0.787024	0.787024	0.642576	0.794040	0.001	6.226133	7	3	4	0	30.02	pass	candidate	verificacion independiente del coordinador
+20f498f	0.930703	pi_L	0.787024	0.787024	0.787024	0.642576	0.930703	1.238469	6.226133	7	3	4	0	30.36	pass	candidate	REJILLA FINA (log, razon 1.4): re-medicion de la mejor instancia de la mision

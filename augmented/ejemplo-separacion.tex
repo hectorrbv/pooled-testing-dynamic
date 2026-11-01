@@ -1,0 +1,18 @@
+% Ejemplo de separacion estatico/dinamico en poblacion grande.
+% Redactado al estilo y largo del Example 1.
+
+\noindent\textbf{Example 2.} Consider a homogeneous population of
+$N \geq 32$ agents, each with utility $u = 1$ and health probability
+$p = 0.04$, testing budget $B = 6$, and pool size constraint $G = 16$, where a
+test reports the number of healthy agents in its pool. An optimal static
+testing plan consists of $B$ individual tests, which yields expected welfare
+$u(\mathcal{T}_s) = Bup = 0.24$. A dynamic plan $\mathcal{T}_d$ proceeds as
+follows. The first $k = B - \log_2 G = 2$ tests are disjoint pools of size $G$,
+covering $kG = 32$ agents. If some pool reports a healthy agent, the remaining
+$\log_2 G = 4$ tests binary-search within it, isolating that agent with
+certainty; if none does, no agent is confirmed. Under this plan an agent is
+confirmed whenever at least one of the $32$ covered agents is healthy, so
+$u(\mathcal{T}_d) \geq u(1 - (1-p)^{kG}) = 0.7292$, representing a $203.8\%$
+improvement over the static optimum. This example demonstrates that adaptivity
+can improve welfare by an arbitrarily large factor, since the budget enters the
+static welfare linearly but the dynamic welfare through the exponent $kG$.

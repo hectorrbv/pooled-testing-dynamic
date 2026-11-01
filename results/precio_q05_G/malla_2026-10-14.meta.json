@@ -1,0 +1,45 @@
+{
+  "created_utc": "2026-10-14T13:26:56.363328+00:00",
+  "parameters": {
+    "out": "results/precio_q05_G/malla_2026-10-14.csv",
+    "legacy_nmax": null,
+    "q": [
+      "1/2"
+    ],
+    "n": [
+      6,
+      7
+    ],
+    "G": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "B": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "case_seconds": 60.0,
+    "states": 1000000,
+    "examples": true
+  },
+  "conventions": {
+    "q": "healthy",
+    "u": "utility",
+    "clearing": "soft",
+    "laminar": "pathwise, rational atom optimum",
+    "policies": "float evaluation in fixed balanced hierarchy; smallest mask breaks ties"
+  },
+  "source_sha256": {
+    "augmented/malla_precio_laminar_q.py": "098ac8a3aec25e9f28184949e0b9095b59fcfbe976b8589a2df5b8cbe54f63af",
+    "augmented/bm17_toy_solver.py": "a404709f36982775a6ff7dc299167470a2daaa6a1087ceff831d3780db51073f",
+    "augmented/bellman_perfiles.py": "9498dde3806b35f998b428b5f21a66c84ac189db57dda0df6a9476b0593782a1",
+    "augmented/laminar_benchmarks.py": "5c271d8776b649b15e1d622a5175bc18d338a49d88c87d47827d7348a37274d4",
+    "augmented/experimento_sesion_28.py": "bc45980dd6f502c484d6d37d966c19a4cf486ee7e3cc346eda3ccc8cdfafcf42"
+  },
+  "rows": 32,
+  "complete": 30
+}

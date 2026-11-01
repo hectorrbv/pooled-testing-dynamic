@@ -1,0 +1,21 @@
+El usuario pide explícitamente una revisión con Opus para mejorar el enfoque pedagógico y conseguir una presentación oral "TED talk like". Actúa como editor de charlas científicas y pedagogo. Revisa y propone mejoras concretas; no modifiques archivos ni ejecutes comandos. Puedes usar solo Read. No leas archivos ajenos a los que aparecen abajo.
+
+CONTEXTO: Héctor prepara una conversación breve de investigación con Francisco, experto que propuso las líneas del proyecto. El presentador aún está aprendiendo. Se frustró porque el notebook mezclaba individuales, un par que libera una prueba, el óptimo laminar y heurísticas. Acabamos de aislar UNA sola comparación en el pase principal: óptimo general frente a óptimo laminar, bajo idénticos datos. Lo demás quedó fuera, en consultas. Respeta esa separación.
+
+PREFERENCIAS OBLIGATORIAS: español natural, breve; sin negritas decorativas; una idea por pantalla; nada de tablas densas, tarjetas, iconos de personas, paletas llamativas, eslóganes o marketing. Evita la palabra "cruces" y sus variantes; usa laminaridad, general, laminar o primera prueba incompatible. "General" permite políticas laminares: no equivale a una política que necesariamente sea no laminar. Usar q=sano, p=infectado, R=conteo, soft clearing. No introducir pi_L, pi_ratio, individuales o el mecanismo del par en la historia principal. El estudio del paper de Nick queda fuera del pase principal. TED-like significa una pregunta que motive, ritmo oral, ejemplo concreto y una progresión fácil de recordar; no dramatizar ni inventar anécdotas o explicaciones causales que los datos no sostienen. Tener rigor y naturalidad sin repetir disclaimers.
+
+EVIDENCIA YA CERRADA: n=6, B=1..6, G=2/3, q=.05,.10,...,.95, probabilidades independientes e iguales, utilidades1, conteos y soft clearing. 228 instancias. General versus laminar:118empates110separaciones. B1,2,6:38empatescada uno; B3:34separacionesde38; B4y5:38separacionescadauno. Máxima pérdida relativa (general−laminar)/general=1/6 en n6B4G3q.5, general3,laminar2.5. Las mayores pérdidas por B,G con separación tienen q=.45 o.5. La optimalidad laminar está cotejada entre solvers; el valor de las políticas evaluado sobre64estados. Son resultados finitos, no garantía universal. La transformación que sigue a la general y cambia ANTES de la primera prueba incompatible con laminaridad aún NO se ha ejecutado. El mapa NO establece cuál es el mecanismo detallado de la política n6 del caso destacado.
+
+LEE estos archivos mediante Read:
+1. results/sesion_2026-10-06/revision_opus_pedagogia/presentacion_actual.md (contenido y notas, fiel al notebook)
+2. docs/notes/2026-10-06-guion-notebook-28.md
+3. results/sesion_2026-10-06/revision_opus_pedagogia/evidencia_resumen.json
+4. results/sesion_2026-10-06/figures/general_vs_laminar.png (inspecciona la figura)
+5. /Users/hectorbecerrilvillamil/.codex/skills/notebooks-investigacion/SKILL.md
+
+ENTREGA EN ESPAÑOL, máximo1000palabras:
+A) Diagnóstico en3puntos: qué impide que esto se entienda al escucharlo una sola vez. Sé crítico, específico y prioriza.
+B) Propón una secuencia de4pantallas con títulos afirmativos o preguntas naturales. Da el texto listo para pantalla (máximo250palabras enTOTAL; setup completo del ejemplo incluido, convenciones compartidas una sola vez) y una frase oral + transición por pantalla. Decide si conviene abrir con la instancia3frentea2.5, por qué nos importa la comparación o la definición; justifica brevemente el orden. No cueles conceptos de otras comparaciones.
+C) Como máximo2mejoras visuales concretas, sin inventar datos ni nuevas simulaciones. Si mantener el heatmap basta, dilo. Señala cómo evitar que la gráfica se convierta en una tabla de números.
+D) Frase de apertura20segundos, cierre20segundos y una pregunta estimulante para Francisco. Haz que el usuario pueda decirlo con sus palabras sin sonar teatral.
+E) Señala cualquier afirmación técnicamente engañosa en tu propuesta; corrígela antes de entregar. No basta decir "más narrativo": necesitamos copy utilizable.

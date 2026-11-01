@@ -1,0 +1,156 @@
+{
+  "instance": {
+    "n": 5,
+    "B": 3,
+    "G": 4,
+    "q": [
+      "19/20",
+      "19/20",
+      "19/20",
+      "19/20",
+      "19/20"
+    ],
+    "u": [
+      "1",
+      "1",
+      "1",
+      "1",
+      "1"
+    ]
+  },
+  "laminar_optimum": "371697/80000",
+  "forced_root_ABCD_best_continuation": "731063/160000",
+  "root_loss": "12331/160000",
+  "branches": [
+    {
+      "r": 0,
+      "probability": "130321/160000",
+      "best_conditional": "99/20",
+      "policies": {
+        "pi_L": {
+          "conditional": "99/20",
+          "weighted_loss": "0",
+          "next": [
+            [
+              4
+            ]
+          ]
+        },
+        "pi_ratio": {
+          "conditional": "99/20",
+          "weighted_loss": "0",
+          "next": [
+            [
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "r": 1,
+      "probability": "6859/40000",
+      "best_conditional": "3",
+      "policies": {
+        "pi_L": {
+          "conditional": "3",
+          "weighted_loss": "0",
+          "next": [
+            [
+              0,
+              1
+            ]
+          ]
+        },
+        "pi_ratio": {
+          "conditional": "3",
+          "weighted_loss": "0",
+          "next": [
+            [
+              0,
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "r": 2,
+      "probability": "1083/80000",
+      "best_conditional": "33/20",
+      "policies": {
+        "pi_L": {
+          "conditional": "33/20",
+          "weighted_loss": "0",
+          "next": [
+            [
+              0,
+              1
+            ]
+          ]
+        },
+        "pi_ratio": {
+          "conditional": "97/60",
+          "weighted_loss": "361/800000",
+          "next": [
+            [
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "r": 3,
+      "probability": "19/40000",
+      "best_conditional": "6/5",
+      "policies": {
+        "pi_L": {
+          "conditional": "1",
+          "weighted_loss": "19/200000",
+          "next": [
+            [
+              0,
+              1
+            ]
+          ]
+        },
+        "pi_ratio": {
+          "conditional": "6/5",
+          "weighted_loss": "0",
+          "next": [
+            [
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "r": 4,
+      "probability": "1/160000",
+      "best_conditional": "19/20",
+      "policies": {
+        "pi_L": {
+          "conditional": "19/20",
+          "weighted_loss": "0",
+          "next": [
+            [
+              4
+            ]
+          ]
+        },
+        "pi_ratio": {
+          "conditional": "19/20",
+          "weighted_loss": "0",
+          "next": [
+            [
+              4
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "method": "Direct enumeration of both remaining tests; saved policies evaluated over all profiles"
+}

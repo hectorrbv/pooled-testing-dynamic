@@ -1,0 +1,4 @@
+# Clase RL (plan maestro §22).
+# Sin esto, tests_rl_fixes.py se SALTA con razon visible; no rompe la coleccion.
+-r requirements.txt
+gymnasium>=0.29

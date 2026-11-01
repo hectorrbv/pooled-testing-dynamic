@@ -1,0 +1,21 @@
+digraph par_completo {
+	bgcolor=white dpi=140 nodesep=.35 ordering=out pad=.12 rankdir=TB ranksep=.48
+	node [color="#00856a" fontcolor="#172033" fontname=Helvetica fontsize=16 margin=".16,.1" penwidth=1.4 shape=box style=rounded]
+	edge [arrowsize=.6 color="#64748b" fontcolor="#64748b" fontname=Helvetica fontsize=13]
+	root [label="Primera prueba: AB"]
+	0 [label="A y B sanos: cobramos 2
+Última prueba: C
+Valor esperado total: 2.1"]
+	root -> 0 [label="R = 0
+1%"]
+	1 [label="Un sano y un infectado
+Última prueba: A
+Cobramos 1 seguro"]
+	root -> 1 [label="R = 1
+18%"]
+	2 [label="A y B infectados
+Última prueba: C
+Valor esperado total: 0.1"]
+	root -> 2 [label="R = 2
+81%"]
+}

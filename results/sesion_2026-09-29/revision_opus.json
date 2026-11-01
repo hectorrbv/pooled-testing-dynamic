@@ -1,0 +1,62 @@
+{
+  "reviewed_utc": "2026-09-29T14:29:32.557049+00:00",
+  "model": "claude-opus-5-5",
+  "scope": "Pedagogía, claridad y concisión; no nuevos resultados de investigación",
+  "prompt_sha256": "37402c477522e4e96c386f71898b5396935af0311c8a8c38ee609ba1fc9902f9",
+  "review": "# Revisión pedagógica\n\n## (a) Tres problemas prioritarios\n\n1. Hay símbolos que se usan antes de definirlos. En la pantalla 2, $\\pi_{ratio}$ solo \"considera cómo seguir\", pero no se dice qué compara. En la 3 aparecen $\\pi_C$, $\\pi_R$, $\\pi_L$ y $\\lambda$ sin explicación, y en la 6 aparece $b$. Las definiciones están en el respaldo 12, pero Francisco verá los símbolos antes de llegar ahí.\n\n2. El árbol de la pantalla 3 parece la política completa. Justo debajo se lee 0.17852, así que es fácil atribuir ese valor al árbol. También puede leerse como prueba de que AB gana en todas las ramas, cuando solo muestra la rama ABCD=3, con probabilidad inicial 0.2916.\n\n3. En las hojas se mezclan el valor esperado y el cobro inmediato. En la pantalla 2, \"cobramos 2\" y \"C aporta 0.1\" aparecen juntos sin el valor 2.1 que usa la fórmula. En la 6, \"Valor de esta rama\" puede leerse como cobro. Conviene usar siempre la misma etiqueta, \"Valor esperado de la rama\". Así la separación entre política completa y plan local, que se hace en el respaldo 13, se apoya en un lenguaje ya fijado.\n\n## (b) Cambios listos para aplicar\n\nsesion-29sep-2\n\n- Reemplazar la frase de $\\pi_{ratio}$ por: \"$\\pi_{ratio}$ compara planes locales por utilidad esperada entre pruebas esperadas, $E[U]/E[T]$. Ejecuta una prueba y vuelve a decidir. Empieza por AB:\"\n- Borrar el párrafo final \"Cuando AB da 0 o 2…\", que repite el pie de figura. Si se prefiere, acortar el pie a \"Política completa desde AB.\"\n- En el árbol, añadir el valor esperado para que coincida con la fórmula:\n\n```\n0 [label=\"A y B sanos: cobramos 2\nÚltima prueba: C\nValor esperado de la rama: 2.1\"]\n1 [label=\"Un sano y un infectado\nÚltima prueba: A\nValor esperado de la rama: 1\"]\n2 [label=\"A y B infectados\nÚltima prueba: C\nValor esperado de la rama: 0.1\"]\n```\n\nsesion-29sep-3\n\n- Antes del párrafo de resultados, añadir una línea: \"$\\pi_3$ estima el cobro futuro con un score aproximado. $\\pi_C$ y $\\pi_R$ dividen la utilidad de un plan entre las pruebas asignadas. $\\pi_L$ puntúa $E[U]-\\lambda E[T]$; $\\lambda$ es el precio de cada prueba, aquí 0.01.\"\n- Cambiar \"Este resultado muestra el riesgo…\" por \"Una rama muestra el riesgo de abrir cuatro con solo dos pruebas:\"\n- Raíz del árbol:\n\n```\nroot [label=\"Solo la rama ABCD = 3 (29.16% al inicio)\nQueda un sano entre cuatro\nÚltima prueba: A\"]\n```\n\n- Añadir al final del párrafo de resultados: \"Estos valores son de cada política completa, no de la rama del árbol.\"\n\nsesion-29sep-4\n\n- Tras \"calculamos el óptimo laminar con Bellman\", añadir: \"Cada regla se compara con el óptimo exacto de su propio setup.\"\n- Mover a notas \"con $B=2$ solo pueden mirar dos\". La frase ya está en las notas y en pantalla se puede quitar.\n\nsesion-29sep-5\n\n- Reemplazar \"La configuración sigue probando cuando puede hacerlo, por eso el precio alto acaba en individuales.\" por: \"Con $\\lambda$ alto ningún plan local puntúa positivo. La regla recurre entonces al cobro inmediato y prueba individuales.\"\n\nsesion-29sep-6\n\n- Tras el setup, añadir: \"$b$: pruebas ya usadas.\"\n\n  Conviene verificar esta definición. Si $b$ significa otra cosa en el notebook, ajústala; la pantalla 9 usa la misma letra.\n- En el último párrafo, dejar explícito de dónde sale 0.42: \"…$0.42(1.45-1.30)=0.063$, donde $0.42=P(R(AB)=1)$.\"\n- En las tres hojas, cambiar \"Valor de esta rama\" por \"Valor esperado de la rama\". En r2, añadir el cobro para que el 1.3 se entienda:\n\n```\nr2 [label=\"B sano: cobramos 1\nÚltima prueba: D\nValor esperado de la rama: 1.3\"]\n```\n\nSobre las etiquetas de los árboles: el de la pantalla 3 es el que más necesita el cambio. El de la 2 lo necesita para que las hojas coincidan con la fórmula, y el de la 6 solo el ajuste de palabra. El árbol del respaldo 13 ya funciona bien: dice \"Plan local\" e indica las pruebas gastadas.\n\n## (c) Mejoras puntuales al resto\n\n1. sesion-29sep-7: la primera vez que aparece \"óptimo general\", añadir \"(permite cruces)\". Así la segunda pérdida se conecta con la pantalla 6 sin explicación extra.\n\n2. sesion-29sep-4, notas: añadir \"Si preguntan por qué $E[T]$ puede ser menor que las pruebas asignadas, ir al respaldo 13 (1.42 frente a 2 y 0.774)\". Así el respaldo que separa plan local y política completa tiene un punto de entrada claro.\n\n3. sesion-29sep-12: en $\\pi_3$, \"score aproximado\" no dice qué aproxima. Si la pantalla 3 ya lo define, el respaldo puede quedarse igual. Si no, bastaría con \"aproxima el valor futuro de cada primera prueba\", siempre que coincida con la implementación.\n\nLas pantallas 8, 9 y 10 funcionan. Las dos ideas para discutir ya están bien separadas: qué garantía buscar con conteos, y cómo enunciar la separación binario/conteos sin mezclarla con el costo de laminaridad. No las alargaría.\n\n## (d) Frase de guion para unir los ejemplos\n\n\"La 2 muestra por qué conviene agrupar; la 3, cuándo agrupar demasiado sale caro; la 4 comprueba si eso se sostiene en los 36 casos; la 5, cuánto depende del precio $\\lambda$; y la 6 y la 7 miden lo que se pierde por no cruzar grupos. Con eso pasamos al paper.\"",
+  "usage": {
+    "inputTokens": 2,
+    "outputTokens": 5632,
+    "cacheReadInputTokens": 531,
+    "cacheCreationInputTokens": 10349,
+    "webSearchRequests": 0,
+    "costUSD": 0.1955462,
+    "contextWindow": 1000000,
+    "maxOutputTokens": 128000,
+    "thinkingTokens": 3306,
+    "canonicalModel": "claude-opus-5-5",
+    "provider": "firstParty",
+    "costBasis": "list"
+  },
+  "applied": [
+    "Definir pi_ratio antes de usarla y pi_L antes de compararla",
+    "Marcar ABCD=3 como una sola rama",
+    "Distinguir cobro inmediato de valor esperado en hojas",
+    "Mantener las seis definiciones y comparaciones en respaldo",
+    "Comparar cada setup con su propio óptimo",
+    "Explicar la salvaguarda con lambda alto",
+    "Indicar que el óptimo general permite cruces"
+  ],
+  "not_applied": [
+    "La sugerencia b=pruebas usadas contradice la notación: b son pruebas restantes. Se conserva la definición correcta.",
+    "No se añaden todas las definiciones al árbol ABCD; se mantienen en respaldo para reducir carga."
+  ],
+  "before_front_words": 939,
+  "after_front_words": 886,
+  "changed_cells": [
+    "sesion-29sep-12",
+    "sesion-29sep-2",
+    "sesion-29sep-3",
+    "sesion-29sep-4",
+    "sesion-29sep-5",
+    "sesion-29sep-6",
+    "sesion-29sep-7"
+  ],
+  "preserved_cells": [
+    "sesion-29sep-8",
+    "sesion-29sep-9",
+    "sesion-29sep-10",
+    "sesion-29sep-11",
+    "sesion-29sep-13"
+  ],
+  "lambda_fallback_checked": {
+    "0.4": {
+      "best_initial_net_value": 0,
+      "first_pool_size": 1
+    },
+    "0.8": {
+      "best_initial_net_value": 0,
+      "first_pool_size": 1
+    }
+  }
+}

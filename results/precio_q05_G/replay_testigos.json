@@ -1,0 +1,40 @@
+{
+  "laminar": {
+    "value": "41/16",
+    "decimal": 2.5625,
+    "max_tests": 4,
+    "profiles": 128
+  },
+  "general": {
+    "value": "13/4",
+    "decimal": 3.25,
+    "max_tests": 4,
+    "profiles": 128
+  },
+  "greedy_G4": {
+    "value": "2",
+    "decimal": 2.0,
+    "max_tests": 4,
+    "profiles": 128
+  },
+  "rollout_G4": {
+    "value": "171/64",
+    "decimal": 2.671875,
+    "max_tests": 4,
+    "profiles": 128
+  },
+  "greedy_G5": {
+    "value": "2",
+    "decimal": 2.0,
+    "max_tests": 4,
+    "profiles": 128
+  },
+  "rollout_G5": {
+    "value": "81/32",
+    "decimal": 2.53125,
+    "max_tests": 4,
+    "profiles": 128
+  },
+  "artifact_sha256": "fc1d05eb183535cdc1135fce2411f61bc83b2316c26cad5c8828c62b56519111",
+  "replay_source_sha256": "bc45980dd6f502c484d6d37d966c19a4cf486ee7e3cc346eda3ccc8cdfafcf42"
+}

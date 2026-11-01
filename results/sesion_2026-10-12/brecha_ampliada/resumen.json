@@ -1,0 +1,82 @@
+{
+  "created_utc": "2026-10-12T13:31:03.510596+00:00",
+  "objective": "maximize optimal binary hard-clearing / optimal augmented pathwise-laminar soft-clearing; independent priors",
+  "completed_optimization_runs": 31,
+  "floating_evaluations": 6199986,
+  "additional_exact_comparisons": 2856,
+  "uncertified_due_to_limits": 122,
+  "search_range": {
+    "n": [
+      3,
+      8
+    ],
+    "B": [
+      2,
+      4
+    ],
+    "G": [
+      2,
+      4
+    ],
+    "coverage": "selected configurations and directed searches, not an exhaustive grid",
+    "numerical_q_bounds": [
+      0.0001,
+      0.9999
+    ]
+  },
+  "vps": {
+    "host": "hermeneuta-vps",
+    "directory": "/home/hermeneuta/agent-workspace/groupcount-gap-20261012",
+    "seconds": 480.0169818904251,
+    "cases": 1233,
+    "status": "completed; results downloaded"
+  },
+  "strongest_result": {
+    "type": "certified limiting family",
+    "n": 4,
+    "B": 2,
+    "G": 2,
+    "q": [
+      "s",
+      "1/2",
+      "1/2",
+      "s"
+    ],
+    "u": [
+      1,
+      3,
+      3,
+      2
+    ],
+    "interval": "19/20 <= s < 1",
+    "binary": "(5/2)*s*(1+s)",
+    "laminar": "3+(3/2)*s*s",
+    "supremum_lower_bound": "10/9",
+    "global_upper_bound_proved_here": false,
+    "finite_case": {
+      "q": [
+        "999999/1000000",
+        "1/2",
+        "1/2",
+        "999999/1000000"
+      ],
+      "u": [
+        "1",
+        "3",
+        "3",
+        "2"
+      ],
+      "B": 2,
+      "G": 2,
+      "ratio": "3333328333335/2999998000001",
+      "ratio_decimal": 1.1111101851847531
+    }
+  },
+  "symbolic_inequalities": 454,
+  "tests_passed": 55,
+  "artifacts_relative_to_repository": {
+    "certificate": "results/sesion_2026-10-12/brecha_ampliada/certificados.json",
+    "source": "augmented/paper/binary_laminar_gap_ten_ninths.tex",
+    "pdf": "output/pdf/binary_laminar_gap_ten_ninths.pdf"
+  }
+}

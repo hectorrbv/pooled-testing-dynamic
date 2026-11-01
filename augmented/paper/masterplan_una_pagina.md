@@ -1,5 +1,9 @@
 # Sesión del 9 de julio — una página
 
+> **[SUPERSEDED 2026-08-01]** Retirado como norte del proyecto por el
+> [plan maestro](../../docs/plans/2026-08-01-plan-maestro-politicas-laminares-planificacion.md).
+> Se conserva como historial de la sesión del 9 de julio.
+
 ## 1. Rigor: el Gibbs necesitaba una segunda corrección, y está hecha
 
 La reescritura de junio hizo la cadena irreducible pero dejó un defecto de equilibrio detallado: la propuesta por caminos alternantes es asimétrica y la aceptación era Metropolis puro. La cadena convergía, estable en todas las semillas, a una posterior equivocada (TV 0.067 en el contraejemplo mínimo; 6.7 puntos de error en una marginal). Se probó con la matriz de transición exacta de la cadena —enumerando todas las ramas del generador—, se corrigió con el factor de Hastings por camino espejo, y la matriz corregida da TV 0.000000 en las cinco topologías auditadas. Suite completa: 79/79. De paso quedan respondidas las dos indicaciones técnicas de la reunión pasada: las distancias se midieron en TV, y ahora hay una cadena correcta sobre la cual estudiar mixing.

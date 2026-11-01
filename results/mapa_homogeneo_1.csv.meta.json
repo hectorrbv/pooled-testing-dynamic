@@ -1,0 +1,87 @@
+{
+  "artifact": "mapa_homogeneo_1.csv",
+  "columns": [
+    "q_sano",
+    "n",
+    "G",
+    "B",
+    "u",
+    "convencion",
+    "clase",
+    "optimo",
+    "baseline_singletons",
+    "ratio_vs_singletons",
+    "tamanos_optimos",
+    "singleton_optimo",
+    "grupo_optimo",
+    "preferencia",
+    "valor_singleton_primero",
+    "valor_mejor_grupo_primero",
+    "brecha_grupo_individual"
+  ],
+  "generated_utc": "2026-09-21T17:50:13+00:00",
+  "generator": "augmented.mapas_homogeneos.map1",
+  "git": {
+    "commit": "619cb6e409ee607612e381b285b600b29fd51327",
+    "dirty": true
+  },
+  "params": {
+    "B": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "G": [
+      2,
+      3,
+      4,
+      5,
+      8
+    ],
+    "backend": "compiled exact-state float64",
+    "class_policy": "pathwise_laminar",
+    "convention": "posterior_zero",
+    "n": "B*G: saturated population, also valid for any n>=B*G",
+    "q": [
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95
+    ],
+    "source_sha256": {
+      "augmented/bellman_tipos.py": "3ad70fa8b0472b38710efcad0a62ad7637d6cad19622d7fa5bb13bc198dc4cc1",
+      "augmented/bellman_tipos_compilado.py": "87869a5835da4ff7575d2b6cf86872def5b09747d023a46dcb0f58721246484e",
+      "augmented/mapas_homogeneos.py": "0a58fefeffa242862f9a2c6ae4a8d0a47e51a230565d8da2b47c4cb81642a6a5"
+    },
+    "tie_tolerance": "1e-10*max(1,abs(V))"
+  },
+  "rows": 665,
+  "seed": null,
+  "stamp_version": 1,
+  "versions": {
+    "numpy": "2.4.3",
+    "pandas": "3.0.1",
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "scipy": "1.18.0"
+  }
+}

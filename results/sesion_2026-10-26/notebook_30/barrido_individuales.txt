@@ -1,0 +1,2 @@
+seed 20261026 counts {'boundary_n<=B': 551, 'interior': 755, 'boundary_B=1': 460} fails 0
+min optimum/individual ratio in interior: 1.0000219674556212 at n,G,B = (3, 2, 2)
